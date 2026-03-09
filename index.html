@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>解码徽派民居 | 宏村·空间密码与文化传承</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+</head>
+<body>
+
+  <!-- 背景视频 -->
+  <video id="bgVideo" class="bg-video" autoplay loop muted playsinline>
+    <source src="public/9ba0a2e6346f2a8446c8b10f630c6071.mp4" type="video/mp4" />
+  </video>
+
+  <!-- 宣纸纹理背景 -->
+  <div class="paper-texture"></div>
+
+  <!-- 边缘晕染效果 -->
+  <div class="ink-edge ink-edge-top"></div>
+  <div class="ink-edge ink-edge-bottom"></div>
+  <div class="ink-edge ink-edge-left"></div>
+  <div class="ink-edge ink-edge-right"></div>
+
+  <!-- 云粒子画布 -->
+  <canvas id="cloudCanvas"></canvas>
+
+  <!-- ===== 右上圆形导航按钮 ===== -->
+  <nav id="circleNav">
+    <a href="index.html" class="circle-btn active" data-page="index">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16L16 5l11 11"/><path d="M8 14v13h16V14"/></svg>
+      <span>首页</span>
+    </a>
+    <a href="matouqiang.html" class="circle-btn" data-page="matouqiang">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 28V21h5V15h4V9h4v6h4v6h5v7"/></svg>
+      <span>马头墙</span>
+    </a>
+    <a href="tianjing.html" class="circle-btn" data-page="tianjing">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="6" width="20" height="20" rx="2"/><rect x="12" y="12" width="8" height="8" rx="1"/><line x1="16" y1="6" x2="16" y2="12"/><line x1="16" y1="20" x2="16" y2="26"/><line x1="6" y1="16" x2="12" y2="16"/><line x1="20" y1="16" x2="26" y2="16"/></svg>
+      <span>天井</span>
+    </a>
+    <a href="sandiao.html" class="circle-btn" data-page="sandiao">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 26Q14 18 16 16T24 6"/><path d="M6 22Q10 18 14 14"/><path d="M18 18Q22 14 26 10"/><circle cx="24" cy="6" r="2"/><circle cx="8" cy="26" r="2"/></svg>
+      <span>三雕</span>
+    </a>
+    <a href="zongzu.html" class="circle-btn" data-page="zongzu">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L16 6l13 12"/><path d="M6 16v12h20V16"/><path d="M13 28v-8h6v8"/></svg>
+      <span>宗族</span>
+    </a>
+    <a href="baohu.html" class="circle-btn" data-page="baohu">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4L6 9v7c0 7 4 13 10 15 6-2 10-8 10-15V9L16 4z"/><path d="M12 16l3 3 5-6"/></svg>
+      <span>保护</span>
+    </a>
+    <a href="kuawenhua.html" class="circle-btn" data-page="kuawenhua">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20a2 2 0 012 2v10a2 2 0 01-2 2H16l-6 5v-5H6a2 2 0 01-2-2V10a2 2 0 012-2z"/><circle cx="12" cy="15" r="1" fill="currentColor"/><circle cx="16" cy="15" r="1" fill="currentColor"/><circle cx="20" cy="15" r="1" fill="currentColor"/></svg>
+      <span>跨文化</span>
+    </a>
+  </nav>
+
+  <!-- ===== 首页 ===== -->
+  <section class="page home-page">
+    <div class="home-title-area">
+      <h1 class="home-title">解码徽派民居</h1>
+      <h2 class="home-subtitle">宏村 · 空间密码与文化传承</h2>
+      <div class="home-divider"></div>
+    </div>
+    <div class="home-body">
+      <div class="home-panorama" id="panorama">
+        <!-- 全景轮播 -->
+        <div class="panorama-track" id="panoramaTrack">
+          <div class="panorama-slide active">
+            <img src="素材/全景1.png" alt="宏村全景1" />
+          </div>
+          <div class="panorama-slide">
+            <img src="素材/全景2.png" alt="宏村全景2" />
+          </div>
+          <div class="panorama-slide">
+            <img src="素材/全景3.png" alt="宏村全景3" />
+          </div>
+          <div class="panorama-slide">
+            <img src="素材/全景4.png" alt="宏村全景4" />
+          </div>
+        </div>
+        <!-- 左右箭头 -->
+        <button class="panorama-arrow panorama-arrow-left" id="panLeft" aria-label="上一张">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="panorama-arrow panorama-arrow-right" id="panRight" aria-label="下一张">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+        </button>
+        <!-- 指示器 -->
+        <div class="panorama-dots" id="panoramaDots">
+          <span class="panorama-dot active" data-idx="0"></span>
+          <span class="panorama-dot" data-idx="1"></span>
+          <span class="panorama-dot" data-idx="2"></span>
+          <span class="panorama-dot" data-idx="3"></span>
+        </div>
+        <!-- 提示文字 -->
+        <div class="panorama-hint">
+          <span class="hint-icon">◀▶</span> 点击箭头切换全景
+        </div>
+      </div>
+      <div class="home-cards">
+        <!-- 画卷卡片1：村落概况 -->
+        <div class="scroll-card" data-scroll="1">
+          <div class="scroll-bar scroll-bar-top"></div>
+          <div class="scroll-cover">
+            <img src="public/村落概况.png" alt="村落概况" class="scroll-cover-img" />
+            <div class="scroll-cover-title">村落概况</div>
+            <div class="scroll-cover-hint">点击展开画卷</div>
+          </div>
+          <div class="scroll-body">
+            <p>宏村位于安徽省黄山市黟县，始建于南宋年间，是汪氏家族的聚居地。村落背倚雷岗山，整个布局以独特的"牛形"仿生学设计闻名，村口的古树为"牛角"，蜿蜒的水圳为"牛肠"，汇聚于中心的月沼形成"牛胃"，再延伸至南湖作为"牛肚"，构成了一套科学且至今仍在发挥作用的人工水系，因此被誉为"中国画里的乡村"。</p>
+          </div>
+          <div class="scroll-bar scroll-bar-bottom"></div>
+        </div>
+        <!-- 画卷卡片2：建筑遗产 -->
+        <div class="scroll-card" data-scroll="2">
+          <div class="scroll-bar scroll-bar-top"></div>
+          <div class="scroll-cover">
+            <img src="public/建筑遗产.png" alt="建筑遗产" class="scroll-cover-img" />
+            <div class="scroll-cover-title">建筑遗产</div>
+            <div class="scroll-cover-hint">点击展开画卷</div>
+          </div>
+          <div class="scroll-body">
+            <p>宏村保存了140余幢明清时期的古建筑，是徽派建筑艺术的集中展示地。其中，明代汪氏宗祠乐叙堂、被誉为"民间故宫"的清代盐商宅邸承志堂以及南湖书院是其杰出代表。这些建筑集徽州砖雕、石雕、木雕"三雕"艺术之大成，粉墙黛瓦、马头墙与天井院落相映成趣，生动展现了徽商文化与工匠精神。</p>
+          </div>
+          <div class="scroll-bar scroll-bar-bottom"></div>
+        </div>
+        <!-- 画卷卡片3：遗产价值 -->
+        <div class="scroll-card" data-scroll="3">
+          <div class="scroll-bar scroll-bar-top"></div>
+          <div class="scroll-cover">
+            <img src="public/遗产价值.png" alt="遗产价值" class="scroll-cover-img" />
+            <div class="scroll-cover-title">遗产价值</div>
+            <div class="scroll-cover-hint">点击展开画卷</div>
+          </div>
+          <div class="scroll-body">
+            <p>凭借其独特的村落规划、保存完好的古建筑群以及与自然和谐共存的典范价值，宏村于2000年被联合国教科文组织列入世界文化遗产，评价其为"人类古老文明的见证，传统建筑的典型作品"。此外，它还拥有全国重点文物保护单位、中国历史文化名村等多项顶级遗产头衔，其成功的保护模式实现了文化遗产的永续利用。</p>
+          </div>
+          <div class="scroll-bar scroll-bar-bottom"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 五大景点按钮 -->
+    <div class="landmark-bar">
+      <button class="landmark-btn" data-landmark="nanhu" style="background-image:url('素材/画卷(1).png')">
+        <span>南湖</span>
+      </button>
+      <button class="landmark-btn" data-landmark="yuezhao" style="background-image:url('素材/画卷(1).png')">
+        <span>月沼</span>
+      </button>
+      <button class="landmark-btn" data-landmark="chengzhitang" style="background-image:url('素材/画卷(1).png')">
+        <span>承志堂</span>
+      </button>
+      <button class="landmark-btn" data-landmark="nanhushuyuan" style="background-image:url('素材/画卷(1).png')">
+        <span>南湖书院</span>
+      </button>
+      <button class="landmark-btn" data-landmark="shurentang" style="background-image:url('素材/画卷(1).png')">
+        <span>树人堂</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- 景点详情弹窗 -->
+  <div class="landmark-overlay" id="landmarkOverlay">
+    <div class="landmark-modal">
+      <button class="landmark-close" id="landmarkClose" aria-label="关闭">&times;</button>
+      <div class="landmark-modal-img">
+        <img id="landmarkImg" src="" alt="" />
+      </div>
+      <div class="landmark-modal-body">
+        <h3 class="landmark-modal-title" id="landmarkTitle"></h3>
+        <p class="landmark-modal-text" id="landmarkText"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 页脚 -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-location">安徽省黄山市黟县宏村</div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

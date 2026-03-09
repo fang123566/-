@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>天井 | 解码徽派民居</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <video id="bgVideo" class="bg-video" autoplay loop muted playsinline>
+    <source src="public/9ba0a2e6346f2a8446c8b10f630c6071.mp4" type="video/mp4" />
+  </video>
+  <div class="paper-texture"></div>
+  <div class="ink-edge ink-edge-top"></div>
+  <div class="ink-edge ink-edge-bottom"></div>
+  <div class="ink-edge ink-edge-left"></div>
+  <div class="ink-edge ink-edge-right"></div>
+  <canvas id="cloudCanvas"></canvas>
+
+  <nav id="circleNav">
+    <a href="index.html" class="circle-btn" data-page="index">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16L16 5l11 11"/><path d="M8 14v13h16V14"/></svg>
+      <span>首页</span>
+    </a>
+    <a href="matouqiang.html" class="circle-btn" data-page="matouqiang">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 28V21h5V15h4V9h4v6h4v6h5v7"/></svg>
+      <span>马头墙</span>
+    </a>
+    <a href="tianjing.html" class="circle-btn" data-page="tianjing">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="6" width="20" height="20" rx="2"/><rect x="12" y="12" width="8" height="8" rx="1"/><line x1="16" y1="6" x2="16" y2="12"/><line x1="16" y1="20" x2="16" y2="26"/><line x1="6" y1="16" x2="12" y2="16"/><line x1="20" y1="16" x2="26" y2="16"/></svg>
+      <span>天井</span>
+    </a>
+    <a href="sandiao.html" class="circle-btn" data-page="sandiao">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 26Q14 18 16 16T24 6"/><path d="M6 22Q10 18 14 14"/><path d="M18 18Q22 14 26 10"/><circle cx="24" cy="6" r="2"/><circle cx="8" cy="26" r="2"/></svg>
+      <span>三雕</span>
+    </a>
+    <a href="zongzu.html" class="circle-btn" data-page="zongzu">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L16 6l13 12"/><path d="M6 16v12h20V16"/><path d="M13 28v-8h6v8"/></svg>
+      <span>宗族</span>
+    </a>
+    <a href="baohu.html" class="circle-btn" data-page="baohu">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4L6 9v7c0 7 4 13 10 15 6-2 10-8 10-15V9L16 4z"/><path d="M12 16l3 3 5-6"/></svg>
+      <span>保护</span>
+    </a>
+    <a href="kuawenhua.html" class="circle-btn" data-page="kuawenhua">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20a2 2 0 012 2v10a2 2 0 01-2 2H16l-6 5v-5H6a2 2 0 01-2-2V10a2 2 0 012-2z"/><circle cx="12" cy="15" r="1" fill="currentColor"/><circle cx="16" cy="15" r="1" fill="currentColor"/><circle cx="20" cy="15" r="1" fill="currentColor"/></svg>
+      <span>跨文化</span>
+    </a>
+  </nav>
+
+  <section class="page sub-page">
+    <div class="sub-page-header">
+      <div class="sub-page-icon">
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="6" width="20" height="20" rx="2"/><rect x="12" y="12" width="8" height="8" rx="1"/><line x1="16" y1="6" x2="16" y2="12"/><line x1="16" y1="20" x2="16" y2="26"/><line x1="6" y1="16" x2="12" y2="16"/><line x1="20" y1="16" x2="26" y2="16"/></svg>
+      </div>
+      <h2 class="sub-page-title">天井</h2>
+      <p class="sub-page-en">SKYWELL COURTYARD</p>
+      <div class="sub-page-divider"></div>
+    </div>
+    <div class="sub-page-content">
+      <!-- 内容待补充 -->
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-location">安徽省黄山市黟县宏村</div>
+      <div class="footer-text">徽派建筑文化信息交互可视化展示</div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
