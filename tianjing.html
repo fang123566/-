@@ -6,6 +6,121 @@
   <title>天井 | 解码徽派民居</title>
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  
+  <style>
+    /* 专属样式：天井页面内容增强 */
+    .skywell-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding-bottom: 5rem;
+        z-index: 5;
+        position: relative;
+    }
+
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 15px;
+        padding: 2.5rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-title-alt {
+        font-family: 'Ma Shan Zheng', cursive;
+        font-size: 2.2rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        color: #1a1a1a;
+    }
+
+    /* 采光模拟器样式 */
+    .lighting-sim-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .sim-canvas-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+        height: 300px;
+        background: #fdfdfd;
+        border: 2px solid #333;
+        overflow: hidden;
+    }
+
+    .sun-slider {
+        width: 80%;
+        margin: 20px 0;
+        cursor: pointer;
+    }
+
+    .sim-info {
+        font-family: 'Noto Serif SC', serif;
+        font-style: italic;
+        color: #555;
+    }
+
+    /* 散点图容器 */
+    .chart-box {
+        width: 100%;
+        height: 450px;
+    }
+
+    /* 趣味问答样式 */
+    .quiz-card {
+        text-align: center;
+        padding: 2rem;
+        border: 2px dashed #999;
+        margin-top: 2rem;
+    }
+
+    .options-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .option-btn {
+        padding: 15px;
+        background: rgba(255,255,255,0.5);
+        border: 1px solid #ccc;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-family: 'Noto Serif SC', serif;
+    }
+
+    .option-btn:hover {
+        background: #1a1a1a;
+        color: #fff;
+    }
+
+    .feedback {
+        margin-top: 15px;
+        font-weight: bold;
+        min-height: 24px;
+    }
+
+    /* 装饰：四水归堂意境动画 */
+    .rain-drop {
+        position: absolute;
+        background: linear-gradient(transparent, #88a);
+        width: 2px;
+        height: 15px;
+        opacity: 0.5;
+        animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+        to { transform: translateY(300px); }
+    }
+  </style>
 </head>
 <body>
 
@@ -24,7 +139,7 @@
       <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16L16 5l11 11"/><path d="M8 14v13h16V14"/></svg>
       <span>首页</span>
     </a>
-    <a href="matouqiang.html" class="circle-btn" data-page="matouqiang">
+    <a href="matouqiang.html" class="circle-btn active" data-page="matouqiang">
       <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 28V21h5V15h4V9h4v6h4v6h5v7"/></svg>
       <span>马头墙</span>
     </a>
@@ -50,6 +165,19 @@
     </a>
   </nav>
 
+
+  <video id="bgVideo" class="bg-video" autoplay loop muted playsinline>
+    <source src="public/9ba0a2e6346f2a8446c8b10f630c6071.mp4" type="video/mp4" />
+  </video>
+  <div class="paper-texture"></div>
+  <div class="ink-edge ink-edge-top"></div>
+  <nav id="circleNav">
+    <a href="tianjing.html" class="circle-btn active" data-page="tianjing">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="6" width="20" height="20" rx="2"/><rect x="12" y="12" width="8" height="8" rx="1"/><line x1="16" y1="6" x2="16" y2="12"/><line x1="16" y1="20" x2="16" y2="26"/><line x1="6" y1="16" x2="12" y2="16"/><line x1="20" y1="16" x2="26" y2="16"/></svg>
+      <span>天井</span>
+    </a>
+    </nav>
+
   <section class="page sub-page">
     <div class="sub-page-header">
       <div class="sub-page-icon">
@@ -59,8 +187,46 @@
       <p class="sub-page-en">SKYWELL COURTYARD</p>
       <div class="sub-page-divider"></div>
     </div>
-    <div class="sub-page-content">
-      <!-- 内容待补充 -->
+
+    <div class="sub-page-content skywell-container">
+      
+      <div class="glass-panel">
+        <h3 class="section-title-alt">【待填充：光影变幻模拟】</h3>
+        <div class="lighting-sim-box">
+          <p class="sim-info">【待填充：拖动滑块模拟一天中的光照角度对天井内部的影响】</p>
+          <div class="sim-canvas-wrapper" id="simWrapper">
+            <svg id="lightingSvg" width="100%" height="300" viewBox="0 0 600 300">
+                <path d="M 0 100 L 250 100 L 250 300 M 350 300 L 350 100 L 600 100" fill="none" stroke="#333" stroke-width="4"/>
+                <line x1="250" y1="290" x2="350" y2="290" stroke="#999" stroke-dasharray="4"/>
+                <polygon id="sunLight" points="250,100 350,100 350,290 250,290" fill="rgba(255, 235, 59, 0.3)" />
+                <circle id="sunIcon" cx="300" cy="50" r="15" fill="#fbc02d" />
+            </svg>
+          </div>
+          <input type="range" min="0" max="180" value="90" class="sun-slider" id="sunSlider">
+          <div id="timeLabel" style="font-family: 'Ma Shan Zheng';">【待填充：正午时分】</div>
+        </div>
+      </div>
+
+      <div class="glass-panel">
+        <h3 class="section-title-alt">【待填充：天井规模分布研究】</h3>
+        <div id="scatterChart" class="chart-box"></div>
+        <p style="text-align:center; color:#666; font-size: 0.9rem; margin-top:1rem;">【待填充：数据采样自徽州各典型古村落住宅】</p>
+      </div>
+
+      <div class="glass-panel">
+        <h3 class="section-title-alt">【待填充：辩古识幽】</h3>
+        <div class="quiz-card">
+          <p id="questionText" style="font-size:1.2rem; margin-bottom:1.5rem;">【待填充：关于“四水归堂”的正确含义是？】</p>
+          <div class="options-grid">
+            <button class="option-btn" onclick="checkAnswer(this, false)">【待填充：选项A】</button>
+            <button class="option-btn" onclick="checkAnswer(this, true)">【待填充：正确选项】</button>
+            <button class="option-btn" onclick="checkAnswer(this, false)">【待填充：选项C】</button>
+            <button class="option-btn" onclick="checkAnswer(this, false)">【待填充：选项D】</button>
+          </div>
+          <div id="quizFeedback" class="feedback"></div>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -71,6 +237,77 @@
     </div>
   </footer>
 
-  <script src="app.js"></script>
+  <script>
+    // --- 采光模拟逻辑 ---
+    const slider = document.getElementById('sunSlider');
+    const sunLight = document.getElementById('sunLight');
+    const sunIcon = document.getElementById('sunIcon');
+    const timeLabel = document.getElementById('timeLabel');
+
+    slider.addEventListener('input', (e) => {
+        const angle = e.target.value;
+        const rad = (angle * Math.PI) / 180;
+        
+        // 计算太阳位置
+        const cx = 300 + 250 * Math.cos(rad);
+        const cy = 250 - 200 * Math.sin(rad);
+        sunIcon.setAttribute('cx', cx);
+        sunIcon.setAttribute('cy', cy);
+
+        // 计算光影投射（简化物理模型）
+        // 这里的逻辑根据角度改变 polygon 的坐标，呈现出光影斜射入天井的效果
+        let offset = (angle - 90) * 1.5;
+        sunLight.setAttribute('points', `250,100 350,100 ${350-offset},290 ${250-offset},290`);
+        
+        // 时间标签变化
+        if(angle < 45) timeLabel.innerText = "【待填充：清晨】";
+        else if(angle > 135) timeLabel.innerText = "【待填充：傍晚】";
+        else timeLabel.innerText = "【待填充：正午前后】";
+    });
+
+    // --- 散点图初始化 ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const chartDom = document.getElementById('scatterChart');
+        const myChart = echarts.init(chartDom);
+        
+        // 模拟天井长宽尺寸数据
+        const data = [[2.1, 3.2], [1.8, 2.5], [4.5, 6.1], [3.2, 4.0], [2.8, 3.5], [5.0, 7.2], [1.5, 2.0], [3.8, 5.2]];
+
+        const option = {
+            title: { text: '【待填充：长宽尺寸关系图】', left: 'center', textStyle: { fontFamily: 'Noto Serif SC' } },
+            xAxis: { name: '【待填充：宽度(m)】', splitLine: { lineStyle: { type: 'dashed' } } },
+            yAxis: { name: '【待填充：长度(m)】', splitLine: { lineStyle: { type: 'dashed' } } },
+            tooltip: { trigger: 'item', formatter: '【待填充】：{c}m' },
+            series: [{
+                symbolSize: 20,
+                data: data,
+                type: 'scatter',
+                itemStyle: { color: '#2c3e50', opacity: 0.6 }
+            }]
+        };
+        myChart.setOption(option);
+        window.addEventListener('resize', myChart.resize);
+    });
+
+    // --- 问答逻辑 ---
+    function checkAnswer(btn, isCorrect) {
+        const feedback = document.getElementById('quizFeedback');
+        if(isCorrect) {
+            feedback.innerText = "【待填充：回答正确！天井确有聚财与排水之意。】";
+            feedback.style.color = "#27ae60";
+            btn.style.background = "#27ae60";
+            btn.style.color = "#fff";
+        } else {
+            feedback.innerText = "【待填充：再思虑一番，此答案似乎不妥。】";
+            feedback.style.color = "#e74c3c";
+            btn.style.background = "#e74c3c";
+            btn.style.color = "#fff";
+            setTimeout(() => {
+                btn.style.background = "rgba(255,255,255,0.5)";
+                btn.style.color = "#333";
+            }, 1000);
+        }
+    }
+  </script>
 </body>
 </html>

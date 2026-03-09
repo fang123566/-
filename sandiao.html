@@ -3,9 +3,187 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>三雕 | 解码徽派民居</title>
+  <title>【待填充】 | 解码徽派民居</title>
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://rawgit.com/jasondavies/d3-cloud/master/build/d3.layout.cloud.js"></script>
+  
+  <style>
+    /* ----------------------------------------------------------- */
+    /* 核心布局与古风样式增强 (基于原框架) */
+    /* ----------------------------------------------------------- */
+    
+    .sub-page-content {
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        z-index: 5; /* 确保在纸张纹理之上 */
+        position: relative;
+    }
+
+    /* 通用古风容器：水墨拉丝背景 + 阴影 */
+    .section-card {
+        background: rgba(253, 252, 248, 0.9); /* 宣纸色半透明 */
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        padding: 1.5rem;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: cardEntry 0.8s ease forwards;
+    }
+
+    @keyframes cardEntry {
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 0.5rem;
+    }
+
+    .section-header h3 {
+        font-family: 'Noto Serif SC', serif;
+        font-weight: 700;
+        font-size: 1.4rem;
+        color: #1a1a1a;
+    }
+
+    .section-header span {
+        font-family: 'Ma Shan Zheng', cursive;
+        color: #e74c3c; /* 朱砂色点缀 */
+        font-size: 1rem;
+    }
+
+    /* ----------------------------------------------------------- */
+    /* 上部：饼图与词云 并排 */
+    /* ----------------------------------------------------------- */
+    .top-row {
+        display: flex;
+        gap: 2rem;
+        height: 400px;
+    }
+
+    #chartPieContainer, #wordCloudContainer {
+        flex: 1;
+        height: 100%;
+        position: relative;
+    }
+
+    #wordCloudCanvas {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* ----------------------------------------------------------- */
+    /* 下部：横向滚动图片库 */
+    /* ----------------------------------------------------------- */
+    .gallery-card {
+        padding: 1rem;
+        /* 深色木纹边框模拟 */
+        border: 4px solid #3e2723; 
+        background: #efebe9;
+    }
+
+    .gallery-scroll-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 1rem 0;
+        /* 自定义滚动条样式 (Chrome/Safari) */
+        scrollbar-width: thin;
+        scrollbar-color: #5d4037 #efebe9;
+    }
+
+    .gallery-scroll-wrapper::-webkit-scrollbar {
+        height: 8px;
+    }
+    .gallery-scroll-wrapper::-webkit-scrollbar-track {
+        background: #efebe9;
+    }
+    .gallery-scroll-wrapper::-webkit-scrollbar-thumb {
+        background: #5d4037;
+        border-radius: 4px;
+    }
+
+    .gallery-item {
+        display: inline-block;
+        width: 300px;
+        height: 220px;
+        margin-right: 1.5rem;
+        border-radius: 4px;
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        
+        /* 默认浮雕/高亮过渡效果 */
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border: 2px solid transparent;
+    }
+
+    .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+
+    /* 悬停放大效果 */
+    .gallery-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    
+    .gallery-item:hover img {
+        transform: scale(1.1);
+    }
+
+    .item-caption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        color: white;
+        padding: 15px 10px 5px 10px;
+        font-family: 'Noto Serif SC', serif;
+        text-align: center;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+    }
+
+    .gallery-item:hover .item-caption {
+        transform: translateY(0);
+    }
+
+    /* ----------------------------------------------------------- */
+    /* 交互效果类 (JS触发) */
+    /* ----------------------------------------------------------- */
+    
+    /* 词云悬停时的图片高亮（朱砂红呼吸灯 + 浮雕） */
+    .gallery-item.hl-from-cloud {
+        border-color: #e74c3c;
+        transform: scale(1.05) translateY(-5px);
+        box-shadow: 0 0 15px rgba(231, 76, 60, 0.6);
+        animation: hlPulse 1.5s infinite;
+        z-index: 10;
+    }
+
+    @keyframes hlPulse {
+        0% { box-shadow: 0 0 15px rgba(231, 76, 60, 0.6); }
+        50% { box-shadow: 0 0 25px rgba(231, 76, 60, 0.9); }
+        100% { box-shadow: 0 0 15px rgba(231, 76, 60, 0.6); }
+    }
+
+  </style>
 </head>
 <body>
 
@@ -32,7 +210,7 @@
       <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="6" width="20" height="20" rx="2"/><rect x="12" y="12" width="8" height="8" rx="1"/><line x1="16" y1="6" x2="16" y2="12"/><line x1="16" y1="20" x2="16" y2="26"/><line x1="6" y1="16" x2="12" y2="16"/><line x1="20" y1="16" x2="26" y2="16"/></svg>
       <span>天井</span>
     </a>
-    <a href="sandiao.html" class="circle-btn" data-page="sandiao">
+    <a href="sandiao.html" class="circle-btn active" data-page="sandiao">
       <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 26Q14 18 16 16T24 6"/><path d="M6 22Q10 18 14 14"/><path d="M18 18Q22 14 26 10"/><circle cx="24" cy="6" r="2"/><circle cx="8" cy="26" r="2"/></svg>
       <span>三雕</span>
     </a>
@@ -50,17 +228,83 @@
     </a>
   </nav>
 
+    <video id="bgVideo" class="bg-video" autoplay loop muted playsinline>
+    <source src="public/9ba0a2e6346f2a8446c8b10f630c6071.mp4" type="video/mp4" />
+  </video>
+  <div class="paper-texture"></div>
+  <div class="ink-edge ink-edge-top"></div>
+  <nav id="circleNav">
+    <a href="sandiao.html" class="circle-btn active" data-page="sandiao">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20a2 2 0 012 2v10a2 2 0 01-2 2H16l-6 5v-5H6a2 2 0 01-2-2V10a2 2 0 012-2z"/><circle cx="12" cy="15" r="1" fill="currentColor"/><circle cx="16" cy="15" r="1" fill="currentColor"/><circle cx="20" cy="15" r="1" fill="currentColor"/></svg>
+      <span><samp>三雕</samp></span>
+    </a>
+  </nav>
+
   <section class="page sub-page">
     <div class="sub-page-header">
       <div class="sub-page-icon">
         <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 26Q14 18 16 16T24 6"/><path d="M6 22Q10 18 14 14"/><path d="M18 18Q22 14 26 10"/><circle cx="24" cy="6" r="2"/><circle cx="8" cy="26" r="2"/></svg>
       </div>
-      <h2 class="sub-page-title">三雕</h2>
-      <p class="sub-page-en">THREE CARVINGS</p>
+      <h2 class="sub-page-title">【待填充】</h2>
+      <p class="sub-page-en">【待填充】</p>
       <div class="sub-page-divider"></div>
     </div>
+    
     <div class="sub-page-content">
-      <!-- 内容待补充 -->
+      
+      <div class="top-row">
+          <div class="section-card" id="chartPieContainer">
+              <div class="section-header">
+                  <h3>【待填充】分布</h3>
+                  <span>【待填充】</span>
+              </div>
+              <div id="chartPie" style="width:100%; height:320px;"></div>
+          </div>
+          
+          <div class="section-card" id="wordCloudContainer">
+              <div class="section-header">
+                  <h3>【待填充】意象</h3>
+                  <span>【待填充】</span>
+              </div>
+              <div id="wordCloudCanvas"></div>
+          </div>
+      </div>
+
+      <div class="section-card gallery-card">
+          <div class="section-header">
+              <h3>【待填充】展示</h3>
+              <span>【待填充】</span>
+          </div>
+          <div class="gallery-scroll-wrapper" id="galleryWrapper">
+              
+              <div class="gallery-item" id="gallery-catA-1" data-category="【待填充A】" data-tags="【待填充Key1】,【待填充Key2】">
+                  <img src="https://via.placeholder.com/300x220/f4f1ea/333333?text=【待填充A-1】" alt="【待填充】">
+                  <div class="item-caption">【待填充-图片说明】</div>
+              </div>
+              
+              <div class="gallery-item" id="gallery-catA-2" data-category="【待填充A】" data-tags="【待填充Key2】,【待填充Key3】">
+                  <img src="https://via.placeholder.com/300x220/fDFCF8/333333?text=【待填充A-2】" alt="【待填充】">
+                  <div class="item-caption">【待填充-图片说明】</div>
+              </div>
+
+              <div class="gallery-item" id="gallery-catB-1" data-category="【待填充B】" data-tags="【待填充Key1】,【待填充Key4】">
+                  <img src="https://via.placeholder.com/300x220/fDFCF8/333333?text=【待填充B-1】" alt="【待填充】">
+                  <div class="item-caption">【待填充-图片说明】</div>
+              </div>
+              
+              <div class="gallery-item" id="gallery-catC-1" data-category="【待填充C】" data-tags="【待填充Key3】">
+                  <img src="https://via.placeholder.com/300x220/fDFCF8/333333?text=【待填充C-1】" alt="【待填充】">
+                  <div class="item-caption">【待填充-图片说明】</div>
+              </div>
+              
+              <div class="gallery-item" id="gallery-catC-2" data-category="【待填充C】" data-tags="【待填充Key4】">
+                  <img src="https://via.placeholder.com/300x220/fDFCF8/333333?text=【待填充C-2】" alt="【待填充】">
+                  <div class="item-caption">【待填充-图片说明】</div>
+              </div>
+
+          </div>
+      </div>
+
     </div>
   </section>
 
@@ -72,5 +316,163 @@
   </footer>
 
   <script src="app.js"></script>
+  
+  <script>
+    // -----------------------------------------------------------
+    // 模拟数据与交互逻辑
+    // -----------------------------------------------------------
+
+    // 1. 题材与图片库锚点映射 (用于饼图点击筛选)
+    const categoryAnchors = {
+        '【待填充A】': 'gallery-catA-1',
+        '【待填充B】': 'gallery-catB-1',
+        '【待填充C】': 'gallery-catC-1'
+    };
+
+    // 2. 词云关键词数据 (含大小和传统色映射)
+    const wordFreq = [
+        { text: "【待填充Key1】", size: 50, color: "#1a1a1a" }, // 墨色
+        { text: "【待填充Key2】", size: 40, color: "#e74c3c" }, // 朱砂
+        { text: "【待填充Key3】", size: 30, color: "#3498db" }, // 石青
+        { text: "【待填充Key4】", size: 25, color: "#f1c40f" }  // 藤黄
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initPieChart();
+        initWordCloud();
+    });
+
+    // -----------------------------------------------------------
+    // ECharts 饼图初始化
+    // -----------------------------------------------------------
+    function initPieChart() {
+        const chartDom = document.getElementById('chartPie');
+        const myChart = echarts.init(chartDom);
+        
+        const option = {
+            backgroundColor: 'transparent',
+            tooltip: { trigger: 'item', formatter: '{b}: {d}%' },
+            legend: { top: 'bottom', textStyle: { fontFamily: 'Noto Serif SC' } },
+            series: [{
+                name: '【待填充】题材',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                avoidLabelOverlap: false,
+                itemStyle: { borderRadius: 8, borderColor: '#fff', borderWidth: 2 },
+                label: { show: false, position: 'center' },
+                emphasis: { label: { show: true, fontSize: '18', fontWeight: 'bold' } },
+                labelLine: { show: false },
+                // 对应映射数据
+                data: [
+                    { value: 40, name: '【待填充A】', itemStyle: {color: '#5d4037'} },
+                    { value: 30, name: '【待填充B】', itemStyle: {color: '#8d6e63'} },
+                    { value: 30, name: '【待填充C】', itemStyle: {color: '#bcaaa4'} }
+                ]
+            }]
+        };
+
+        myChart.setOption(option);
+
+        // --- 交互：饼图点击筛选图片 ---
+        myChart.on('click', function(params) {
+            const categoryName = params.name;
+            const anchorId = categoryAnchors[categoryName];
+            if (anchorId) {
+                const targetItem = document.getElementById(anchorId);
+                const wrapper = document.getElementById('galleryWrapper');
+                if (targetItem && wrapper) {
+                    // 平滑滚动到目标图片位置
+                    wrapper.scrollTo({
+                        left: targetItem.offsetLeft - wrapper.offsetLeft,
+                        behavior: 'smooth'
+                    });
+                    
+                    // 可选：给目标添加临时的闪烁效果以示强调
+                    targetItem.style.animation = 'hlPulse 0.5s 2';
+                    setTimeout(() => targetItem.style.animation = '', 1000);
+                }
+            }
+        });
+
+        window.addEventListener('resize', myChart.resize);
+    }
+
+    // -----------------------------------------------------------
+    // d3-cloud 古风词云初始化
+    // -----------------------------------------------------------
+    function initWordCloud() {
+        const container = document.getElementById('wordCloudCanvas');
+        const width = container.offsetWidth;
+        const height = container.offsetHeight;
+
+        // 清空容器（防止resize重复绘制）
+        d3.select("#wordCloudCanvas").selectAll("*").remove();
+
+        const layout = d3.layout.cloud()
+            .size([width, height])
+            .words(wordFreq.map(d => ({text: d.text, size: d.size, color: d.color})))
+            .padding(5)
+            .rotate(() => (~~(Math.random() * 2) * 90) * 0.5) // 随机倾斜0或45度
+            .font("Ma Shan Zheng")
+            .fontSize(d => d.size)
+            .on("end", draw);
+
+        layout.start();
+
+        function draw(words) {
+            const svg = d3.select("#wordCloudCanvas").append("svg")
+                .attr("width", layout.size()[0])
+                .attr("height", layout.size()[1])
+                .append("g")
+                .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")");
+
+            svg.selectAll("text")
+                .data(words)
+                .enter().append("text")
+                .style("font-size", d => d.size + "px")
+                .style("font-family", "Ma Shan Zheng")
+                .style("fill", d => d.color) // 使用指定的古风色
+                .attr("text-anchor", "middle")
+                .attr("transform", d => "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")")
+                .text(d => d.text)
+                .style("cursor", "pointer")
+                
+                // 入场动画：从小到大渐变
+                .style("opacity", 0)
+                .transition().duration(1000).style("opacity", 1)
+
+                // --- 交互：词云悬停高亮对应图片 ---
+                .on("mouseover", function(event, d) {
+                    const hoveredWord = d.text;
+                    const galleryItems = document.querySelectorAll('.gallery-item');
+                    
+                    galleryItems.forEach(item => {
+                        const tags = item.getAttribute('data-tags');
+                        if (tags && tags.includes(hoveredWord)) {
+                            // 添加 CSS 高亮类
+                            item.classList.add('hl-from-cloud');
+                        } else {
+                            // 其他图片稍微变暗以突出高亮项
+                            item.style.opacity = 0.5;
+                        }
+                    });
+                    
+                    // 放大自身词汇
+                    d3.select(this).transition().duration(200).style("font-size", (d.size * 1.2) + "px");
+                })
+                .on("mouseout", function(event, d) {
+                    // 移除高亮和恢复透明度
+                    document.querySelectorAll('.gallery-item').forEach(item => {
+                        item.classList.remove('hl-from-cloud');
+                        item.style.opacity = 1;
+                    });
+                    
+                    // 还原自身词汇大小
+                    d3.select(this).transition().duration(200).style("font-size", d.size + "px");
+                });
+        }
+    }
+
+  </script>
 </body>
 </html>

@@ -6,6 +6,116 @@
   <title>保护 | 解码徽派民居</title>
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <style>
+    /* 专属样式：保护页面 */
+    .protection-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 20px;
+      padding: 0 40px 60px 40px;
+      z-index: 10;
+      position: relative;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+    }
+
+    .title-ink {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+      color: #2c3e50;
+      border-bottom: 1px dashed #999;
+      padding-bottom: 5px;
+    }
+
+    /* 数据图表区 */
+    .chart-container { height: 300px; width: 100%; }
+
+    /* 修缮对比滑块 */
+    .comparison-container {
+      grid-column: span 8;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .compare-slider {
+      position: relative;
+      width: 100%;
+      height: 350px;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 3px solid #333;
+    }
+
+    .compare-img {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .img-after { z-index: 1; }
+    .img-before {
+      z-index: 2;
+      width: 50%; /* 初始对比位置 */
+      border-right: 3px solid #e74c3c;
+    }
+
+    .slider-input {
+      position: absolute;
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      outline: none;
+      margin: 0;
+      z-index: 3;
+      cursor: ew-resize;
+    }
+
+    /* 问题卡片 */
+    .question-side {
+      grid-column: span 4;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .q-card {
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .q-card:hover { transform: scale(1.02); background: rgba(255,255,255,0.9); }
+    .q-ans { display: none; margin-top: 10px; font-size: 0.9rem; color: #555; border-top: 1px solid #ddd; padding-top: 10px; }
+
+    /* 照片墙弹窗 */
+    #photoModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      justify-content: center; align-items: center;
+    }
+    .modal-content {
+      width: 80%; height: 80%;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    }
+    .modal-content img { width: 100%; height: 200px; object-fit: cover; border: 2px solid #fff; }
+  </style>
 </head>
 <body>
 
@@ -24,7 +134,7 @@
       <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16L16 5l11 11"/><path d="M8 14v13h16V14"/></svg>
       <span>首页</span>
     </a>
-    <a href="matouqiang.html" class="circle-btn" data-page="matouqiang">
+    <a href="matouqiang.html" class="circle-btn active" data-page="matouqiang">
       <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 28V21h5V15h4V9h4v6h4v6h5v7"/></svg>
       <span>马头墙</span>
     </a>
@@ -50,27 +160,145 @@
     </a>
   </nav>
 
+
+  <video id="bgVideo" class="bg-video" autoplay loop muted playsinline>
+    <source src="public/9ba0a2e6346f2a8446c8b10f630c6071.mp4" type="video/mp4" />
+  </video>
+  <div class="paper-texture"></div>
+  <div class="ink-edge ink-edge-top"></div>
+  <nav id="circleNav">
+    <a href="baohu.html" class="circle-btn active" data-page="baohu">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4L6 9v7c0 7 4 13 10 15 6-2 10-8 10-15V9L16 4z"/><path d="M12 16l3 3 5-6"/></svg>
+      <span>保护</span>
+    </a>
+  </nav>
+
   <section class="page sub-page">
     <div class="sub-page-header">
       <div class="sub-page-icon">
-        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4L6 9v7c0 7 4 13 10 15 6-2 10-8 10-15V9L16 4z"/><path d="M12 16l3 3 5-6"/></svg>
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 4L6 9v7c0 7 4 13 10 15 6-2 10-8 10-15V9L16 4z"/></svg>
       </div>
-      <h2 class="sub-page-title">保护</h2>
-      <p class="sub-page-en">CONSERVATION</p>
+      <h2 class="sub-page-title">【待填充：守护徽州】</h2>
+      <p class="sub-page-en">PROTECTION & REVITALIZATION</p>
       <div class="sub-page-divider"></div>
     </div>
-    <div class="sub-page-content">
-      <!-- 内容待补充 -->
+
+    <div class="protection-grid">
+      <div class="glass-card" style="grid-column: span 4;">
+        <h3 class="title-ink">【待填充：修缮比例】</h3>
+        <div id="pieRepair" class="chart-container"></div>
+        <p style="font-size: 0.8rem; color: #666; text-align: center;">【待填充：点击扇区查看实景照片】</p>
+      </div>
+
+      <div class="glass-card" style="grid-column: span 4;">
+        <h3 class="title-ink">【待填充：资金来源】</h3>
+        <div id="pieFund" class="chart-container"></div>
+      </div>
+
+      <div class="glass-card" style="grid-column: span 4;">
+        <h3 class="title-ink">【待填充：游客趋势】</h3>
+        <div id="lineVisitor" class="chart-container"></div>
+      </div>
+
+      <div class="comparison-container">
+        <div class="glass-card">
+          <h3 class="title-ink">【待填充：匠心修缮对比】</h3>
+          <div class="compare-slider">
+            <div class="compare-img img-after" style="background-image: url('【待填充：修缮后图】');"></div>
+            <div class="compare-img img-before" id="beforeImg" style="background-image: url('【待填充：修缮前图】');"></div>
+            <input type="range" min="0" max="100" value="50" class="slider-input" oninput="moveSlider(this)">
+          </div>
+          <p>【待填充：关于这组建筑修缮过程的文字介绍...】</p>
+        </div>
+      </div>
+
+      <div class="question-side">
+        <div class="glass-card q-card" onclick="toggleAns(this)">
+          <div style="font-weight: bold;">【待填充：问题一？】</div>
+          <div class="q-ans">【待填充：回答内容...】</div>
+        </div>
+        <div class="glass-card q-card" onclick="toggleAns(this)">
+          <div style="font-weight: bold;">【待填充：问题二？】</div>
+          <div class="q-ans">【待填充：回答内容...】</div>
+        </div>
+        <div class="glass-card q-card" onclick="toggleAns(this)">
+          <div style="font-weight: bold;">【待填充：问题三？】</div>
+          <div class="q-ans">【待填充：回答内容...】</div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-location">安徽省黄山市黟县宏村</div>
-      <div class="footer-text">徽派建筑文化信息交互可视化展示</div>
-    </div>
-  </footer>
+  <div id="photoModal" onclick="this.style.display='none'">
+    <div class="modal-content">
+      <img src="https://via.placeholder.com/400" alt="1">
+      <img src="https://via.placeholder.com/400" alt="2">
+      <img src="https://via.placeholder.com/400" alt="3">
+      </div>
+  </div>
 
-  <script src="app.js"></script>
+  <footer class="site-footer">...</footer>
+
+  <script>
+    // --- ECharts 初始化 ---
+    const pieRepair = echarts.init(document.getElementById('pieRepair'));
+    pieRepair.setOption({
+      tooltip: { trigger: 'item' },
+      series: [{
+        type: 'pie',
+        radius: '70%',
+        data: [
+          { value: 45, name: '【待填充：已修缮】', itemStyle: {color: '#2d575d'} },
+          { value: 30, name: '【待填充：修缮中】', itemStyle: {color: '#6a8d92'} },
+          { value: 25, name: '【待填充：待修缮】', itemStyle: {color: '#b5c4c7'} }
+        ]
+      }]
+    });
+    // 点击显示照片墙
+    pieRepair.on('click', () => { document.getElementById('photoModal').style.display='flex'; });
+
+    const pieFund = echarts.init(document.getElementById('pieFund'));
+    pieFund.setOption({
+      series: [{
+        type: 'pie',
+        innerRadius: '50%',
+        data: [
+          { value: 50, name: '【待填充：政府拨款】' },
+          { value: 30, name: '【待填充：社会众筹】' },
+          { value: 20, name: '【待填充：私人保护】' }
+        ]
+      }]
+    });
+
+    const lineVisitor = echarts.init(document.getElementById('lineVisitor'));
+    lineVisitor.setOption({
+      xAxis: { type: 'category', data: ['2020', '2021', '2022', '2023', '2024', '2025'] },
+      yAxis: { type: 'value' },
+      series: [{
+        data: [120, 150, 110, 280, 460, 520],
+        type: 'line',
+        smooth: true,
+        lineStyle: { color: '#e74c3c' }
+      }]
+    });
+
+    // --- 交互功能 ---
+    function moveSlider(input) {
+      const container = input.parentElement;
+      const beforeImg = container.querySelector('.img-before');
+      beforeImg.style.width = input.value + "%";
+    }
+
+    function toggleAns(card) {
+      const ans = card.querySelector('.q-ans');
+      ans.style.display = (ans.style.display === 'block') ? 'none' : 'block';
+    }
+
+    window.addEventListener('resize', () => {
+      pieRepair.resize();
+      pieFund.resize();
+      lineVisitor.resize();
+    });
+  </script>
 </body>
 </html>

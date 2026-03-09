@@ -6,6 +6,111 @@
   <title>跨文化 | 解码徽派民居</title>
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <style>
+    /* 跨文化页面专属样式 */
+    .cross-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding-bottom: 80px;
+      z-index: 10;
+      position: relative;
+    }
+
+    .glass-box {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    .section-label {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 2rem;
+      color: #333;
+      text-align: center;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .section-label::before, .section-label::after {
+      content: ""; width: 50px; height: 1px; background: #ccc;
+    }
+
+    /* 对比滑块 */
+    .compare-slider-wrapper {
+      position: relative;
+      width: 100%;
+      height: 450px;
+      overflow: hidden;
+      border-radius: 10px;
+      border: 4px solid #2c3e50;
+    }
+
+    .slider-img {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background-size: cover; background-position: center;
+    }
+
+    .slider-handle {
+      position: absolute; top: 0; bottom: 0; width: 4px; background: #fff;
+      left: 50%; cursor: ew-resize; z-index: 5;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .slider-label {
+      position: absolute; bottom: 20px; padding: 5px 15px;
+      background: rgba(0,0,0,0.6); color: #fff; font-family: 'Noto Serif SC';
+    }
+
+    /* 对比卡片 */
+    .compare-cards {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+    }
+
+    .compare-card {
+      padding: 20px; border-top: 3px solid #333; background: #fcfcfc;
+      transition: 0.3s;
+    }
+    .compare-card:hover { background: #fff; transform: translateY(-5px); }
+
+    /* 成员感悟卡片 */
+    .insight-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px;
+    }
+    .insight-card {
+      padding: 25px; border-left: 5px solid #2c3e50;
+      font-family: 'Noto Serif SC', serif; line-height: 1.8;
+    }
+    .author-info {
+      margin-top: 15px; text-align: right; font-weight: 700;
+      color: #e74c3c; font-family: 'Ma Shan Zheng';
+    }
+
+    /* 寻宝游戏 */
+    .game-scene {
+      position: relative; width: 100%; height: 500px;
+      background: #eee url('【待填充：背景全景图地址】') center/cover;
+      cursor: crosshair; overflow: hidden;
+    }
+    .target-hit {
+      position: absolute; border: 2px solid #e74c3c; border-radius: 50%;
+      pointer-events: none; transform: translate(-50%, -50%); animation: ping 1s ease-out;
+    }
+    @keyframes ping { from { width: 0; height: 0; opacity: 1; } to { width: 60px; height: 60px; opacity: 0; } }
+
+    .inventory {
+      display: flex; justify-content: space-around; margin-top: 20px;
+    }
+    .inventory-item { padding: 10px 20px; border: 1px solid #ccc; opacity: 0.5; }
+    .inventory-item.found { opacity: 1; background: #d4edda; border-color: #28a745; color: #155724; font-weight: bold; }
+
+  </style>
 </head>
 <body>
 
@@ -14,37 +119,8 @@
   </video>
   <div class="paper-texture"></div>
   <div class="ink-edge ink-edge-top"></div>
-  <div class="ink-edge ink-edge-bottom"></div>
-  <div class="ink-edge ink-edge-left"></div>
-  <div class="ink-edge ink-edge-right"></div>
-  <canvas id="cloudCanvas"></canvas>
-
   <nav id="circleNav">
-    <a href="index.html" class="circle-btn" data-page="index">
-      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16L16 5l11 11"/><path d="M8 14v13h16V14"/></svg>
-      <span>首页</span>
-    </a>
-    <a href="matouqiang.html" class="circle-btn" data-page="matouqiang">
-      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 28V21h5V15h4V9h4v6h4v6h5v7"/></svg>
-      <span>马头墙</span>
-    </a>
-    <a href="tianjing.html" class="circle-btn" data-page="tianjing">
-      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="6" width="20" height="20" rx="2"/><rect x="12" y="12" width="8" height="8" rx="1"/><line x1="16" y1="6" x2="16" y2="12"/><line x1="16" y1="20" x2="16" y2="26"/><line x1="6" y1="16" x2="12" y2="16"/><line x1="20" y1="16" x2="26" y2="16"/></svg>
-      <span>天井</span>
-    </a>
-    <a href="sandiao.html" class="circle-btn" data-page="sandiao">
-      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 26Q14 18 16 16T24 6"/><path d="M6 22Q10 18 14 14"/><path d="M18 18Q22 14 26 10"/><circle cx="24" cy="6" r="2"/><circle cx="8" cy="26" r="2"/></svg>
-      <span>三雕</span>
-    </a>
-    <a href="zongzu.html" class="circle-btn" data-page="zongzu">
-      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L16 6l13 12"/><path d="M6 16v12h20V16"/><path d="M13 28v-8h6v8"/></svg>
-      <span>宗族</span>
-    </a>
-    <a href="baohu.html" class="circle-btn" data-page="baohu">
-      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4L6 9v7c0 7 4 13 10 15 6-2 10-8 10-15V9L16 4z"/><path d="M12 16l3 3 5-6"/></svg>
-      <span>保护</span>
-    </a>
-    <a href="kuawenhua.html" class="circle-btn" data-page="kuawenhua">
+    <a href="kuawenhua.html" class="circle-btn active" data-page="kuawenhua">
       <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20a2 2 0 012 2v10a2 2 0 01-2 2H16l-6 5v-5H6a2 2 0 01-2-2V10a2 2 0 012-2z"/><circle cx="12" cy="15" r="1" fill="currentColor"/><circle cx="16" cy="15" r="1" fill="currentColor"/><circle cx="20" cy="15" r="1" fill="currentColor"/></svg>
       <span>跨文化</span>
     </a>
@@ -53,24 +129,135 @@
   <section class="page sub-page">
     <div class="sub-page-header">
       <div class="sub-page-icon">
-        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20a2 2 0 012 2v10a2 2 0 01-2 2H16l-6 5v-5H6a2 2 0 01-2-2V10a2 2 0 012-2z"/><circle cx="12" cy="15" r="1" fill="currentColor"/><circle cx="16" cy="15" r="1" fill="currentColor"/><circle cx="20" cy="15" r="1" fill="currentColor"/></svg>
+        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20a2 2 0 012 2v10a2 2 0 01-2 2H16l-6 5v-5H6a2 2 0 01-2-2V10a2 2 0 012-2z"/></svg>
       </div>
-      <h2 class="sub-page-title">跨文化</h2>
+      <h2 class="sub-page-title">【待填充：文化互鉴】</h2>
       <p class="sub-page-en">CROSS-CULTURAL DIALOGUE</p>
       <div class="sub-page-divider"></div>
     </div>
-    <div class="sub-page-content">
-      <!-- 内容待补充 -->
+
+    <div class="sub-page-content cross-content">
+      
+      <div class="glass-box">
+        <h3 class="section-label">【待填充：天井与内庭】</h3>
+        <p style="text-align: center; margin-bottom: 20px;">【待填充：左右拖动滑块，对比徽派天井与西方民居内庭的光影美学】</p>
+        <div class="compare-slider-wrapper" id="sliderWrapper">
+          <div class="slider-img" style="background-image: url('【待填充：西方民居图片地址】');"></div>
+          <div class="slider-label" style="right: 20px;">【待填充：西方内庭】</div>
+          
+          <div class="slider-img" id="huizhouImg" style="background-image: url('【待填充：徽派天井图片地址】'); width: 50%;"></div>
+          <div class="slider-label" style="left: 20px;">【待填充：徽派天井】</div>
+          
+          <div class="slider-handle" id="sliderHandle"></div>
+        </div>
+        
+      </div>
+
+      <div class="compare-cards">
+        <div class="glass-box compare-card">
+          <h4 style="font-weight: 900;">【待填充：建筑材质】</h4>
+          <p>【待填充：徽派砖木石与西方石材文化的碰撞...】</p>
+        </div>
+        <div class="glass-box compare-card">
+          <h4 style="font-weight: 900;">【待填充：空间哲学】</h4>
+          <p>【待填充：内向型聚合与外向型开放的对话...】</p>
+        </div>
+        <div class="glass-box compare-card">
+          <h4 style="font-weight: 900;">【待填充：装饰寓意】</h4>
+          <p>【待填充：中式祥瑞图案与西式神话雕刻...】</p>
+        </div>
+      </div>
+
+      <div class="glass-box">
+        <h3 class="section-label">【待填充：匠心识踪】</h3>
+        <p style="text-align: center;">【待填充：在场景中找出隐藏的徽派元素（点击图片寻找）】</p>
+        <div class="game-scene" id="gameScene">
+          <div id="clickFeedback"></div>
+        </div>
+        <div class="inventory">
+          <div class="inventory-item" id="item-mtq">【待填充：马头墙】</div>
+          <div class="inventory-item" id="item-tj">【待填充：天井】</div>
+          <div class="inventory-item" id="item-zd">【待填充：砖雕】</div>
+        </div>
+      </div>
+
+      <h3 class="section-label">【待填充：成员心语】</h3>
+      <div class="insight-grid">
+        <div class="glass-box insight-card">
+          <p>“【待填充：成员感悟内容1...】”</p>
+          <div class="author-info">—— 【待填充：成员姓名】</div>
+        </div>
+        <div class="glass-box insight-card">
+          <p>“【待填充：成员感悟内容2...】”</p>
+          <div class="author-info">—— 【待填充：成员姓名】</div>
+        </div>
+        <div class="glass-box insight-card">
+          <p>“【待填充：成员感悟内容3...】”</p>
+          <div class="author-info">—— 【待填充：成员姓名】</div>
+        </div>
+        <div class="glass-box insight-card">
+          <p>“【待填充：成员感悟内容4...】”</p>
+          <div class="author-info">—— 【待填充：成员姓名】</div>
+        </div>
+      </div>
+
     </div>
   </section>
 
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-location">安徽省黄山市黟县宏村</div>
-      <div class="footer-text">徽派建筑文化信息交互可视化展示</div>
     </div>
   </footer>
 
-  <script src="app.js"></script>
+  <script>
+    // --- 对比滑块逻辑 ---
+    const wrapper = document.getElementById('sliderWrapper');
+    const handle = document.getElementById('sliderHandle');
+    const huiImg = document.getElementById('huizhouImg');
+
+    wrapper.addEventListener('mousemove', (e) => {
+      let rect = wrapper.getBoundingClientRect();
+      let x = e.clientX - rect.left;
+      let percent = (x / rect.width) * 100;
+      if(percent >= 0 && percent <= 100) {
+        handle.style.left = percent + "%";
+        huiImg.style.width = percent + "%";
+      }
+    });
+
+    // --- 寻宝游戏逻辑 ---
+    // 预设目标区域 (百分比坐标: x, y, 范围)
+    const targets = {
+      'mtq': { x: 20, y: 30, r: 10, id: 'item-mtq' }, // 马头墙
+      'tj':  { x: 50, y: 60, r: 15, id: 'item-tj' },  // 天井
+      'zd':  { x: 80, y: 40, r: 8,  id: 'item-zd' }   // 砖雕
+    };
+
+    const scene = document.getElementById('gameScene');
+    scene.addEventListener('click', (e) => {
+      let rect = scene.getBoundingClientRect();
+      let px = ((e.clientX - rect.left) / rect.width) * 100;
+      let py = ((e.clientY - rect.top) / rect.height) * 100;
+
+      // 生成点击视觉反馈
+      const dot = document.createElement('div');
+      dot.className = 'target-hit';
+      dot.style.left = px + "%";
+      dot.style.top = py + "%";
+      scene.appendChild(dot);
+      setTimeout(() => dot.remove(), 1000);
+
+      // 碰撞检测
+      for(let key in targets) {
+        let t = targets[key];
+        let dist = Math.sqrt(Math.pow(px - t.x, 2) + Math.pow(py - t.y, 2));
+        if(dist < t.r) {
+          document.getElementById(t.id).classList.add('found');
+          // 可在此处加入音效或成功提示
+        }
+      }
+    });
+  </script>
 </body>
 </html>

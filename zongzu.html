@@ -6,6 +6,122 @@
   <title>宗族 | 解码徽派民居</title>
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    /* 宗族页面专属样式 */
+    .clan-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      z-index: 10;
+      position: relative;
+    }
+
+    /* 通用模块样式 */
+    .clan-module {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease;
+    }
+
+    .clan-module:hover {
+      transform: translateY(-5px);
+    }
+
+    .module-title {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      border-bottom: 1px dashed #666;
+      padding-bottom: 10px;
+      color: #333;
+    }
+
+    /* 模块1：动态谱系树 */
+    #genealogyTree {
+      width: 100%;
+      height: 400px;
+      background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAACpJREFUGFdjZEADJgY0QC6SDRIDCRByMAmYHEwCJgfXAJWAy8E0IKsFALksBAnS3M9kAAAAAElFTkSuQmCC'); /* 淡淡的宣纸纹 */
+    }
+
+    /* 模块2：空间礼制交互 */
+    .shrine-map {
+      position: relative;
+      width: 100%;
+      height: 350px;
+      background: #f0f0f0;
+      border: 2px solid #333;
+      margin-top: 10px;
+    }
+
+    .map-spot {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #c33;
+      border-radius: 50%;
+      cursor: pointer;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(2.5); opacity: 0; }
+    }
+
+    .info-overlay {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      padding: 10px;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    /* 模块3：族规卷轴 */
+    .scroll-box {
+      grid-column: span 2;
+      background: #fdfaf0;
+      border-left: 15px solid #332b24;
+      border-right: 15px solid #332b24;
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scroll-content {
+      column-count: 3;
+      column-rule: 1px solid #ddd;
+      font-family: 'Noto Serif SC', serif;
+      line-height: 2;
+      text-align: justify;
+    }
+
+    /* 模块4：统计图表 - 聚落构成 */
+    .chart-box {
+      height: 300px;
+    }
+
+    /* 文字标记样式 */
+    .placeholder-text {
+      color: #777;
+      font-style: italic;
+    }
+
+    .node circle { fill: #333; }
+    .node text { font: 12px 'Noto Serif SC'; }
+    .link { fill: none; stroke: #999; stroke-width: 1.5px; }
+  </style>
 </head>
 <body>
 
@@ -24,7 +140,7 @@
       <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16L16 5l11 11"/><path d="M8 14v13h16V14"/></svg>
       <span>首页</span>
     </a>
-    <a href="matouqiang.html" class="circle-btn" data-page="matouqiang">
+    <a href="matouqiang.html" class="circle-btn active" data-page="matouqiang">
       <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 28V21h5V15h4V9h4v6h4v6h5v7"/></svg>
       <span>马头墙</span>
     </a>
@@ -50,27 +166,135 @@
     </a>
   </nav>
 
+
+  <video id="bgVideo" class="bg-video" autoplay loop muted playsinline>
+    <source src="public/9ba0a2e6346f2a8446c8b10f630c6071.mp4" type="video/mp4" />
+  </video>
+  <div class="paper-texture"></div>
+  <nav id="circleNav">
+    <a href="zongzu.html" class="circle-btn active" data-page="zongzu">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L16 6l13 12"/><path d="M6 16v12h20V16"/><path d="M13 28v-8h6v8"/></svg>
+      <span>宗族</span>
+    </a>
+    </nav>
+
   <section class="page sub-page">
     <div class="sub-page-header">
       <div class="sub-page-icon">
         <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L16 6l13 12"/><path d="M6 16v12h20V16"/><path d="M13 28v-8h6v8"/></svg>
       </div>
-      <h2 class="sub-page-title">宗族</h2>
-      <p class="sub-page-en">CLAN CULTURE</p>
+      <h2 class="sub-page-title">【待填充：宗族文化】</h2>
+      <p class="sub-page-en">CLAN SYSTEM & ANCESTRAL HALL</p>
       <div class="sub-page-divider"></div>
     </div>
-    <div class="sub-page-content">
-      <!-- 内容待补充 -->
+
+    <div class="sub-page-content clan-container">
+      
+      <div class="clan-module">
+        <h3 class="module-title">【待填充：血脉延绵】</h3>
+        <p class="placeholder-text">【待填充：点击节点可缩放，查看家族分支的演变轨迹】</p>
+        <div id="genealogyTree"></div>
+        
+      </div>
+
+      <div class="clan-module">
+        <h3 class="module-title">【待填充：祠堂礼制】</h3>
+        <p class="placeholder-text">【待填充：祠堂是建筑的灵魂。点击红点探索空间秩序】</p>
+        <div class="shrine-map">
+          <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; border:1px solid #ccc;">
+            【待填充：祠堂平面图素材】
+          </div>
+          <div class="map-spot" style="top:20%; left:50%;" onmouseover="showInfo('【待填充：寝堂（祭祀核心）】')" onmouseout="hideInfo()"></div>
+          <div class="map-spot" style="top:50%; left:50%;" onmouseover="showInfo('【待填充：享堂（族人集会）】')" onmouseout="hideInfo()"></div>
+          <div class="map-spot" style="top:80%; left:50%;" onmouseover="showInfo('【待填充：门厅（威严象征）】')" onmouseout="hideInfo()"></div>
+          <div id="infoOverlay" class="info-overlay"></div>
+        </div>
+        
+      </div>
+
+      <div class="clan-module scroll-box">
+        <h3 class="module-title" style="text-align: center;">【待填充：家风族规卷轴】</h3>
+        <div class="scroll-content">
+          【待填充：第一款 孝父母...】<br>
+          【待填充：第二款 和兄弟...】<br>
+          【待填充：第三款 睦宗族...】<br>
+          【待填充：第四款 勤职业...】<br>
+          【待填充：第五款 崇节俭...】<br>
+          【待填充：第六款 严教训...】<br>
+          【待填充：第七款 禁赌博...】<br>
+          【待填充：第八款 慎祭奠...】
+        </div>
+      </div>
+
+      <div class="clan-module">
+        <h3 class="module-title">【待填充：贾而好儒】</h3>
+        <p class="placeholder-text">【待填充：徽商利润回流宗族，资助学子功名的比例分布】</p>
+        <div class="chart-box" id="clanChart">
+           <div style="width:100%; height:100%; border:1px dashed #999; display:flex; align-items:center; justify-content:center;">
+             【待填充：可视化图表素材】
+           </div>
+        </div>
+      </div>
+
+      <div class="clan-module">
+        <h3 class="module-title">【待填充：枕山环水】</h3>
+        <p class="placeholder-text">【待填充：宗族聚落与地理风水的关系模拟】</p>
+        <div style="width:100%; height:200px; background:#e8e8e8;">【待填充：三维地形模拟图】</div>
+        
+      </div>
+
     </div>
   </section>
 
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-location">安徽省黄山市黟县宏村</div>
-      <div class="footer-text">徽派建筑文化信息交互可视化展示</div>
-    </div>
-  </footer>
+  <script>
+    // 简单的信息提示交互
+    function showInfo(text) {
+      const overlay = document.getElementById('infoOverlay');
+      overlay.innerText = text;
+      overlay.style.display = 'block';
+    }
+    function hideInfo() {
+      document.getElementById('infoOverlay').style.display = 'none';
+    }
 
-  <script src="app.js"></script>
+    // D3.js 谱系树渲染示例（简化版）
+    const data = {
+      name: "【待填充：始祖】",
+      children: [
+        { name: "【待填充：二世】", children: [{name: "【三世】"}, {name: "【三世】"}] },
+        { name: "【待填充：二世】", children: [{name: "【三世】"}, {name: "【三世】"}] }
+      ]
+    };
+
+    const width = 500;
+    const tree = d3.tree().size([400, width - 160]);
+    const root = d3.hierarchy(data);
+    tree(root);
+
+    const svg = d3.select("#genealogyTree").append("svg")
+      .attr("width", "100%")
+      .attr("height", 400)
+      .append("g")
+      .attr("transform", "translate(80,0)");
+
+    svg.selectAll(".link")
+      .data(root.links())
+      .enter().append("path")
+      .attr("class", "link")
+      .attr("d", d3.linkHorizontal().x(d => d.y).y(d => d.x));
+
+    const node = svg.selectAll(".node")
+      .data(root.descendants())
+      .enter().append("g")
+      .attr("class", "node")
+      .attr("transform", d => `translate(${d.y},${d.x})`);
+
+    node.append("circle").attr("r", 4.5);
+    node.append("text")
+      .attr("dy", ".31em")
+      .attr("x", d => d.children ? -10 : 10)
+      .style("text-anchor", d => d.children ? "end" : "start")
+      .text(d => d.data.name);
+  </script>
 </body>
 </html>
