@@ -99,7 +99,7 @@
     /* MAIN LAYOUT */
     .main-content {
       display: grid;
-      grid-template-columns: 300px 1fr;
+      grid-template-columns: 400px 1fr;
       gap: 0;
       min-height: calc(100vh - 200px);
     }
@@ -112,16 +112,17 @@
       position: sticky;
       top: 0;
       height: fit-content;
+      width: 400px;
     }
     .sidebar-title { font-family:'Ma Shan Zheng',cursive; font-size:1.35rem; color:var(--ink-black); text-align:center; margin-bottom:5px; letter-spacing:.1em; }
     .sidebar-subtitle { font-size:.68rem; letter-spacing:.2em; color:var(--ink-light); text-align:center; text-transform:uppercase; margin-bottom:22px; }
     .brush-line { width:100%; height:12px; margin-bottom:22px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12'%3E%3Cpath d='M2 8 Q20 3 40 7 Q70 11 100 6 Q130 1 160 7 Q180 10 198 6' fill='none' stroke='rgba(192,57,43,0.35)' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-size:100% 100%; }
 
-    .type-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:20px; }
+    .type-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:24px; }
     .type-item { position:relative; border-radius:4px; overflow:visible; cursor:pointer; transition:all .3s ease; border:1px solid rgba(184,134,11,.15); background:var(--paper-warm); }
     .type-item:hover { border-color:rgba(192,57,43,.45); box-shadow:0 6px 20px rgba(192,57,43,.14); transform:translateY(-2px); z-index:200; }
     .type-img-wrap { overflow:hidden; border-radius:4px 4px 0 0; }
-    .type-item img { width:100%; height:160px; object-fit:cover; display:block; filter:none; transition:filter .35s,transform .4s; }
+    .type-item img { width:100%; height:200px; object-fit:cover; display:block; filter:none; transition:filter .35s,transform .4s; }
     .type-item:hover img { filter:sepia(0%) contrast(1.02); transform:scale(1.08); }
     .type-label { padding:5px 4px; font-size:1rem; font-weight:500; color:var(--ink-medium); text-align:center; font-family:'Noto Serif SC',serif; letter-spacing:.06em; background:var(--paper-warm); border-top:1px solid rgba(184,134,11,.1); border-radius:0 0 4px 4px; transition:color .3s; }
     .type-item:hover .type-label { color:var(--cinnabar); }
@@ -160,7 +161,7 @@
     ============================ */
     .profile-section {
       display: grid;
-      grid-template-columns: 1fr 300px;   /* 书页从240px扩至300px */
+      grid-template-columns: 1fr 400px;   /* 书页从240px扩至300px */
       gap: 24px;
       margin-bottom: 32px;
       align-items: stretch;               /* 两栏等高 */
@@ -193,7 +194,7 @@
 
     /* ===== BOOK SCROLL ===== */
     .scroll-book {
-      width: 300px;                       /* 与grid列宽匹配 */
+      width: 400px;                       /* 与grid列宽匹配 */
       display: flex;
       flex-direction: column;
     }
