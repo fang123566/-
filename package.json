@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "徽派建筑文化展览",
   "scripts": {
-    "build": "mkdir -p dist && cp -r index.html styles.css app.js public素材 dist/ || true",
+    "build": "node scripts/build.js",
     "preserve": "npm run build",
     "serve": "npx serve dist"
   },
