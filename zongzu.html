@@ -3,18 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>宗族 | 解码徽派民居</title>
+  <title>宗族文化 - 解码徽派民居</title>
   <link rel="stylesheet" href="styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;700;900&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet" />
   <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
   <style>
+    :root {
+      --ink-black: #1a1410;
+      --ink-deep: #2d2519;
+      --ink-medium: #4a3d2e;
+      --ink-light: #8c7a60;
+      --ink-faint: #c4b49a;
+      --paper: #f5f0e8;
+      --paper-warm: #faf6ee;
+      --cinnabar: #c0392b;
+      --gold: #b8860b;
+      --jade: #2e6b4f;
+      --scroll-bg: #fdfaf0;
+      --scroll-border: #8c6b48;
+    }
+
     /* 宗族页面专属样式 */
     .clan-container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 2rem;
+      background: #f8f5f0; /* 古风底色 */
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 30px;
       z-index: 10;
       position: relative;
@@ -22,33 +42,76 @@
 
     /* 通用模块样式 */
     .clan-module {
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(0, 0, 0, 0.1);
-      border-radius: 4px;
-      padding: 25px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-      transition: transform 0.3s ease;
+      background: #fffbf0;
+      border: 1px solid #d2b48c;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-radius: 6px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      background-image: 
+        radial-gradient(circle at top left, rgba(139, 69, 19, 0.04) 0%, transparent 50%),
+        radial-gradient(circle at bottom right, rgba(139, 69, 19, 0.04) 0%, transparent 50%);
+    }
+
+    .clan-module::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: repeating-linear-gradient(0deg, transparent, transparent 29px, rgba(184, 134, 11, 0.03) 29px, rgba(184, 134, 11, 0.03) 30px);
+      pointer-events: none;
     }
 
     .clan-module:hover {
       transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(26, 20, 16, 0.12);
     }
 
     .module-title {
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: 1.8rem;
-      margin-bottom: 20px;
-      border-bottom: 1px dashed #666;
-      padding-bottom: 10px;
-      color: #333;
+      font-family: "楷体", "宋体", serif; /* 古风字体 */
+      color: #8b4513; /* 红木色 */
+      border-bottom: 2px solid #d2b48c; /* 牛皮纸色边框 */
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      letter-spacing: 0.08em;
+      position: relative;
+    }
+
+    .module-title::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100px;
+      height: 2px;
+      background: #8b4513;
     }
 
     /* 模块1：动态谱系树 */
     #genealogyTree {
       width: 100%;
       height: 400px;
-      background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAACpJREFUGFdjZEADJgY0QC6SDRIDCRByMAmYHEwCJgfXAJWAy8E0IKsFALksBAnS3M9kAAAAAElFTkSuQmCC'); /* 淡淡的宣纸纹 */
+      background: linear-gradient(160deg, #fefaf0 0%, #f8f0dc 55%, #f2e8cc 100%);
+      border: 1px solid rgba(184, 134, 11, 0.15);
+      border-radius: 4px;
+      position: relative;
+    }
+
+    #genealogyTree::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: repeating-linear-gradient(0deg, transparent, transparent 29px, rgba(184, 134, 11, 0.05) 29px, rgba(184, 134, 11, 0.05) 30px);
+      pointer-events: none;
     }
 
     /* 模块2：空间礼制交互 */
@@ -56,24 +119,56 @@
       position: relative;
       width: 100%;
       height: 350px;
-      background: #f0f0f0;
-      border: 2px solid #333;
+      background: linear-gradient(160deg, #fefaf0 0%, #f8f0dc 55%, #f2e8cc 100%);
+      border: 1px solid rgba(184, 134, 11, 0.2);
+      border-radius: 4px;
       margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .shrine-map::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: repeating-linear-gradient(0deg, transparent, transparent 29px, rgba(184, 134, 11, 0.05) 29px, rgba(184, 134, 11, 0.05) 30px);
+      pointer-events: none;
     }
 
     .map-spot {
       position: absolute;
-      width: 20px;
-      height: 20px;
-      background: #c33;
+      width: 18px;
+      height: 18px;
+      background: var(--cinnabar);
+      border: 3px solid rgba(255, 255, 255, 0.9);
       border-radius: 50%;
       cursor: pointer;
-      animation: pulse 2s infinite;
+      box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.18);
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+
+    .map-spot:hover {
+      transform: scale(1.5);
+      background: var(--ink-deep);
+      box-shadow: 0 0 0 8px rgba(192, 57, 43, 0.12);
+    }
+
+    .map-spot::after {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 2px solid var(--cinnabar);
+      animation: pulse 2s ease-in-out infinite;
     }
 
     @keyframes pulse {
-      0% { transform: scale(1); opacity: 1; }
-      100% { transform: scale(2.5); opacity: 0; }
+      0%   { transform: scale(1);   opacity: 0.6; }
+      50%  { transform: scale(1.7); opacity: 0; }
+      100% { transform: scale(1);   opacity: 0.6; }
     }
 
     .info-overlay {
@@ -81,46 +176,286 @@
       bottom: 20px;
       left: 20px;
       right: 20px;
-      background: rgba(0,0,0,0.7);
+      background: rgba(26, 20, 16, 0.85);
+      backdrop-filter: blur(8px);
       color: #fff;
-      padding: 10px;
+      padding: 15px;
       font-size: 0.9rem;
+      border-radius: 4px;
       display: none;
+      animation: fadeIn 0.3s ease;
+      z-index: 20;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* 模块3：族规卷轴 */
     .scroll-box {
-      grid-column: span 2;
-      background: #fdfaf0;
-      border-left: 15px solid #332b24;
-      border-right: 15px solid #332b24;
-      padding: 40px;
+      grid-column: span 1;
+      background: var(--scroll-bg);
+      border-left: 15px solid var(--scroll-border);
+      border-right: 15px solid var(--scroll-border);
+      padding: 50px;
       position: relative;
       overflow: hidden;
+      box-shadow: 0 15px 40px rgba(26, 20, 16, 0.1);
+      background-image: 
+        radial-gradient(circle at top left, rgba(140, 107, 72, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at bottom right, rgba(140, 107, 72, 0.05) 0%, transparent 50%);
+    }
+
+    .scroll-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        repeating-linear-gradient(0deg, transparent, transparent 30px, rgba(184, 134, 11, 0.06) 30px, rgba(184, 134, 11, 0.06) 31px),
+        repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(184, 134, 11, 0.03) 30px, rgba(184, 134, 11, 0.03) 31px);
+      pointer-events: none;
+    }
+
+    .scroll-box::after {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      border: 1px solid rgba(184, 134, 11, 0.1);
+      pointer-events: none;
     }
 
     .scroll-content {
       column-count: 3;
-      column-rule: 1px solid #ddd;
-      font-family: 'Noto Serif SC', serif;
-      line-height: 2;
+      column-rule: 1px solid rgba(184, 134, 11, 0.15);
+      font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+      line-height: 2.2;
       text-align: justify;
+      color: var(--ink-medium);
+      position: relative;
+      z-index: 1;
+      letter-spacing: 0.03em;
+    }
+
+    .scroll-content p {
+      margin-bottom: 24px;
+      text-indent: 2em;
+      font-size: 1rem;
+      line-height: 2.2;
+    }
+
+    .scroll-content .rule-title {
+      font-family: 'Ma Shan Zheng', cursive;
+      color: var(--cinnabar);
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 0.1em;
     }
 
     /* 模块4：统计图表 - 聚落构成 */
     .chart-box {
       height: 300px;
+      position: relative;
     }
 
     /* 文字标记样式 */
     .placeholder-text {
-      color: #777;
+      color: var(--ink-faint);
       font-style: italic;
+      font-size: 0.9rem;
     }
 
-    .node circle { fill: #333; }
-    .node text { font: 12px 'Noto Serif SC'; }
-    .link { fill: none; stroke: #999; stroke-width: 1.5px; }
+    .node circle { 
+      fill: var(--ink-deep);
+      stroke: var(--paper);
+      stroke-width: 2px;
+    }
+    .node text { 
+      font: 12px 'Noto Serif SC';
+      fill: var(--ink-medium);
+    }
+    .link { 
+      fill: none; 
+      stroke: var(--ink-faint); 
+      stroke-width: 1.5px;
+    }
+
+    /* 页面过渡动画 */
+    .clan-module {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .clan-module.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 微交互效果 */
+    .clan-module:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(139, 69, 19, 0.15);
+    }
+
+    .module-title {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .module-title::before {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: -100%;
+      width: 100%;
+      height: 2px;
+      background: #8b4513;
+      transition: left 0.5s ease;
+    }
+
+    .clan-module:hover .module-title::before {
+      left: 0;
+    }
+
+    /* 图片悬停效果 */
+    .zongzu-img img,
+    .zongzu-img-group img {
+      transition: all 0.3s ease;
+    }
+
+    .zongzu-img img:hover,
+    .zongzu-img-group img:hover {
+      transform: scale(1.02);
+      box-shadow: 0 5px 15px rgba(139, 69, 19, 0.2);
+    }
+
+    /* 平滑滚动 */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* 按钮悬停效果 */
+    .circle-btn {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .circle-btn:hover {
+      transform: translateY(-5px) scale(1.1);
+      box-shadow: 0 10px 25px rgba(192, 57, 43, 0.2);
+    }
+
+    /* 滚动条样式 */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(184, 134, 11, 0.1);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(140, 122, 96, 0.3);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(140, 122, 96, 0.5);
+    }
+
+    /* 响应式布局 */
+    @media (max-width: 1100px) {
+      .clan-container {
+        grid-template-columns: 1fr;
+      }
+      .scroll-box {
+        grid-column: span 1;
+      }
+      #genealogyTree {
+        height: 450px;
+      }
+      .shrine-map {
+        height: 400px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .clan-container {
+        padding: 15px;
+        gap: 20px;
+      }
+      .clan-module {
+        padding: 20px;
+      }
+      .scroll-box {
+        padding: 25px;
+        border-left: 8px solid var(--ink-deep);
+        border-right: 8px solid var(--ink-deep);
+      }
+      .scroll-content {
+        column-count: 1;
+      }
+      .module-title {
+        font-size: 1.2rem;
+      }
+      #genealogyTree {
+        height: 400px;
+      }
+      .shrine-map {
+        height: 350px;
+      }
+      .chart-box {
+        height: 250px;
+      }
+      .scroll-content .rule-title {
+        font-size: 1rem;
+      }
+      .scroll-content p {
+        font-size: 0.85rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .clan-container {
+        padding: 10px;
+        gap: 15px;
+      }
+      .clan-module {
+        padding: 15px;
+      }
+      .scroll-box {
+        padding: 20px;
+        border-left: 6px solid var(--ink-deep);
+        border-right: 6px solid var(--ink-deep);
+      }
+      .module-title {
+        font-size: 1.1rem;
+      }
+      #genealogyTree {
+        height: 350px;
+      }
+      .shrine-map {
+        height: 300px;
+      }
+      .chart-box {
+        height: 200px;
+      }
+      .scroll-content .rule-title {
+        font-size: 0.9rem;
+      }
+      .scroll-content p {
+        font-size: 0.8rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -140,7 +475,7 @@
       <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16L16 5l11 11"/><path d="M8 14v13h16V14"/></svg>
       <span>首页</span>
     </a>
-    <a href="matouqiang.html" class="circle-btn active" data-page="matouqiang">
+    <a href="matouqiang.html" class="circle-btn" data-page="matouqiang">
       <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 28V21h5V15h4V9h4v6h4v6h5v7"/></svg>
       <span>马头墙</span>
     </a>
@@ -152,7 +487,7 @@
       <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 26Q14 18 16 16T24 6"/><path d="M6 22Q10 18 14 14"/><path d="M18 18Q22 14 26 10"/><circle cx="24" cy="6" r="2"/><circle cx="8" cy="26" r="2"/></svg>
       <span>三雕</span>
     </a>
-    <a href="zongzu.html" class="circle-btn" data-page="zongzu">
+    <a href="zongzu.html" class="circle-btn active" data-page="zongzu">
       <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L16 6l13 12"/><path d="M6 16v12h20V16"/><path d="M13 28v-8h6v8"/></svg>
       <span>宗族</span>
     </a>
@@ -166,135 +501,805 @@
     </a>
   </nav>
 
-
-  <video id="bgVideo" class="bg-video" autoplay loop muted playsinline>
-    <source src="public/9ba0a2e6346f2a8446c8b10f630c6071.mp4" type="video/mp4" />
-  </video>
-  <div class="paper-texture"></div>
-  <nav id="circleNav">
-    <a href="zongzu.html" class="circle-btn active" data-page="zongzu">
-      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L16 6l13 12"/><path d="M6 16v12h20V16"/><path d="M13 28v-8h6v8"/></svg>
-      <span>宗族</span>
-    </a>
-    </nav>
-
   <section class="page sub-page">
     <div class="sub-page-header">
       <div class="sub-page-icon">
         <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L16 6l13 12"/><path d="M6 16v12h20V16"/><path d="M13 28v-8h6v8"/></svg>
       </div>
-      <h2 class="sub-page-title">【待填充：宗族文化】</h2>
+      <h2 class="sub-page-title">宗族文化</h2>
       <p class="sub-page-en">CLAN SYSTEM & ANCESTRAL HALL</p>
       <div class="sub-page-divider"></div>
+      
+      <!-- 页面导航锚点 -->
+      <div style="margin-top: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;">
+        <a href="#cluster-layout" style="color: #8b4513; text-decoration: none; font-family: '楷体'; font-size: 1rem; padding: 5px 15px; border: 1px solid #d2b48c; border-radius: 20px; transition: all 0.3s ease; background: #fffbf0;">宗族聚居与建筑布局</a>
+        <a href="#genealogy" style="color: #8b4513; text-decoration: none; font-family: '楷体'; font-size: 1rem; padding: 5px 15px; border: 1px solid #d2b48c; border-radius: 20px; transition: all 0.3s ease; background: #fffbf0;">血脉延绵</a>
+        <a href="#shrine" style="color: #8b4513; text-decoration: none; font-family: '楷体'; font-size: 1rem; padding: 5px 15px; border: 1px solid #d2b48c; border-radius: 20px; transition: all 0.3s ease; background: #fffbf0;">祠堂礼制</a>
+        <a href="#symbols" style="color: #8b4513; text-decoration: none; font-family: '楷体'; font-size: 1rem; padding: 5px 15px; border: 1px solid #d2b48c; border-radius: 20px; transition: all 0.3s ease; background: #fffbf0;">宗族文化符号</a>
+        <a href="#rules" style="color: #8b4513; text-decoration: none; font-family: '楷体'; font-size: 1rem; padding: 5px 15px; border: 1px solid #d2b48c; border-radius: 20px; transition: all 0.3s ease; background: #fffbf0;">家风族规卷轴</a>
+        <a href="#merchant" style="color: #8b4513; text-decoration: none; font-family: '楷体'; font-size: 1rem; padding: 5px 15px; border: 1px solid #d2b48c; border-radius: 20px; transition: all 0.3s ease; background: #fffbf0;">贾而好儒</a>
+        <a href="#fengshui" style="color: #8b4513; text-decoration: none; font-family: '楷体'; font-size: 1rem; padding: 5px 15px; border: 1px solid #d2b48c; border-radius: 20px; transition: all 0.3s ease; background: #fffbf0;">枕山环水</a>
+      </div>
+      <style>
+        .sub-page-header a:hover {
+          background: #8b4513;
+          color: #fffbf0;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+        }
+      </style>
     </div>
 
     <div class="sub-page-content clan-container">
       
-      <div class="clan-module">
-        <h3 class="module-title">【待填充：血脉延绵】</h3>
-        <p class="placeholder-text">【待填充：点击节点可缩放，查看家族分支的演变轨迹】</p>
+      <div class="clan-module" id="cluster-layout">
+        <h3 class="module-title">宗族聚居与建筑布局</h3>
+        <p style="font-size: 1rem; line-height: 1.6; color: #4a3d2e; margin-bottom: 1.5rem;">
+          徽派宗族以"祠堂为核心、支祠为分支、民居为节点"的聚居模式，直接影响了村落的整体布局。宗族制度通过等级分明的建筑规划，体现了长幼有序、尊卑有别的社会秩序。
+        </p>
+        <!-- 手绘素材区：宗族村落布局手绘示意图 -->
+        <div class="zongzu-img" style="margin: 1.5rem 0;">
+          <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20village%20layout%20with%20ancestral%20hall%20at%20center%2C%20traditional%20Huizhou%20architecture%2C%20warm%20yellow%20tones%2C%20ink%20painting%20style&image_size=landscape_16_9" alt="徽派宗族村落布局" style="width: 100%; border: 1px solid #d2b48c; border-radius: 4px;">
+        </div>
+        <p style="font-size: 0.9rem; line-height: 1.5; color: #8c7a60; font-style: italic; text-align: center;">
+          宗族村落布局示意图：以祠堂为中心，民居环绕，体现宗族向心力
+        </p>
+      </div>
+
+      <div class="clan-module" id="genealogy">
+        <h3 class="module-title">血脉延绵</h3>
+        <p class="placeholder-text">点击节点可缩放，查看家族分支的演变轨迹</p>
         <div id="genealogyTree"></div>
         
       </div>
 
-      <div class="clan-module">
-        <h3 class="module-title">【待填充：祠堂礼制】</h3>
-        <p class="placeholder-text">【待填充：祠堂是建筑的灵魂。点击红点探索空间秩序】</p>
+      <div class="clan-module" id="shrine">
+        <h3 class="module-title">祠堂礼制</h3>
+        <p class="placeholder-text">祠堂是建筑的灵魂。点击红点探索空间秩序</p>
         <div class="shrine-map">
-          <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; border:1px solid #ccc;">
-            【待填充：祠堂平面图素材】
+          <div style="width:100%; height:100%; position:relative;">
+            <!-- 手绘祠堂示意图 -->
+            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20ancestral%20hall%20floor%20plan%2C%20traditional%20Huizhou%20architecture%20layout%2C%20warm%20yellow%20tones%2C%20ink%20painting%20style%2C%20with%20labels%20for%20main%20halls%20and%20courtyards&image_size=landscape_16_9" alt="祠堂平面示意图" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
           </div>
-          <div class="map-spot" style="top:20%; left:50%;" onmouseover="showInfo('【待填充：寝堂（祭祀核心）】')" onmouseout="hideInfo()"></div>
-          <div class="map-spot" style="top:50%; left:50%;" onmouseover="showInfo('【待填充：享堂（族人集会）】')" onmouseout="hideInfo()"></div>
-          <div class="map-spot" style="top:80%; left:50%;" onmouseover="showInfo('【待填充：门厅（威严象征）】')" onmouseout="hideInfo()"></div>
-          <div id="infoOverlay" class="info-overlay"></div>
+          
+          <!-- 交互热点 -->
+          <div class="map-spot" style="top:20%; left:50%; transform:translateX(-50%);" onmouseover="showInfo('门厅：祠堂的入口，通常设有牌楼式大门，彰显宗族威严，是身份地位的象征。门前多立石狮、旗杆，显示家族荣耀。')" onmouseout="hideInfo()"></div>
+          <div class="map-spot" style="top:45%; left:50%; transform:translateX(-50%);" onmouseover="showInfo('享堂：祠堂的核心空间，是族人集会、议事的场所，也是举行重大仪式的地方。堂中设有祖先牌位和供桌，是宗族活动的中心。')" onmouseout="hideInfo()"></div>
+          <div class="map-spot" style="top:70%; left:50%; transform:translateX(-50%);" onmouseover="showInfo('寝堂：祠堂的最内部分，供奉祖先牌位，是祭祀活动的中心场所。通常只有宗族长辈和重要人物才能进入。')" onmouseout="hideInfo()"></div>
+          <div class="map-spot" style="top:45%; left:22.5%;" onmouseover="showInfo('东厢房：通常用作宗族学校或存放宗族文献、族谱的地方，是家族文化传承的重要场所。')" onmouseout="hideInfo()"></div>
+          <div class="map-spot" style="top:45%; right:22.5%;" onmouseover="showInfo('西厢房：通常用作接待宾客或宗族议事的辅助场所，体现了宗族的礼仪规范。')" onmouseout="hideInfo()"></div>
+          <div class="map-spot" style="top:35%; left:50%; transform:translateX(-50%);" onmouseover="showInfo('天井：祠堂中的露天空间，不仅具有采光、通风的功能，也是宗族活动的重要场所，体现了天人合一的设计理念。')" onmouseout="hideInfo()"></div>
+          
+          <!-- 信息提示框 -->
+          <div id="infoOverlay" class="info-overlay">
+            <div style="font-weight: bold; margin-bottom: 8px; color: var(--cinnabar); font-family: 'Ma Shan Zheng', cursive;">空间功能</div>
+            <div id="infoContent"></div>
+          </div>
         </div>
         
       </div>
 
-      <div class="clan-module scroll-box">
-        <h3 class="module-title" style="text-align: center;">【待填充：家风族规卷轴】</h3>
-        <div class="scroll-content">
-          【待填充：第一款 孝父母...】<br>
-          【待填充：第二款 和兄弟...】<br>
-          【待填充：第三款 睦宗族...】<br>
-          【待填充：第四款 勤职业...】<br>
-          【待填充：第五款 崇节俭...】<br>
-          【待填充：第六款 严教训...】<br>
-          【待填充：第七款 禁赌博...】<br>
-          【待填充：第八款 慎祭奠...】
+      <div class="clan-module" id="symbols">
+        <h3 class="module-title">宗族文化符号在建筑中的体现</h3>
+        <p style="font-size: 1rem; line-height: 1.6; color: #4a3d2e; margin-bottom: 1.5rem;">
+          徽派建筑中的"堂号匾""家训楹联"是宗族文化的直接体现，通过建筑装饰传递宗族价值观和家族荣耀。这些文化符号不仅是装饰元素，更是宗族身份和文化传承的重要载体。
+        </p>
+        <!-- 手绘素材区：匾额/楹联手绘图 -->
+        <div class="zongzu-img-group" style="display: flex; justify-content: space-between; margin: 1.5rem 0;">
+          <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20wooden%20plaque%20with%20calligraphy%2C%20traditional%20Huizhou%20architecture%20decoration%2C%20warm%20yellow%20tones%2C%20ink%20painting%20style&image_size=square" alt="宗族匾额" style="width: 48%; border: 1px solid #d2b48c; border-radius: 4px;">
+          <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20couplet%20with%20calligraphy%2C%20traditional%20Huizhou%20architecture%20decoration%2C%20warm%20yellow%20tones%2C%20ink%20painting%20style&image_size=square" alt="宗族楹联" style="width: 48%; border: 1px solid #d2b48c; border-radius: 4px;">
+        </div>
+        <p style="font-size: 0.9rem; line-height: 1.5; color: #8c7a60; font-style: italic; text-align: center;">
+          宗族文化符号：匾额与楹联是徽派建筑中宗族身份的重要标识
+        </p>
+      </div>
+
+      <div class="clan-module scroll-box" id="rules">
+        <h3 class="module-title" style="text-align: center;">家风族规卷轴</h3>
+        <button onclick="toggleScroll()" style="display: block; margin: 0 auto 20px; padding: 8px 20px; background: #8b4513; color: #fffbf0; border: 1px solid #d2b48c; border-radius: 20px; font-family: '楷体'; cursor: pointer; transition: all 0.3s ease;">展开卷轴</button>
+        <div class="scroll-content" style="position: relative; max-height: 0; overflow: hidden; opacity: 0; transform: translateY(20px); transition: max-height 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease, transform 0.8s ease;">
+          <!-- 印章装饰 -->
+          <div style="position: absolute; top: 20px; right: 40px; width: 80px; height: 80px; border: 2px solid var(--cinnabar); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-family: 'Ma Shan Zheng', cursive; color: var(--cinnabar); font-size: 1.2rem; transform: rotate(15deg); opacity: 0.8;">
+            汪氏家训
+          </div>
+          
+          <!-- 卷轴内容 -->
+          <div style="column-count: 3; column-rule: 1px solid rgba(184, 134, 11, 0.15);">
+            <div>
+              <p class="rule-title">第一款 孝父母</p>
+              <p>父母养育之恩，昊天罔极。为人子女者，当尽孝道，晨昏定省，冬温夏凊，使父母安享天伦之乐。父母在，不远游，游必有方。父母之年，不可不知也，一则以喜，一则以惧。</p>
+              <p class="rule-title">第二款 和兄弟</p>
+              <p>兄弟本是同根生，当和睦相处，互敬互爱，患难与共，勿因小利而伤手足之情。兄友弟恭，长幼有序，家族方能兴旺。</p>
+              <p class="rule-title">第三款 睦宗族</p>
+              <p>宗族一脉相承，当团结互助，守望相助，共荣共辱，维护宗族声誉。宗族事务，当群策群力，共同参与，共建和谐宗族。</p>
+            </div>
+            <div>
+              <p class="rule-title">第四款 勤职业</p>
+              <p>业精于勤，荒于嬉。无论士农工商，当勤奋敬业，精益求精，创造家业。职业无贵贱，敬业则崇高，懒惰则可耻。</p>
+              <p class="rule-title">第五款 崇节俭</p>
+              <p>俭以养德，奢则败家。当厉行节约，反对浪费，量入为出，积累家业。一粥一饭，当思来之不易；半丝半缕，恒念物力维艰。</p>
+              <p class="rule-title">第六款 严教训</p>
+              <p>子女教育，关系家族兴衰。当严格管教，导之以正，培养良好品德。因材施教，循序渐进，不可溺爱，不可苛责，使子女成为有用之才。</p>
+            </div>
+            <div>
+              <p class="rule-title">第七款 禁赌博</p>
+              <p>赌博害人害己，败家丧志。当严禁赌博，远离恶习，保持清白家风。赌博之人，轻则倾家荡产，重则家破人亡，不可不戒。</p>
+              <p class="rule-title">第八款 慎祭奠</p>
+              <p>祖先祭祀，慎终追远。当恭敬虔诚，按时祭扫，传承家族文化。祭祀之时，当心怀敬畏，至诚至敬，表达对祖先的追思之情。</p>
+              <p class="rule-title">第九款 重教育</p>
+              <p>教育为本，知识为宝。当重视子女教育，不惜重金，培养人才。万般皆下品，唯有读书高，读书则明理，明理则修身。</p>
+            </div>
+          </div>
+          
+          <!-- 底部装饰 -->
+          <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 200px; height: 1px; background: linear-gradient(to right, transparent, var(--cinnabar), transparent);"></div>
+          <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); font-family: 'Ma Shan Zheng', cursive; color: var(--ink-faint); font-size: 0.9rem;">
+            大清乾隆年间 汪氏宗族立
+          </div>
         </div>
       </div>
 
-      <div class="clan-module">
-        <h3 class="module-title">【待填充：贾而好儒】</h3>
-        <p class="placeholder-text">【待填充：徽商利润回流宗族，资助学子功名的比例分布】</p>
-        <div class="chart-box" id="clanChart">
-           <div style="width:100%; height:100%; border:1px dashed #999; display:flex; align-items:center; justify-content:center;">
-             【待填充：可视化图表素材】
-           </div>
+      <div class="clan-module" id="merchant">
+        <h3 class="module-title">贾而好儒</h3>
+        <p class="placeholder-text">徽商利润回流宗族，资助学子功名的比例分布</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: 300px;">
+          <div class="chart-box" id="clanChart"></div>
+          <div class="chart-box" id="educationChart"></div>
+        </div>
+        <div style="margin-top: 20px; height: 250px;">
+          <div class="chart-box" id="merchantChart"></div>
         </div>
       </div>
 
-      <div class="clan-module">
-        <h3 class="module-title">【待填充：枕山环水】</h3>
-        <p class="placeholder-text">【待填充：宗族聚落与地理风水的关系模拟】</p>
-        <div style="width:100%; height:200px; background:#e8e8e8;">【待填充：三维地形模拟图】</div>
+      <div class="clan-module" id="fengshui">
+        <h3 class="module-title">枕山环水</h3>
+        <p class="placeholder-text">宗族聚落与地理风水的关系模拟</p>
+        <div style="width:100%; height:300px; border:1px solid #d2b48c; border-radius:4px; position:relative; overflow:hidden;">
+          <!-- 手绘风水布局示意图 -->
+          <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20feng%20shui%20village%20layout%2C%20traditional%20Huizhou%20architecture%20with%20mountains%20at%20back%2C%20water%20in%20front%2C%20warm%20yellow%20tones%2C%20ink%20painting%20style&image_size=landscape_16_9" alt="宗族聚落风水布局示意图" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+          
+          <!-- 风水热点 -->
+          <div class="map-spot" style="top:15%; left:50%; transform:translateX(-50%);" onmouseover="showInfo('靠山：宗族聚落背后的山脉，象征背后有依靠，为宗族提供庇护和安全感。')" onmouseout="hideInfo()"></div>
+          <div class="map-spot" style="bottom:30%; left:50%; transform:translateX(-50%);" onmouseover="showInfo('明堂：宗族建筑前方的开阔空间，象征前途光明，运势亨通。')" onmouseout="hideInfo()"></div>
+          <div class="map-spot" style="bottom:17.5%; left:50%; transform:translateX(-50%);" onmouseover="showInfo('水局：宗族前方的水系，象征财富汇聚，为宗族带来财运和生机。')" onmouseout="hideInfo()"></div>
+          <div class="map-spot" style="top:50%; left:20%;" onmouseover="showInfo('青龙：左侧的山脉或建筑，象征吉祥和贵人相助。')" onmouseout="hideInfo()"></div>
+          <div class="map-spot" style="top:50%; right:20%;" onmouseover="showInfo('白虎：右侧的山脉或建筑，象征守护和辟邪。')" onmouseout="hideInfo()"></div>
+          
+          <!-- 风水说明 -->
+          <div style="position:absolute; top:10px; left:10px; background:rgba(26, 20, 16, 0.7); color:white; padding:8px 12px; border-radius:4px; font-size:0.8rem; backdrop-filter:blur(4px);">
+            <div style="font-family:'Ma Shan Zheng', cursive; margin-bottom:4px; color:var(--cinnabar);">风水布局</div>
+            <div>左青龙 · 右白虎 · 前朱雀 · 后玄武</div>
+          </div>
+        </div>
         
+        <!-- 风水说明文字 -->
+        <div style="margin-top:20px; padding:15px; background:rgba(245, 240, 232, 0.6); border-radius:4px; border-left:3px solid var(--cinnabar);">
+          <h4 style="font-family:'Ma Shan Zheng', cursive; color:var(--ink-black); margin-bottom:10px;">风水理念</h4>
+          <p style="font-size:0.9rem; line-height:1.6; color:var(--ink-medium);">
+            徽派宗族聚落注重风水布局，通常遵循"枕山、环水、面屏"的原则。背后有靠山提供庇护，前方有明堂开阔视野，左右有青龙白虎守护，前方有水系汇聚财富，形成理想的居住环境。这种布局不仅体现了中国传统的风水观念，也反映了宗族对美好生活的向往和追求。
+          </p>
+        </div>
       </div>
 
     </div>
   </section>
 
   <script>
-    // 简单的信息提示交互
+    // 增强的信息提示交互
     function showInfo(text) {
       const overlay = document.getElementById('infoOverlay');
-      overlay.innerText = text;
+      const infoContent = document.getElementById('infoContent');
+      infoContent.innerText = text;
       overlay.style.display = 'block';
     }
     function hideInfo() {
       document.getElementById('infoOverlay').style.display = 'none';
     }
 
-    // D3.js 谱系树渲染示例（简化版）
+    // D3.js 谱系树渲染 - 汪氏家族谱系（增强版）
     const data = {
-      name: "【待填充：始祖】",
+      name: "汪华（始祖）",
+      description: "唐代歙州刺史，汪氏家族始祖",
       children: [
-        { name: "【待填充：二世】", children: [{name: "【三世】"}, {name: "【三世】"}] },
-        { name: "【待填充：二世】", children: [{name: "【三世】"}, {name: "【三世】"}] }
+        {
+          name: "汪建（二世）",
+          description: "汪华长子，袭封越国公",
+          children: [
+            { 
+              name: "汪处哲（三世）",
+              description: "汪建长子，官至歙州司马"
+            },
+            { 
+              name: "汪处惠（三世）",
+              description: "汪建次子，任宣州刺史"
+            }
+          ]
+        },
+        {
+          name: "汪璨（二世）",
+          description: "汪华次子，任左卫将军",
+          children: [
+            { 
+              name: "汪处澄（三世）",
+              description: "汪璨长子，任池州刺史"
+            },
+            { 
+              name: "汪处休（三世）",
+              description: "汪璨次子，任湖州刺史"
+            }
+          ]
+        },
+        {
+          name: "汪达（二世）",
+          description: "汪华三子，任右卫将军",
+          children: [
+            { 
+              name: "汪处崇（三世）",
+              description: "汪达长子，任杭州刺史"
+            },
+            { 
+              name: "汪处恭（三世）",
+              description: "汪达次子，任睦州刺史"
+            }
+          ]
+        },
+        {
+          name: "汪广（二世）",
+          description: "汪华四子，任左卫中郎将",
+          children: [
+            { 
+              name: "汪处俭（三世）",
+              description: "汪广长子，任婺州刺史"
+            },
+            { 
+              name: "汪处立（三世）",
+              description: "汪广次子，任衢州刺史"
+            }
+          ]
+        },
+        {
+          name: "汪逊（二世）",
+          description: "汪华五子，任右卫中郎将",
+          children: [
+            { 
+              name: "汪处易（三世）",
+              description: "汪逊长子，任台州刺史"
+            },
+            { 
+              name: "汪处则（三世）",
+              description: "汪逊次子，任温州刺史"
+            }
+          ]
+        }
       ]
     };
 
     const width = 500;
-    const tree = d3.tree().size([400, width - 160]);
+    const height = 400;
+    const tree = d3.tree().size([height - 80, width - 160]);
     const root = d3.hierarchy(data);
     tree(root);
 
     const svg = d3.select("#genealogyTree").append("svg")
       .attr("width", "100%")
-      .attr("height", 400)
+      .attr("height", height)
       .append("g")
-      .attr("transform", "translate(80,0)");
+      .attr("transform", "translate(80,40)");
 
-    svg.selectAll(".link")
+    // 创建工具提示
+    const tooltip = d3.select("#genealogyTree").append("div")
+      .attr("class", "tooltip")
+      .style("position", "absolute")
+      .style("background", "rgba(26, 20, 16, 0.85)")
+      .style("color", "white")
+      .style("padding", "10px")
+      .style("border-radius", "4px")
+      .style("pointer-events", "none")
+      .style("opacity", "0")
+      .style("transition", "opacity 0.3s");
+
+    // 绘制连接线
+    const link = svg.selectAll(".link")
       .data(root.links())
       .enter().append("path")
       .attr("class", "link")
-      .attr("d", d3.linkHorizontal().x(d => d.y).y(d => d.x));
+      .attr("d", d3.linkHorizontal().x(d => d.y).y(d => d.x))
+      .style("stroke-dasharray", d => d.target.children ? "" : "5,5")
+      .style("stroke-width", d => d.target.depth === 0 ? 2 : 1.5);
 
+    // 绘制节点
     const node = svg.selectAll(".node")
       .data(root.descendants())
       .enter().append("g")
       .attr("class", "node")
-      .attr("transform", d => `translate(${d.y},${d.x})`);
+      .attr("transform", d => `translate(${d.y},${d.x})`)
+      .on("click", function(event, d) {
+        // 切换子节点的显示/隐藏
+        if (d.children) {
+          d._children = d.children;
+          d.children = null;
+        } else if (d._children) {
+          d.children = d._children;
+          d._children = null;
+        }
+        
+        // 更新树
+        updateTree(root);
+      })
+      .on("mouseover", function(event, d) {
+        // 显示工具提示
+        tooltip.transition()
+          .duration(200)
+          .style("opacity", 1);
+        tooltip.html(`<strong>${d.data.name}</strong><br>${d.data.description || '无详细信息'}`)
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 28) + "px");
+        
+        // 高亮当前节点
+        d3.select(this).select("circle")
+          .attr("r", 6)
+          .style("fill", "var(--cinnabar)");
+      })
+      .on("mouseout", function(event, d) {
+        // 隐藏工具提示
+        tooltip.transition()
+          .duration(500)
+          .style("opacity", 0);
+        
+        // 恢复节点样式
+        d3.select(this).select("circle")
+          .attr("r", 4.5)
+          .style("fill", "var(--ink-deep)");
+      });
 
-    node.append("circle").attr("r", 4.5);
+    // 添加节点圆圈
+    node.append("circle")
+      .attr("r", 4.5)
+      .style("fill", d => d.children || d._children ? "var(--cinnabar)" : "var(--ink-deep)")
+      .style("stroke", "var(--paper)")
+      .style("stroke-width", 2);
+
+    // 添加节点文本
     node.append("text")
       .attr("dy", ".31em")
-      .attr("x", d => d.children ? -10 : 10)
-      .style("text-anchor", d => d.children ? "end" : "start")
+      .attr("x", d => d.children || d._children ? -15 : 10)
+      .style("text-anchor", d => d.children || d._children ? "end" : "start")
+      .style("font-size", d => d.depth === 0 ? "14px" : "12px")
+      .style("font-weight", d => d.depth === 0 ? "bold" : "normal")
+      .style("fill", d => d.depth === 0 ? "var(--cinnabar)" : "var(--ink-medium)")
       .text(d => d.data.name);
+
+    // 添加展开/折叠指示器
+    node.filter(d => d.children || d._children)
+      .append("path")
+      .attr("d", d => d.children ? "M -8 0 L 0 -6 L 8 0" : "M -8 0 L 0 6 L 8 0")
+      .attr("transform", d => `translate(${d.children ? -18 : 12}, 0)`) 
+      .style("fill", "none")
+      .style("stroke", "var(--ink-medium)")
+      .style("stroke-width", 1.5);
+
+    // 更新树的函数
+    function updateTree(source) {
+      // 重新计算布局
+      const treeData = tree(root);
+      
+      // 更新连接线
+      const linkUpdate = svg.selectAll(".link")
+        .data(treeData.links());
+      
+      linkUpdate.enter()
+        .append("path")
+        .attr("class", "link")
+        .attr("d", d3.linkHorizontal().x(d => d.y).y(d => d.x))
+        .style("stroke-dasharray", d => d.target.children ? "" : "5,5")
+        .style("stroke-width", d => d.target.depth === 0 ? 2 : 1.5);
+      
+      linkUpdate
+        .transition()
+        .duration(300)
+        .attr("d", d3.linkHorizontal().x(d => d.y).y(d => d.x));
+      
+      linkUpdate.exit().remove();
+      
+      // 更新节点
+      const nodeUpdate = svg.selectAll(".node")
+        .data(treeData.descendants());
+      
+      const nodeEnter = nodeUpdate.enter()
+        .append("g")
+        .attr("class", "node")
+        .attr("transform", d => `translate(${source.y},${source.x})`)
+        .on("click", function(event, d) {
+          if (d.children) {
+            d._children = d.children;
+            d.children = null;
+          } else if (d._children) {
+            d.children = d._children;
+            d._children = null;
+          }
+          updateTree(d);
+        })
+        .on("mouseover", function(event, d) {
+          tooltip.transition()
+            .duration(200)
+            .style("opacity", 1);
+          tooltip.html(`<strong>${d.data.name}</strong><br>${d.data.description || '无详细信息'}`)
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 28) + "px");
+          
+          d3.select(this).select("circle")
+            .attr("r", 6)
+            .style("fill", "var(--cinnabar)");
+        })
+        .on("mouseout", function(event, d) {
+          tooltip.transition()
+            .duration(500)
+            .style("opacity", 0);
+          
+          d3.select(this).select("circle")
+            .attr("r", 4.5)
+            .style("fill", "var(--ink-deep)");
+        });
+      
+      nodeEnter.append("circle")
+        .attr("r", 0)
+        .style("fill", d => d.children || d._children ? "var(--cinnabar)" : "var(--ink-deep)")
+        .style("stroke", "var(--paper)")
+        .style("stroke-width", 2)
+        .transition()
+        .duration(300)
+        .attr("r", 4.5);
+      
+      nodeEnter.append("text")
+        .attr("dy", ".31em")
+        .attr("x", d => d.children || d._children ? -15 : 10)
+        .style("text-anchor", d => d.children || d._children ? "end" : "start")
+        .style("font-size", d => d.depth === 0 ? "14px" : "12px")
+        .style("font-weight", d => d.depth === 0 ? "bold" : "normal")
+        .style("fill", d => d.depth === 0 ? "var(--cinnabar)" : "var(--ink-medium)")
+        .text(d => d.data.name)
+        .style("opacity", 0)
+        .transition()
+        .duration(300)
+        .style("opacity", 1);
+      
+      nodeEnter.filter(d => d.children || d._children)
+        .append("path")
+        .attr("d", d => d.children ? "M -8 0 L 0 -6 L 8 0" : "M -8 0 L 0 6 L 8 0")
+        .attr("transform", d => `translate(${d.children ? -18 : 12}, 0)`) 
+        .style("fill", "none")
+        .style("stroke", "var(--ink-medium)")
+        .style("stroke-width", 1.5)
+        .style("opacity", 0)
+        .transition()
+        .duration(300)
+        .style("opacity", 1);
+      
+      nodeUpdate
+        .transition()
+        .duration(300)
+        .attr("transform", d => `translate(${d.y},${d.x})`);
+      
+      nodeUpdate.select("circle")
+        .transition()
+        .duration(300)
+        .style("fill", d => d.children || d._children ? "var(--cinnabar)" : "var(--ink-deep)");
+      
+      nodeUpdate.select("path")
+        .transition()
+        .duration(300)
+        .attr("d", d => d.children ? "M -8 0 L 0 -6 L 8 0" : "M -8 0 L 0 6 L 8 0")
+        .attr("transform", d => `translate(${d.children ? -18 : 12}, 0)`);
+      
+      nodeUpdate.exit()
+        .transition()
+        .duration(300)
+        .attr("transform", d => `translate(${source.y},${source.x})`)
+        .remove();
+      
+      nodeUpdate.exit().select("circle")
+        .transition()
+        .duration(300)
+        .attr("r", 0);
+      
+      nodeUpdate.exit().select("text")
+        .transition()
+        .duration(300)
+        .style("opacity", 0);
+    }
+
+    // ECharts 数据可视化 - 贾而好儒
+    document.addEventListener('DOMContentLoaded', function() {
+      // 图表1：徽商利润流向
+      const chartDom1 = document.getElementById('clanChart');
+      const myChart1 = echarts.init(chartDom1);
+      
+      const option1 = {
+        backgroundColor: '#fffbf0',
+        title: {
+          text: '徽商利润流向',
+          left: 'center',
+          textStyle: {
+            fontFamily: '楷体',
+            fontSize: 16,
+            color: '#8b4513'
+          }
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{b}: {c}% ({d}%)',
+          backgroundColor: 'rgba(26, 20, 16, 0.85)',
+          borderColor: '#d2b48c',
+          textStyle: {
+            fontFamily: '宋体',
+            color: '#f8f5f0'
+          }
+        },
+        legend: {
+          bottom: 10,
+          textStyle: {
+            fontFamily: '宋体',
+            color: '#8b4513',
+            fontSize: 12
+          }
+        },
+        series: [
+          {
+            type: 'pie',
+            radius: ['40%', '70%'],
+            center: ['50%', '45%'],
+            itemStyle: {
+              borderRadius: 8,
+              borderColor: '#f8f5f0',
+              borderWidth: 2,
+              shadowBlur: 10,
+              shadowColor: 'rgba(139, 69, 19, 0.3)'
+            },
+            label: {
+              fontFamily: '宋体',
+              color: '#8b4513',
+              fontSize: 12
+            },
+            data: [
+              { value: 35, name: '教育投入', itemStyle: { color: '#8b4513' } },
+              { value: 25, name: '祠堂建设', itemStyle: { color: '#d2b48c' } },
+              { value: 20, name: '族田购置', itemStyle: { color: '#a0522d' } },
+              { value: 15, name: '慈善救济', itemStyle: { color: '#cd853f' } },
+              { value: 5, name: '其他', itemStyle: { color: '#deb887' } }
+            ]
+          }
+        ]
+      };
+      
+      myChart1.setOption(option1);
+      
+      // 图表2：科举功名统计
+      const chartDom2 = document.getElementById('educationChart');
+      const myChart2 = echarts.init(chartDom2);
+      
+      const option2 = {
+        backgroundColor: '#fffbf0',
+        title: {
+          text: '科举功名统计',
+          left: 'center',
+          textStyle: {
+            fontFamily: '楷体',
+            fontSize: 16,
+            color: '#8b4513'
+          }
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          },
+          backgroundColor: 'rgba(26, 20, 16, 0.85)',
+          borderColor: '#d2b48c',
+          textStyle: {
+            fontFamily: '宋体',
+            color: '#f8f5f0'
+          }
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          data: ['进士', '举人', '秀才', '监生'],
+          axisLabel: {
+            fontFamily: '宋体',
+            color: '#8b4513',
+            fontSize: 12
+          },
+          axisLine: {
+            lineStyle: {
+              color: 'rgba(139, 69, 19, 0.3)'
+            }
+          }
+        },
+        yAxis: {
+          type: 'value',
+          axisLabel: {
+            color: '#8b4513',
+            fontFamily: '宋体'
+          },
+          splitLine: {
+            lineStyle: {
+              color: 'rgba(139, 69, 19, 0.1)'
+            }
+          }
+        },
+        series: [
+          {
+            name: '人数',
+            type: 'bar',
+            data: [12, 35, 89, 156],
+            itemStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: '#8b4513' },
+                { offset: 1, color: '#d2b48c' }
+              ]),
+              borderRadius: [4, 4, 0, 0],
+              shadowBlur: 8,
+              shadowColor: 'rgba(139, 69, 19, 0.2)'
+            }
+          }
+        ]
+      };
+      
+      myChart2.setOption(option2);
+      
+      // 图表3：徽商发展趋势
+      const chartDom3 = document.getElementById('merchantChart');
+      const myChart3 = echarts.init(chartDom3);
+      
+      const option3 = {
+        backgroundColor: '#fffbf0',
+        title: {
+          text: '徽商发展趋势（1600-1850）',
+          left: 'center',
+          textStyle: {
+            fontFamily: '楷体',
+            fontSize: 16,
+            color: '#8b4513'
+          }
+        },
+        tooltip: {
+          trigger: 'axis',
+          backgroundColor: 'rgba(26, 20, 16, 0.85)',
+          borderColor: '#d2b48c',
+          textStyle: {
+            fontFamily: '宋体',
+            color: '#f8f5f0'
+          }
+        },
+        legend: {
+          data: ['商户数量', '资本规模'],
+          bottom: 10,
+          textStyle: {
+            fontFamily: '宋体',
+            color: '#8b4513',
+            fontSize: 12
+          }
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '15%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: ['1600', '1650', '1700', '1750', '1800', '1850'],
+          axisLabel: {
+            fontFamily: '宋体',
+            color: '#8b4513',
+            fontSize: 12
+          },
+          axisLine: {
+            lineStyle: {
+              color: 'rgba(139, 69, 19, 0.3)'
+            }
+          }
+        },
+        yAxis: {
+          type: 'value',
+          axisLabel: {
+            color: '#8b4513',
+            fontFamily: '宋体'
+          },
+          splitLine: {
+            lineStyle: {
+              color: 'rgba(139, 69, 19, 0.1)'
+            }
+          }
+        },
+        series: [
+          {
+            name: '商户数量',
+            type: 'line',
+            data: [120, 250, 480, 850, 1200, 980],
+            smooth: true,
+            symbol: 'circle',
+            symbolSize: 6,
+            lineStyle: {
+              color: '#8b4513',
+              width: 2
+            },
+            itemStyle: {
+              color: '#8b4513'
+            }
+          },
+          {
+            name: '资本规模',
+            type: 'line',
+            data: [50, 120, 350, 680, 1050, 820],
+            smooth: true,
+            symbol: 'circle',
+            symbolSize: 6,
+            lineStyle: {
+              color: '#d2b48c',
+              width: 2
+            },
+            itemStyle: {
+              color: '#d2b48c'
+            }
+          }
+        ]
+      };
+      
+      myChart3.setOption(option3);
+      
+      // 响应式调整
+      window.addEventListener('resize', function() {
+        myChart1.resize();
+        myChart2.resize();
+        myChart3.resize();
+      });
+    });
+
+    // 滚动进入动画
+    document.addEventListener('DOMContentLoaded', function() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const delay = Array.from(document.querySelectorAll('.clan-module')).indexOf(entry.target) * 100;
+            setTimeout(() => {
+              entry.target.classList.add('visible');
+            }, delay);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.clan-module').forEach(module => {
+        observer.observe(module);
+      });
+    });
+
+    // 卷轴展开/收起功能
+    function toggleScroll() {
+      const scrollContent = document.querySelector('.scroll-content');
+      const button = document.querySelector('button[onclick="toggleScroll()"]');
+      
+      if (scrollContent.style.maxHeight === '0px' || scrollContent.style.maxHeight === '') {
+        // 展开卷轴
+        scrollContent.style.maxHeight = '2000px';
+        scrollContent.style.opacity = '1';
+        scrollContent.style.transform = 'translateY(0)';
+        button.textContent = '收起卷轴';
+      } else {
+        // 收起卷轴
+        scrollContent.style.maxHeight = '0px';
+        scrollContent.style.opacity = '0';
+        scrollContent.style.transform = 'translateY(20px)';
+        button.textContent = '展开卷轴';
+      }
+    }
   </script>
 </body>
 </html>

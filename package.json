@@ -1,14 +1,13 @@
 {
-  "name": "react-example",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "ancient-huizhou-architecture",
+  "version": "1.0.0",
+  "description": "徽派建筑文化展览",
   "scripts": {
-    "start": "http-server . -p 3001 -c-1",
-    "serve": "http-server . -p 3001 -c-1"
+    "build": "node scripts/build.js",
+    "preserve": "npm run build",
+    "serve": "npx serve dist"
   },
-  "dependencies": {},
-  "devDependencies": {
-    "http-server": "^14.1.1"
-  }
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
