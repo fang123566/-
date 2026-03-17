@@ -1503,13 +1503,27 @@
           <div class="scroll-book" style="justify-content:center; padding:10px 20px;">
             <p class="game-text" style="margin-bottom:20px; font-size:0.9rem;">
               徽州古建的修复坚持“修旧如旧”原则，不大拆大建。<br>在右侧选择下方部件，于画板上按住并滑动，擦去蒙尘。</p>
-            <div
-              style="display:flex; flex-direction:column; gap:8px; margin-bottom:15px; max-width:80%; margin:0 auto;">
-              <button class="page-btn page-active" onclick="changeRubbingPage(0)">敬爱堂</button>
-              <button class="page-btn" onclick="changeRubbingPage(1)">屯溪镇海桥</button>
-              <button class="page-btn" onclick="changeRubbingPage(2)">追慕堂</button>
-              <button class="page-btn" onclick="changeRubbingPage(3)">承志堂</button>
-              <button class="page-btn" onclick="changeRubbingPage(4)">脩爵堂</button>
+            <div class="rub-btn-group">
+                <button class="rub-btn active" onclick="changeRubbingPage(0)">
+                    <span class="btn-index">壹</span>
+                    <span class="btn-text">敬爱堂</span>
+                </button>
+                <button class="rub-btn" onclick="changeRubbingPage(1)">
+                    <span class="btn-index">贰</span>
+                    <span class="btn-text">屯溪镇海桥</span>
+                </button>
+                <button class="rub-btn" onclick="changeRubbingPage(2)">
+                    <span class="btn-index">叁</span>
+                    <span class="btn-text">追慕堂</span>
+                </button>
+                <button class="rub-btn" onclick="changeRubbingPage(3)">
+                    <span class="btn-index">肆</span>
+                    <span class="btn-text">承志堂</span>
+                </button>
+                <button class="rub-btn" onclick="changeRubbingPage(4)">
+                    <span class="btn-index">伍</span>
+                    <span class="btn-text">脩爵堂</span>
+                </button>
             </div>
             <p id="rubbingDesc"
               style="text-align:center; font-size:0.85rem; color:var(--ink-medium); min-height:45px; margin-top:15px;">
@@ -1747,7 +1761,7 @@
         {
           bgCol: "linear-gradient(135deg, #e52d27, #b31217)", bgTxt: "朱门凝重", topCol: "#5d4037",
           oldImg: "素材/天井与保护补充素材/旧脩爵堂.jpg", newImg: "素材/天井与保护补充素材/新脩爵堂.jpg",
-          topTxt: "白墙大面积斑驳脱落、小青瓦屋面塌陷漏雨、木梁柱裸露腐朽、砖雕门楼纹样模糊，墙体有明显裂缝",
+          topTxt: "白墙斑驳脱落、瓦屋塌陷漏雨、木梁裸露腐朽、砖雕纹样模糊",
           desc: "白墙黛瓦规整，马头墙线条利落，“脩爵堂” 匾额墨色鲜亮，砖雕龙凤纹样清晰完整"
         }
       ];

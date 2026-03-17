@@ -833,4 +833,84 @@ body {
   .circle-btn svg { width: 20px; height: 20px; }
   .scroll-cover { height: 70px; }
   .scroll-body p { font-size: 0.78rem; }
+}/* 按钮容器布局 */
+.rub-btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 240px; /* 紧凑设计 */
+    margin: 20px auto;
+}
+
+/* 基础按钮样式 - 拟真书签感 */
+.rub-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 12px 18px;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(184, 134, 11, 0.15); /* 淡淡的金棕色边框 */
+    border-left: 3px solid var(--ink-faint); /* 默认左侧为淡墨色 */
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    text-align: left;
+    overflow: hidden;
+}
+
+/* 按钮文字样式 */
+.btn-text {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 0.95rem;
+    color: var(--ink-medium);
+    letter-spacing: 0.1em;
+    z-index: 2;
+}
+
+/* 按钮编号样式 - 书法感 */
+.btn-index {
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 1.1rem;
+    color: var(--ink-light);
+    margin-right: 12px;
+    opacity: 0.6;
+}
+
+/* 鼠标悬停效果 */
+.rub-btn:hover {
+    background: rgba(252, 249, 242, 0.8);
+    border-color: var(--cinnabar);
+    transform: translateX(5px); /* 悬停时轻微向右滑动，增强交互感 */
+}
+
+/* 激活状态 - 朱砂红印章感 */
+.rub-btn.active {
+    background: linear-gradient(to right, rgba(167, 45, 35, 0.08), transparent);
+    border-color: rgba(167, 45, 35, 0.3);
+    border-left: 4px solid var(--cinnabar); /* 侧边变为醒目的朱砂红 */
+    box-shadow: -5px 5px 15px rgba(20, 17, 14, 0.05);
+}
+
+.rub-btn.active .btn-text {
+    color: var(--cinnabar);
+    font-weight: 600;
+}
+
+.rub-btn.active .btn-index {
+    color: var(--cinnabar);
+    opacity: 1;
+}
+
+/* 按钮背景水墨装饰点缀 (可选) */
+.rub-btn::after {
+    content: '';
+    position: absolute;
+    right: -20px;
+    bottom: -20px;
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, rgba(167, 45, 35, 0.03) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: 1;
 }
