@@ -1,1879 +1,1010 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>天井 | 徽派建筑的呼吸与灵魂</title>
-    <link rel="stylesheet" href="styles.css" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;700;900&family=Ma+Shan+Zheng&display=swap"
-        rel="stylesheet" />
-
-    <style>
-        /* --- 数字古籍增强翻页效果 --- */
-        .book-wrapper {
-            perspective: 2500px;
-        }
-
-        .book {
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .flip-page {
-            position: absolute;
-            width: 50%;
-            height: 100%;
-            top: 0;
-            left: 50%;
-            transform-origin: left center;
-            transition: transform 2s cubic-bezier(0.25, 1, 0.4, 1);
-            backface-visibility: hidden;
-            background: linear-gradient(160deg, #fefaf0 0%, #f8f0dc 55%, #f2e8cc 100%);
-            z-index: 1;
-            opacity: 0;
-            visibility: hidden; /* 强制彻底不渲染，防止 3D 闪现 */
-            pointer-events: none;
-            box-shadow: inset 3px 0 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .flip-page.active {
-            opacity: 1;
-            visibility: visible;
-            z-index: 10;
-            pointer-events: auto;
-            transition: transform 2s cubic-bezier(0.25, 1, 0.4, 1);
-        }
-
-        .flip-page.active.target-page {
-            z-index: 12 !important; /* 确保目标页在翻转过程中始终压在旧页之上 */
-        }
-
-        .flip-page.left-side {
-            left: 0;
-            transform: rotateY(180deg);
-            /* 初始完全翻过去隐藏 */
-            transform-origin: right center;
-            border-radius: 12px 0 0 12px;
-            box-shadow: inset -5px 0 20px rgba(0, 0, 0, 0.05), -5px 5px 20px rgba(26, 20, 16, 0.1);
-        }
-
-        .flip-page.right-side {
-            left: 50%;
-            transform: rotateY(-180deg);
-            /* 初始完全翻过去隐藏 */
-            transform-origin: left center;
-            border-radius: 0 12px 12px 0;
-            box-shadow: inset 5px 0 20px rgba(0, 0, 0, 0.05), 5px 5px 20px rgba(26, 20, 16, 0.1);
-        }
-
-        .flip-page.left-side.active {
-            transform: rotateY(0deg);
-            z-index: 10;
-        }
-
-        .flip-page.right-side.active {
-            transform: rotateY(0deg);
-            z-index: 10;
-        }
-
-        /* 翻书动画类 - 增加 Z 轴位移模拟书页卷起的厚度感 */
-        .flip-page.flipping-out {
-            z-index: 20 !important;
-        }
-
-        .flip-page.left-side.flipping-out {
-            animation: pageFlipOutLeft 2s cubic-bezier(0.3, 0.1, 0.2, 1) forwards;
-        }
-
-        .flip-page.right-side.flipping-out {
-            animation: pageFlipOutRight 2s cubic-bezier(0.3, 0.1, 0.2, 1) forwards;
-        }
-
-        .flip-page.flipping-in {
-            z-index: 15 !important;
-        }
-
-        .flip-page.left-side.flipping-in {
-            animation: pageFlipInLeft 2s cubic-bezier(0.3, 0.1, 0.2, 1) forwards;
-        }
-
-        .flip-page.right-side.flipping-in {
-            animation: pageFlipInRight 2s cubic-bezier(0.3, 0.1, 0.2, 1) forwards;
-        }
-
-        /* 右页翻走 (向左翻卷) */
-        @keyframes pageFlipOutRight {
-            0% {
-                transform: rotateY(0deg) translateZ(0);
-            }
-
-            30% {
-                transform: rotateY(-45deg) translateZ(20px);
-            }
-
-            100% {
-                transform: rotateY(-180deg) translateZ(0);
-            }
-        }
-
-        /* 左页翻入 (从左翻卷过来) */
-        @keyframes pageFlipInLeft {
-            0% {
-                transform: rotateY(180deg) translateZ(0);
-            }
-
-            70% {
-                transform: rotateY(45deg) translateZ(20px);
-            }
-
-            100% {
-                transform: rotateY(0deg) translateZ(0);
-            }
-        }
-
-        /* 左页翻走 (向右翻卷) - 用于返回上一页 */
-        @keyframes pageFlipOutLeft {
-            0% {
-                transform: rotateY(0deg) translateZ(0);
-            }
-
-            30% {
-                transform: rotateY(45deg) translateZ(20px);
-            }
-
-            100% {
-                transform: rotateY(180deg) translateZ(0);
-            }
-        }
-
-        /* 右页翻入 (从右翻卷过来) - 用于返回上一页 */
-        @keyframes pageFlipInRight {
-            0% {
-                transform: rotateY(-180deg) translateZ(0);
-            }
-
-            70% {
-                transform: rotateY(-45deg) translateZ(20px);
-            }
-
-            100% {
-                transform: rotateY(0deg) translateZ(0);
-            }
-        }
-
-        /* 单页模式适配 */
-        @media (max-width: 900px) {
-            .flip-page {
-                width: 100% !important;
-                left: 0 !important;
-                border-radius: 12px !important;
-            }
-
-            .flip-page.left-side,
-            .flip-page.right-side {
-                transform-origin: center !important;
-            }
-
-            .flip-page.left-side.flipping-out,
-            .flip-page.right-side.flipping-out {
-                animation: pageFlipOutMobile 0ms ease forwards;
-            }
-
-            .flip-page.left-side.flipping-in,
-            .flip-page.right-side.flipping-in {
-                animation: pageFlipInMobile 0ms ease forwards;
-            }
-
-            @keyframes pageFlipOutMobile {
-                0% {
-                    transform: scale(1);
-                }
-
-                100% {
-                    transform: scale(0.9) translateX(-100%);
-                }
-            }
-
-            @keyframes pageFlipInMobile {
-                0% {
-                    transform: scale(0.9) translateX(100%);
-                }
-
-                100% {
-                    transform: scale(1) translateX(0);
-                }
-            }
-        }
-
-        :root {
-            --ink-black: #1a1410;
-            --ink-deep: #2d2519;
-            --ink-medium: #4a3d2e;
-            --ink-light: #8c7a60;
-            --ink-faint: #c4b49a;
-            --paper: #f5f0e8;
-            --paper-warm: #faf6ee;
-            --cinnabar: #c0392b;
-            --gold: #b8860b;
-            --jade: #2e6b4f;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* 核心修复：引入 Flexbox 控制整体布局高度，确保底部不被挤出 */
-        html, body {
-            height: 100vh;
-            overflow: hidden;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: #dcd7ce;
-            color: var(--ink-black);
-            font-family: 'Noto Serif SC', 'SimSun', serif;
-            position: relative;
-            line-height: 1.8;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* 全局水墨噪点背景 */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.6;
-        }
-
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(ellipse 300px 200px at 0% 0%, rgba(26, 20, 16, .08) 0%, transparent 70%), radial-gradient(ellipse 300px 200px at 100% 0%, rgba(26, 20, 16, .06) 0%, transparent 70%), radial-gradient(ellipse 300px 200px at 0% 100%, rgba(26, 20, 16, .06) 0%, transparent 70%), radial-gradient(ellipse 300px 200px at 100% 100%, rgba(26, 20, 16, .08) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-
-
-        /* ================= 骨架布局 (Top Header + Main Flex) ================= */
-        .page-wrapper {
-            position: relative;
-            z-index: 1;
-            flex: 1; /* 占据除 Footer 外的所有剩余空间 */
-            display: flex;
-            flex-direction: column;
-            min-height: 0; /* 防止内容溢出容器 */
-        }
-
-        /* 顶部 Header */
-        .hero-header {
-            position: relative;
-            padding: 0;
-            overflow: hidden;
-            flex-shrink: 0;
-            border-bottom: 1px solid rgba(184, 134, 11, .2);
-        }
-
-        .hero-header::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 200' preserveAspectRatio='none'%3E%3Cpath d='M0 200 L0 120 L80 80 L130 90 L200 40 L270 55 L320 20 L400 60 L450 30 L530 70 L600 15 L680 60 L730 35 L800 75 L870 20 L940 65 L990 40 L1060 80 L1120 50 L1200 90 L1200 200 Z' fill='rgba(26,20,16,0.04)'/%3E%3C/svg%3E");
-            background-size: 100% 100%;
-            pointer-events: none;
-        }
-
-        .hero-header::after {
-            content: '天井方寸';
-            position: absolute;
-            top: 5px;
-            right: 40px;
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 4rem;
-            color: rgba(192, 57, 43, .04);
-            letter-spacing: .1em;
-            pointer-events: none;
-            writing-mode: vertical-rl;
-        }
-
-        .hero-inner {
-            display: flex;
-            align-items: flex-end;
-            position: relative;
-            z-index: 1;
-            width: 100%;
-        }
-
-        .hero-left {
-            width: 320px;
-            padding: 0 24px;
-            flex-shrink: 0;
-            box-sizing: border-box;
-            margin-bottom: 56px; /* 进一步微调，对齐马头墙页面的 38px */
-        }
-
-        .hero-right {
-            flex: 1;
-            padding: 0 40px;
-            display: flex;
-            align-items: flex-end;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(192, 57, 43, .08);
-            border: 1px solid rgba(192, 57, 43, .25);
-            padding: 4px 12px;
-            border-radius: 2px;
-            margin-bottom: 10px;
-        }
-
-        .hero-badge span {
-            font-size: .65rem;
-            letter-spacing: .15em;
-            color: var(--cinnabar);
-            font-weight: 500;
-        }
-
-        .hero-badge::before,
-        .hero-badge::after {
-            content: '◆';
-            font-size: .35rem;
-            color: var(--cinnabar);
-            opacity: .6;
-        }
-
-        .hero-title-zh {
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 2.8rem;
-            color: var(--ink-black);
-            line-height: 1;
-            letter-spacing: .05em;
-            margin-bottom: 4px;
-            text-shadow: 2px 3px 6px rgba(26, 20, 16, .1);
-        }
-
-        .hero-title-en {
-            font-size: .6rem;
-            letter-spacing: .25em;
-            color: var(--ink-light);
-            font-weight: 300;
-            margin-bottom: 0;
-            text-transform: uppercase;
-        }
-
-        /* 核心修改：无缝拼接的说明文字标签 */
-        .hero-desc {
-            font-size: 0.82rem;
-            line-height: 1.6;
-            color: var(--ink-deep);
-            margin: 0;
-            padding: 8px 20px;
-            background: linear-gradient(to top, var(--paper-warm), rgba(252, 249, 242, 0.85));
-            border: 1px solid rgba(184, 134, 11, .15);
-            border-bottom: none;
-            border-radius: 8px 8px 0 0;
-            border-left: 4px solid var(--cinnabar);
-            box-shadow: 0 -4px 15px rgba(20, 17, 14, 0.03);
-            position: relative;
-            z-index: 20;
-            transform: translateY(1px);
-            max-width: 850px;
-        }
-
-        .hero-intro {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--ink-black);
-            border-bottom: 1px dashed rgba(184, 134, 11, 0.2);
-            padding-bottom: 8px;
-            font-size: 0.88rem;
-        }
-
-        .hero-history {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .history-item {
-            font-size: 0.78rem;
-            color: var(--ink-medium);
-            line-height: 1.5;
-        }
-
-        .history-item strong {
-            color: var(--cinnabar);
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 0.95rem;
-            margin-right: 6px;
-        }
-
-        /* 下半部分主体 */
-        .main-content {
-            display: flex;
-            flex: 1;
-            width: 100%;
-            align-items: stretch;
-            min-height: 0;
-        }
-
-        /* === 左侧栏 === */
-        .sidebar {
-            background: rgba(245, 240, 232, .92);
-            border-right: 1px solid rgba(184, 134, 11, .2);
-            padding: 0 24px 30px 24px; /* 调整底部 Padding 与右侧书本对齐 */
-            width: 320px;
-            display: flex;
-            flex-direction: column;
-            z-index: 10;
-            flex-shrink: 0;
-        }
-
-        .sidebar-title {
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 1.35rem;
-            color: var(--ink-black);
-            text-align: center;
-            margin-bottom: 5px;
-            letter-spacing: .1em;
-        }
-
-        .sidebar-subtitle {
-            font-size: .68rem;
-            letter-spacing: .2em;
-            color: var(--ink-light);
-            text-align: center;
-            text-transform: uppercase;
-            margin-bottom: 15px;
-        }
-
-        .brush-line {
-            width: 100%;
-            height: 12px;
-            margin-bottom: 10px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12'%3E%3Cpath d='M2 8 Q20 3 40 7 Q70 11 100 6 Q130 1 160 7 Q180 10 198 6' fill='none' stroke='rgba(192,57,43,0.35)' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-size: 100% 100%;
-        }
-
-        .styled-card {
-            background: var(--paper-warm);
-            border: 1px solid rgba(184, 134, 11, .2);
-            border-radius: 4px;
-            padding: 15px;
-            box-shadow: 0 6px 24px rgba(26, 20, 16, .06);
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .styled-card::before {
-            content: '';
-            position: absolute;
-            inset: 4px;
-            border: 1px solid rgba(184, 134, 11, .1);
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .ink-divider {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 15px 0;
-        }
-
-        .ink-divider::before,
-        .ink-divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(to right, transparent, rgba(184, 134, 11, .4), transparent);
-        }
-
-        .ink-divider span {
-            font-family: 'Ma Shan Zheng', cursive;
-            color: var(--gold);
-            font-size: 1.1rem;
-            opacity: .8;
-        }
-
-        /* 侧边动态面板：完全依靠 Flexbox 伸缩自适应高度，底部完美对齐 */
-        .data-scroll-outer {
-            position: relative;
-            margin-bottom: 0;
-            user-select: none;
-            overflow: hidden;
-            border: 1px solid rgba(184, 134, 11, .15);
-            background: rgba(26, 20, 16, .02);
-            border-radius: 4px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-        }
-
-        .data-scroll-track {
-            overflow: hidden;
-            position: relative;
-            flex: 1;
-        }
-
-        .data-scroll-mask-t,
-        .data-scroll-mask-b {
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 40px;
-            z-index: 4;
-            pointer-events: none;
-        }
-
-        .data-scroll-mask-t {
-            top: 0;
-            background: linear-gradient(to bottom, rgba(245, 240, 232, 1), transparent);
-        }
-
-        .data-scroll-mask-b {
-            bottom: 0;
-            background: linear-gradient(to top, rgba(245, 240, 232, 1), transparent);
-        }
-
-        .data-scroll-belt {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            animation: beltScrollV 60s linear infinite;
-        }
-
-        .data-scroll-belt.paused {
-            animation-play-state: paused;
-        }
-
-        @keyframes beltScrollV {
-            0% {
-                transform: translateY(0);
-            }
-
-            100% {
-                transform: translateY(-50%);
-            }
-        }
-
-        .ds-panel {
-            flex-shrink: 0;
-            width: 100%;
-            padding: 12px;
-            background: var(--paper-warm);
-            border-bottom: 1px solid rgba(184, 134, 11, .18);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .ds-panel-img {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 2px;
-            margin-bottom: 8px;
-            border: 1px solid rgba(184, 134, 11, .1);
-        }
-
-        .ds-panel-num {
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: .6rem;
-            letter-spacing: .22em;
-            color: var(--cinnabar);
-            opacity: .6;
-            margin-bottom: 2px;
-        }
-
-        .ds-panel-title {
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 1rem;
-            color: var(--ink-black);
-            letter-spacing: .08em;
-            margin-bottom: 2px;
-        }
-
-        .ds-panel-en {
-            font-size: .55rem;
-            letter-spacing: .18em;
-            color: var(--ink-faint);
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .ds-divider {
-            width: 100%;
-            height: 1px;
-            background: linear-gradient(to right, var(--cinnabar), rgba(184, 134, 11, .2), transparent);
-            margin-bottom: 8px;
-            opacity: .5;
-        }
-
-        .ds-panel-desc {
-            font-size: 0.75rem;
-            color: var(--ink-medium);
-            line-height: 1.6;
-        }
-
-        .ds-controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            padding: 10px 0;
-            background: rgba(245, 240, 232, 0.5);
-            border-top: 1px solid rgba(184, 134, 11, .05);
-        }
-
-        .ds-play-btn {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            border: 1px solid rgba(192, 57, 43, .35);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            color: var(--cinnabar);
-            font-size: 0.7rem;
-        }
-
-        .content-area {
-            padding: 0 40px 30px 40px; /* 减小间距，约留一行字高度 */
-            min-width: 0;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            justify-content: center;
-            background: transparent;
-            position: relative;
-            min-height: 0;
-            overflow: visible; /* 允许翻页箭头超出 */
-        }
-
-        .book-wrapper {
-            position: relative;
-            width: 95%;
-            height: 94%;
-            perspective: 2000px;
-            z-index: 10;
-            display: flex;
-            margin: 0 auto;
-        }
-
-        .book {
-            position: relative;
-            width: 100%;
-            max-width: 1500px;
-            height: 100%;
-            background: transparent;
-            display: flex;
-        }
-
-        /* 书脊与中缝 */
-        .book-spine {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 50%;
-            width: 80px;
-            transform: translateX(-50%);
-            background: linear-gradient(to right, transparent 0%, rgba(20, 17, 14, 0.03) 20%, rgba(20, 17, 14, 0.1) 50%, rgba(20, 17, 14, 0.03) 80%, transparent 100%);
-            z-index: 20;
-            pointer-events: none;
-        }
-
-        .book-seam {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 50%;
-            width: 1px;
-            background: rgba(184, 134, 11, 0.25);
-            z-index: 21;
-            pointer-events: none;
-        }
-
-        /* 书籍底纹与页眉脚 */
-        .page-watermark {
-            position: absolute;
-            top: 5%;
-            right: -5%;
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 24rem;
-            color: rgba(20, 17, 14, 0.02);
-            z-index: 0;
-            pointer-events: none;
-            white-space: nowrap;
-        }
-
-        .left-side .page-watermark {
-            right: auto;
-            left: -5%;
-        }
-
-        .page-header {
-            position: absolute;
-            top: 25px;
-            font-size: 0.7rem;
-            color: var(--ink-light);
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .page-header::after {
-            content: '';
-            display: block;
-            width: 30px;
-            height: 1px;
-            background: var(--cinnabar);
-        }
-
-        .left-side .page-header {
-            left: 50px;
-        }
-
-        .right-side .page-header {
-            right: 50px;
-            flex-direction: row-reverse;
-        }
-
-        .right-side .page-header::after {
-            background: var(--gold);
-        }
-
-        .page-number {
-            position: absolute;
-            bottom: 25px;
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 0.9rem;
-            color: var(--ink-medium);
-            z-index: 10;
-        }
-
-        .left-side .page-number {
-            left: 50px;
-        }
-
-        .right-side .page-number {
-            right: 50px;
-        }
-
-        /* 翻页按钮 */
-        .book-nav-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 50px;
-            height: 70px;
-            background: rgba(252, 249, 242, 0.95);
-            border: 1px solid rgba(184, 134, 11, 0.4);
-            color: var(--cinnabar);
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 1.4rem;
-            cursor: pointer;
-            z-index: 30;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(20, 17, 14, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .book-nav-btn:hover {
-            background: var(--ink-deep);
-            color: var(--paper-warm);
-            border-color: var(--ink-deep);
-        }
-
-        .book-nav-btn:disabled {
-            display: none;
-        }
-
-        .book-nav-btn.prev {
-            left: 25px;
-            border-radius: 4px 0 0 4px;
-        }
-
-        .book-nav-btn.next {
-            right: 25px;
-            border-radius: 0 4px 4px 0;
-        }
-
-        /* 书内排版样式 */
-        .book-content {
-            position: relative;
-            z-index: 2;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            padding: 40px 60px 40px 60px; /* 恢复均匀边距 */
-            overflow: hidden; /* 彻底移除滑动，强制内容分页 */
-        }
-
-        .left-side .book-content {
-            padding-right: 40px; /* 左页右侧靠近书脊，间距稍小 */
-        }
-
-        .right-side .book-content {
-            padding-left: 40px; /* 右页左侧靠近书脊，间距稍小 */
-        }
-
-        .chapter-heading {
-            margin-top: 10px;
-            margin-bottom: 25px;
-            border-bottom: 1px solid rgba(184, 134, 11, 0.2);
-            padding-bottom: 15px;
-            position: relative;
-        }
-
-        .chapter-num {
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 1.4rem;
-            color: var(--cinnabar);
-            margin-bottom: -8px;
-            display: block;
-            opacity: 0.8;
-        }
-
-        .chapter-title {
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 2.8rem;
-            color: var(--ink-black);
-            line-height: 1.2;
-            letter-spacing: 0.05em;
-        }
-
-        .chapter-subtitle {
-            font-size: 0.85rem;
-            color: var(--ink-medium);
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            font-weight: 700;
-            margin-top: 8px;
-        }
-
-        .text-lead {
-            font-size: 1.05rem;
-            color: var(--ink-deep);
-            font-weight: 500;
-            line-height: 1.9;
-            margin-bottom: 20px;
-            text-align: justify;
-            border-left: 3px solid var(--cinnabar);
-            padding-left: 15px;
-        }
-
-        .text-columns {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            text-align: justify;
-            align-items: start;
-        }
-
-        .text-body {
-            font-size: 0.9rem;
-            color: var(--ink-medium);
-            line-height: 2.1;
-            letter-spacing: 0.03em;
-            margin-bottom: 15px;
-        }
-
-        .drop-cap::first-letter {
-            float: left;
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 3.5rem;
-            line-height: 0.8;
-            padding-top: 6px;
-            padding-right: 10px;
-            color: var(--cinnabar);
-        }
-
-        .side-note-vert {
-            float: right;
-            writing-mode: vertical-rl;
-            padding: 12px;
-            margin-left: 20px;
-            background: rgba(184, 134, 11, 0.05);
-            border: 1px solid rgba(184, 134, 11, 0.2);
-            font-family: 'Noto Serif SC', serif;
-            font-size: 0.85rem;
-            color: var(--ink-deep);
-            line-height: 2;
-            letter-spacing: 0.1em;
-            box-shadow: 2px 2px 0 rgba(167, 45, 35, 0.1);
-        }
-
-        /* 书内图片体系 */
-        .img-grid {
-            display: grid;
-            gap: 20px;
-            height: 100%;
-            flex: 1;
-        }
-
-        .img-grid.layout-top-bottom {
-            grid-template-rows: 2fr 1fr;
-        }
-
-        .img-grid.layout-split {
-            grid-template-columns: 1fr 1fr;
-        }
-
-        .img-grid.layout-hero {
-            grid-template-rows: 1fr;
-            height: 100%;
-            min-height: 400px;
-        }
-
-        .book-img-wrapper {
-            position: relative;
-            border-radius: 2px;
-            overflow: hidden;
-            box-shadow: 0 6px 20px rgba(20, 17, 14, 0.08);
-            display: flex;
-            flex-direction: column;
-            background: #eae6df;
-        }
-
-        .book-img-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 2s ease;
-        }
-
-        .book-img-wrapper:hover img {
-            transform: scale(1.03);
-        }
-
-        .img-caption {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(20, 17, 14, 0.7);
-            backdrop-filter: blur(5px);
-            color: var(--paper);
-            padding: 10px 15px;
-            font-size: 0.75rem;
-            letter-spacing: 0.1em;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .img-caption span:last-child {
-            color: var(--gold);
-        }
-
-        .img-placeholder {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(184, 134, 11, 0.3);
-        }
-
-        .img-placeholder::before {
-            content: '图';
-            position: absolute;
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 10rem;
-            color: rgba(167, 45, 35, 0.04);
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .ph-box {
-            position: relative;
-            z-index: 2;
-            background: rgba(252, 249, 242, 0.95);
-            border: 1px dashed rgba(184, 134, 11, 0.6);
-            padding: 15px 20px;
-            text-align: center;
-            max-width: 85%;
-            box-shadow: 0 4px 15px rgba(20, 17, 14, 0.06);
-        }
-
-        .ph-title {
-            color: var(--cinnabar);
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 1.1rem;
-            letter-spacing: 0.1em;
-            margin-bottom: 6px;
-            display: block;
-            border-bottom: 1px solid rgba(167, 45, 35, 0.2);
-            padding-bottom: 6px;
-            font-weight: bold;
-        }
-
-        .ph-desc {
-            font-size: 0.8rem;
-            color: var(--ink-deep);
-            line-height: 1.6;
-        }
-
-        /* FOOTER (下方黑色区域) */
-        .site-footer {
-            background: var(--ink-deep);
-            padding: 15px 64px; /* 缩小页脚高度，留更多空间给书本 */
-            position: relative;
-            z-index: 1;
-            border-top: 2px solid var(--cinnabar);
-            flex-shrink: 0; /* 确保页脚不会被压缩 */
-        }
-
-        .footer-inner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            max-width: 1500px;
-            margin: 0 auto;
-        }
-
-        .footer-location {
-            font-size: .78rem;
-            letter-spacing: .15em;
-            color: var(--ink-faint);
-        }
-
-        .footer-brand {
-            font-family: 'Ma Shan Zheng', cursive;
-            font-size: 1.1rem;
-            color: rgba(245, 240, 232, .6);
-            letter-spacing: .1em;
-        }
-
-        .footer-text {
-            font-size: .72rem;
-            letter-spacing: .1em;
-            color: rgba(196, 180, 154, .5);
-        }
-
-        .seal {
-            position: fixed;
-            bottom: 50px;
-            right: 40px;
-            width: 60px;
-            height: 60px;
-            border-radius: 4px;
-            border: 2px solid var(--cinnabar);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-            opacity: .5;
-            transition: opacity .3s;
-        }
-
-        .seal:hover {
-            opacity: .9;
-        }
-
-        .seal-inner {
-            font-family: 'Ma Shan Zheng', cursive;
-            color: var(--cinnabar);
-            font-size: .65rem;
-            text-align: center;
-            line-height: 1.4;
-            letter-spacing: .05em;
-        }
-
-        @media (max-width: 1200px) {
-            .page.single-page {
-                width: 100% !important;
-                left: 0 !important;
-                transform-origin: center;
-                transform: scale(0.95) translateY(20px);
-                border-radius: 4px !important;
-            }
-
-            .page.single-page.active {
-                transform: scale(1) translateY(0);
-            }
-
-            .book-spine,
-            .book-seam {
-                display: none !important;
-            }
-
-            .text-columns {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-
-            .side-note-vert {
-                float: none;
-                writing-mode: horizontal-tb;
-                margin: 0 0 20px 0;
-                border-left: 2px solid var(--cinnabar);
-                padding: 10px;
-                border-bottom: none;
-                border-top: none;
-                border-right: none;
-            }
-
-            .img-grid.layout-split {
-                grid-template-columns: 1fr;
-                grid-template-rows: 1fr 1fr;
-            }
-
-            .book-nav-btn {
-                width: 40px;
-                height: 60px;
-                font-size: 1.2rem;
-            }
-
-            .book-nav-btn.prev {
-                left: 0;
-                border-radius: 0 4px 4px 0;
-                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-            }
-
-            .book-nav-btn.next {
-                right: 0;
-                border-radius: 4px 0 0 4px;
-                box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-            }
-        }
-
-        @media (max-width: 1024px) {
-            .page-wrapper {
-                flex-direction: column;
-                height: auto;
-                overflow: visible;
-            }
-
-            html,
-            body {
-                height: 100vh;
-                overflow: hidden;
-            }
-
-            .hero-inner {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .hero-right {
-                width: 100%;
-                padding: 20px 24px 0 24px;
-            }
-
-            .hero-desc {
-                border-radius: 4px;
-                border-bottom: 1px solid rgba(184, 134, 11, .15);
-                transform: none;
-                max-width: 100%;
-            }
-
-            .sidebar {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid rgba(184, 134, 11, .2);
-                padding: 20px 24px;
-            }
-
-            .data-scroll-outer {
-                height: 400px;
-                flex: none;
-            }
-
-            .content-area {
-                padding: 20px 20px 60px 20px;
-            }
-
-            .book-wrapper {
-                height: 100%;
-            }
-        }
-    </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>天井 | 徽派建筑的呼吸与灵魂</title>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&family=ZCOOL+QingKe+HuangYou&family=Liu+Jian+Mao+Cao&family=Long+Cang&family=Noto+Serif+SC:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink-black:#2d2519;
+  --ink-deep:#4a3d2e;
+  --ink-medium:#6b5a45;
+  --ink-warm:#8c7a60;
+  --ink-light:#b89a6e;
+  --ink-mist:#d4c4a8;
+  --paper:#f5eedc;
+  --paper-warm:#faf4e4;
+  --cinnabar:#c0392b;
+  --cinnabar-light:#d44030;
+  --gold:#b8860b;
+  --gold-light:#c8921a;
+  --flip-ms:1050;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;}
+body{
+  font-family:'Ma Shan Zheng','Noto Serif SC','SimSun',serif;
+  color:var(--ink-black);
+  display:flex;flex-direction:column;
+  background-color: #faf6ee;
+}
+
+/* ── 视频背景 ── */
+#bgVideo{
+  position:fixed;inset:0;width:100%;height:100%;
+  object-fit:cover;z-index:0;
+}
+
+/* ── 浅色宣纸蒙版 ── */
+.bg-overlay{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:rgba(245,240,232,0.98);
+}
+/* 边缘渐暗晕染，模拟宣纸四边焦痕 */
+.bg-vignette{
+  position:fixed;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(ellipse 88% 85% at 50% 50%,
+    transparent 40%,
+    rgba(60,35,10,.18) 72%,
+    rgba(40,24,8,.42) 100%);
+}
+/* 宣纸纤维纹理 */
+.bg-texture{
+  position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.07;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode:multiply;
+}
+
+/* ── 水墨粒子 ── */
+.particles{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden;}
+.p{position:absolute;animation:inkFall linear infinite;}
+@keyframes inkFall{
+  0%{transform:translateY(-6px) scale(0);opacity:0;}
+  6%{opacity:.55;transform:translateY(0) scale(1);}
+  92%{opacity:.1;}
+  100%{transform:translateY(102vh) scale(.5);opacity:0;}
+}
+
+/* ── 进度条 ── */
+.page-progress{
+  position:fixed;top:0;left:0;height:3px;z-index:500;
+  background:linear-gradient(to right,var(--cinnabar),var(--gold));
+  transition:width .6s cubic-bezier(.22,1,.36,1);
+  box-shadow:0 0 8px rgba(168,112,16,.6);
+}
+
+/* ── WRAPPER ── */
+.page-wrapper{
+  position:relative;z-index:10;
+  flex:1;display:flex;flex-direction:column;
+  height:100vh;min-height:0;
+  animation:wrapIn .7s ease both;
+}
+@keyframes wrapIn{from{opacity:0;}to{opacity:1;}}
+
+/* ═══════════════════════════════
+   NAV
+═══════════════════════════════ */
+#circleNav{
+  position:fixed;top:.9rem;right:1.3rem;
+  display:flex;flex-direction:row;gap:.38rem;z-index:400;
+}
+.circle-btn{
+  width:46px;height:46px;border-radius:50%;
+  background:rgba(245,240,232,1);
+  backdrop-filter:blur(12px);
+  border:1.5px solid rgba(168,112,16,.3);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  text-decoration:none;color:var(--ink-medium);
+  box-shadow:0 2px 14px rgba(60,35,10,.22),inset 0 1px 0 rgba(255,255,255,.5);
+  transition:all .28s ease;cursor:pointer;
+}
+.circle-btn svg{width:15px;height:15px;stroke:currentColor;transition:transform .25s;}
+.circle-btn span{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:.48rem;letter-spacing:.05em;white-space:nowrap;color:var(--ink-medium);
+}
+.circle-btn:hover{
+  background:rgba(184,48,32,.9);border-color:var(--cinnabar);
+  color:rgba(245,240,232,1);transform:translateY(-2px) scale(1.06);
+  box-shadow:0 6px 20px rgba(184,48,32,.36);
+}
+.circle-btn:hover span,.circle-btn:hover svg{color:#f5eedc;}
+.circle-btn.active{
+  background:var(--cinnabar);border-color:var(--cinnabar);color:#f5eedc;
+  box-shadow:0 4px 18px rgba(184,48,32,.5);
+}
+.circle-btn.active span,.circle-btn.active svg{color:#f5eedc;}
+
+/* ═══════════════════════════════
+   HERO HEADER
+═══════════════════════════════ */
+.hero-header{
+  position:relative;flex-shrink:0;
+  background:rgba(245,240,232,1);
+  backdrop-filter:blur(18px);
+  border-bottom:2px solid rgba(168,112,16,.25);
+  overflow:hidden;
+  box-shadow:0 4px 24px rgba(60,35,10,.12);
+}
+/* 山脊纹 */
+.hero-header::before{
+  content:'';position:absolute;bottom:0;left:0;width:100%;height:100%;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 140' preserveAspectRatio='none'%3E%3Cpath d='M0 140 L0 90 L80 58 L130 66 L200 24 L270 38 L320 10 L400 42 L450 18 L530 50 L600 5 L680 42 L730 20 L800 55 L870 8 L940 46 L990 26 L1060 60 L1120 32 L1200 68 L1200 140 Z' fill='rgba(168,112,16,.06)'/%3E%3C/svg%3E");
+  background-size:100% 100%;pointer-events:none;
+}
+/* 草书装饰水印 */
+.hero-header::after{
+  content:'天井';position:absolute;top:-12px;right:38px;
+  font-family:'Liu Jian Mao Cao',cursive;
+  font-size:6rem;color:rgba(168,112,16,.07);
+  letter-spacing:.08em;pointer-events:none;
+  writing-mode:vertical-rl;line-height:1;
+}
+
+.hero-inner{display:flex;align-items:stretch;width:100%;}
+
+/* 左侧品牌区 */
+.hero-left{
+  width:268px;flex-shrink:0;padding:15px 20px 17px;
+  border-right:1px solid rgba(168,112,16,.18);
+  display:flex;flex-direction:column;justify-content:center;
+  background:rgba(245,240,232,1);
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(184,48,32,.1);border:1px solid rgba(184,48,32,.28);
+  padding:3px 11px;border-radius:2px;margin-bottom:9px;
+  animation:badgePulse 4.5s ease-in-out infinite;
+}
+@keyframes badgePulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(184,48,32,0);}
+  50%{box-shadow:0 0 0 4px rgba(184,48,32,.1);}
+}
+.hero-badge::before,.hero-badge::after{content:'◆';font-size:.32rem;color:var(--cinnabar);opacity:.7;}
+.hero-badge span{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.62rem;letter-spacing:.14em;color:var(--cinnabar);
+}
+.hero-title-zh{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:3.1rem;color:var(--ink-black);
+  text-shadow:2px 3px 0 rgba(184,48,32,.12),0 0 28px rgba(168,112,16,.1);
+  line-height:1;letter-spacing:.12em;margin-bottom:5px;
+  animation:titleIn .8s cubic-bezier(.22,1,.36,1) .1s both;
+}
+@keyframes titleIn{
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.hero-title-rule{
+  height:2px;width:0;margin-bottom:6px;
+  background:linear-gradient(to right,var(--cinnabar),var(--gold),transparent);
+  animation:ruleGrow .6s ease .38s both;
+}
+@keyframes ruleGrow{to{width:54px;}}
+.hero-title-en{
+  font-family:'Long Cang',cursive;
+  font-size:.58rem;letter-spacing:.16em;color:var(--ink-light);
+}
+/* 小印章 */
+.hero-seal{
+  margin-top:10px;width:38px;height:38px;border-radius:3px;
+  border:2px solid var(--cinnabar);
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(184,48,32,.06);
+  animation:sealIn .5s ease .6s both;
+}
+@keyframes sealIn{from{opacity:0;transform:rotate(-8deg) scale(.8);}to{opacity:1;transform:rotate(0) scale(1);}}
+.hero-seal-txt{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:.5rem;color:var(--cinnabar);
+  line-height:1.4;text-align:center;letter-spacing:.03em;
+}
+
+/* 右侧内容区 */
+.hero-right{flex:1;padding:12px 24px 0 20px;display:flex;flex-direction:column;justify-content:flex-end;gap:0;}
+
+/* 顶部摘要条 */
+.hero-quote-bar{
+  display:flex;align-items:center;gap:14px;
+  padding:7px 14px;margin-bottom:8px;
+  background:rgba(168,112,16,.06);
+  border:1px solid rgba(168,112,16,.15);
+  border-radius:3px;
+  animation:descIn .7s cubic-bezier(.22,1,.36,1) .15s both;
+}
+.hero-quote-bar-icon{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:1.8rem;color:rgba(184,48,32,.25);
+  line-height:1;flex-shrink:0;
+}
+.hero-quote-bar-text{
+  font-family:'Liu Jian Mao Cao',cursive;
+  font-size:.82rem;color:var(--ink-deep);
+  letter-spacing:.12em;line-height:1.5;
+}
+
+/* 主描述盒 */
+.hero-desc{
+  font-size:.75rem;line-height:1.6;color:var(--ink-deep);
+  background:rgba(245,240,232,1);
+  padding:10px 18px 13px;
+  border:1px solid rgba(168,112,16,.16);border-bottom:none;
+  border-radius:6px 6px 0 0;border-left:3px solid var(--cinnabar);
+  transform:translateY(1px);
+  animation:descIn .8s cubic-bezier(.22,1,.36,1) .28s both;
+  font-family:'ZCOOL XiaoWei',serif;
+}
+@keyframes descIn{
+  from{opacity:0;transform:translateY(14px);}
+  to{opacity:1;transform:translateY(1px);}
+}
+.hero-intro{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.82rem;color:var(--ink-black);
+  margin-bottom:7px;padding-bottom:6px;
+  border-bottom:1px dashed rgba(168,112,16,.2);
+  letter-spacing:.04em;
+}
+.hero-history{display:flex;flex-direction:column;gap:4px;}
+.history-item{
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.7rem;color:var(--ink-medium);line-height:1.5;
+}
+.history-item strong{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  color:var(--cinnabar);font-size:.88rem;margin-right:5px;
+}
+
+/* 右侧数据指标栏 */
+.hero-stats{
+  display:flex;gap:0;margin-bottom:0;
+  border:1px solid rgba(168,112,16,.16);border-top:none;border-bottom:none;
+  background:rgba(245,240,232,1);
+  animation:descIn .8s cubic-bezier(.22,1,.36,1) .4s both;
+}
+.stat-item{
+  flex:1;padding:7px 12px;text-align:center;
+  border-right:1px solid rgba(168,112,16,.12);
+  transition:background .25s;
+}
+.stat-item:last-child{border-right:none;}
+.stat-item:hover{background:rgba(184,48,32,.06);}
+.stat-num{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:1.18rem;color:var(--cinnabar);
+  display:block;line-height:1.1;
+}
+.stat-label{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.52rem;color:var(--ink-light);
+  letter-spacing:.08em;margin-top:1px;display:block;
+}
+
+/* ═══════════════════════════════
+   MAIN
+═══════════════════════════════ */
+.main-content{display:flex;flex:1;width:100%;align-items:stretch;min-height:0;}
+
+/* ═══════════════════════════════
+   SIDEBAR
+═══════════════════════════════ */
+.sidebar{
+  width:262px;flex-shrink:0;
+  background:rgba(245,240,232,1);
+  backdrop-filter:blur(18px) saturate(1.2);
+  border-right:1px solid rgba(168,112,16,.18);
+  padding:9px 12px 0;
+  display:flex;flex-direction:column;
+  position:relative;
+  box-shadow:2px 0 18px rgba(60,35,10,.08);
+}
+.sidebar::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(to right,transparent,rgba(168,112,16,.5),transparent);
+}
+.ds-ctrl{
+  display:flex;align-items:center;gap:8px;
+  padding-bottom:8px;border-bottom:1px solid rgba(168,112,16,.12);
+  margin-bottom:8px;flex-shrink:0;
+}
+.ds-play-btn{
+  width:24px;height:24px;border-radius:50%;
+  border:1px solid rgba(184,48,32,.4);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(184,48,32,.08);color:var(--cinnabar);
+  font-size:.58rem;transition:all .22s;
+}
+.ds-play-btn:hover{background:var(--cinnabar);color:rgba(245,240,232,1);transform:scale(1.14);}
+.ds-speed-label{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.55rem;color:var(--ink-light);letter-spacing:.1em;
+}
+/* 侧栏章节导航 */
+.sidebar-chapters{
+  display:flex;flex-direction:column;gap:2px;
+  padding-bottom:8px;margin-bottom:8px;
+  border-bottom:1px solid rgba(168,112,16,.1);
+}
+.ch-nav-item{
+  display:flex;align-items:center;gap:6px;padding:4px 7px;
+  border-radius:2px;cursor:pointer;
+  transition:background .2s,transform .2s;
+  border:1px solid transparent;
+}
+.ch-nav-item:hover{background:rgba(184,48,32,.07);border-color:rgba(184,48,32,.15);transform:translateX(3px);}
+.ch-nav-item.active-ch{background:rgba(184,48,32,.1);border-color:rgba(184,48,32,.22);}
+.ch-nav-num{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:.72rem;color:var(--cinnabar);width:16px;flex-shrink:0;
+}
+.ch-nav-title{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.64rem;color:var(--ink-medium);letter-spacing:.06em;
+}
+.ch-nav-dot{
+  margin-left:auto;width:4px;height:4px;border-radius:50%;
+  background:rgba(168,112,16,.3);flex-shrink:0;
+}
+.ch-nav-item.active-ch .ch-nav-dot{background:var(--cinnabar);}
+
+.data-scroll-outer{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;min-height:0;}
+.dsm-top,.dsm-bot{position:absolute;left:0;right:0;height:38px;z-index:4;pointer-events:none;}
+.dsm-top{top:0;background:linear-gradient(to bottom,rgba(245,240,232,1),transparent);}
+.dsm-bot{bottom:0;background:linear-gradient(to top,rgba(245,240,232,1),transparent);}
+.data-scroll-track{overflow:hidden;flex:1;position:relative;}
+.data-scroll-belt{display:flex;flex-direction:column;width:100%;animation:beltV 50s linear infinite;}
+.data-scroll-belt:hover,.data-scroll-belt.paused{animation-play-state:paused;}
+@keyframes beltV{0%{transform:translateY(0);}100%{transform:translateY(-50%);}}
+.ds-panel{
+  flex-shrink:0;width:100%;padding:8px 7px;
+  background:transparent;
+  border-bottom:1px solid rgba(168,112,16,.1);
+  cursor:pointer;transition:background .25s,transform .22s;
+  position:relative;overflow:hidden;
+}
+.ds-panel::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:linear-gradient(to bottom,var(--cinnabar),var(--gold));
+  transform:scaleY(0);transform-origin:top;transition:transform .3s ease;
+}
+.ds-panel:hover::before{transform:scaleY(1);}
+.ds-panel:hover{background:rgba(168,112,16,.07);transform:translateX(3px);}
+.ds-panel-img{
+  width:100%;height:250px;object-fit:cover;border-radius:2px;margin-bottom:5px;
+  border:1px solid rgba(168,112,16,.15);
+  filter:sepia(22%) brightness(.88) contrast(1.04);transition:filter .4s,transform .5s;
+}
+.ds-panel:hover .ds-panel-img{filter:sepia(0%) brightness(1);transform:scale(1.03);}
+.ds-panel-num{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.5rem;letter-spacing:.16em;color:var(--cinnabar);margin-bottom:2px;
+}
+.ds-panel-title{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:.88rem;color:var(--ink-black);letter-spacing:.08em;margin-bottom:1px;
+}
+.ds-panel-en{
+  font-family:'Long Cang',cursive;
+  font-size:.46rem;letter-spacing:.1em;color:var(--ink-light);
+  margin-bottom:5px;display:block;
+}
+.ds-divider{
+  width:100%;height:1px;
+  background:linear-gradient(to right,var(--cinnabar),rgba(168,112,16,.2),transparent);
+  margin-bottom:5px;opacity:.35;
+}
+.ds-panel-desc{
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.62rem;color:var(--ink-warm);line-height:1.55;
+}
+
+/* ═══════════════════════════════
+   BOOK STAGE
+═══════════════════════════════ */
+.content-area{flex:1;min-height:0;display:flex;align-items:stretch;position:relative;}
+.book-stage{
+  position:relative;flex:1;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+  background:radial-gradient(ellipse 65% 65% at 50% 50%,
+    rgba(240,228,198,.12) 0%,transparent 100%);
+}
+.book-wrap{
+  position:relative;width:100%;height:100%;
+  perspective:2700px;perspective-origin:50% 44%;
+}
+.book-open{
+  position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;
+  transform-style:preserve-3d;
+  animation:bookReveal .95s cubic-bezier(.22,1,.36,1) .1s both;
+  filter:drop-shadow(0 28px 72px rgba(40,24,8,.55)) drop-shadow(0 6px 18px rgba(40,24,8,.35));
+}
+@keyframes bookReveal{
+  from{opacity:0;transform:translateY(20px) scale(.98);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+
+/* 书页 */
+.pg{
+  position:relative;overflow:hidden;
+  background:linear-gradient(152deg,#fefbf0rgba(245,240,232,1) 0%,rgba(245,240,232,1) 50%,rgba(245,240,232,1) 100%);
+}
+.pg::before{
+  content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 25px,rgba(168,112,16,.06) 25px,rgba(168,112,16,.06) 26px);
+}
+.pg-l{
+  border-right:1px solid rgba(168,112,16,.2);
+  box-shadow:inset -18px 0 36px rgba(40,24,8,.14),inset -2px 0 6px rgba(40,24,8,.07);
+}
+.pg-r{box-shadow:inset 18px 0 36px rgba(40,24,8,.14),inset 2px 0 6px rgba(40,24,8,.07);}
+.pg-l::after{content:'';position:absolute;top:0;bottom:0;left:46px;width:1px;background:rgba(184,48,32,.12);z-index:1;pointer-events:none;}
+.pg-r::after{content:'';position:absolute;top:0;bottom:0;right:46px;width:1px;background:rgba(184,48,32,.12);z-index:1;pointer-events:none;}
+.book-spine-crease{position:absolute;top:0;bottom:0;left:50%;width:54px;transform:translateX(-50%);background:linear-gradient(to right,transparent,rgba(40,24,8,.04) 22%,rgba(40,24,8,.13) 50%,rgba(40,24,8,.04) 78%,transparent);z-index:20;pointer-events:none;}
+.book-spine-line{position:absolute;top:0;bottom:0;left:50%;width:1px;background:linear-gradient(to bottom,transparent,rgba(168,112,16,.28) 10%,rgba(168,112,16,.28) 90%,transparent);z-index:21;pointer-events:none;}
+
+/* ── 书页内容 ── */
+.pg-content{
+  position:relative;z-index:2;height:100%;
+  display:flex;flex-direction:column;
+  padding:28px 38px 24px 44px;overflow:hidden;
+  font-family:'ZCOOL XiaoWei',serif;
+}
+.pg-r .pg-content{padding:28px 44px 24px 38px;}
+
+.pg-watermark{
+  position:absolute;bottom:-4%;right:-1%;
+  font-family:'Liu Jian Mao Cao',cursive;
+  font-size:13rem;color:rgba(40,24,8,.025);
+  line-height:1;pointer-events:none;z-index:0;user-select:none;
+}
+.pg-header{
+  position:absolute;top:13px;
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.56rem;color:var(--ink-light);letter-spacing:.15em;
+  z-index:10;display:flex;align-items:center;gap:6px;
+}
+.pg-header::after{content:'';display:block;width:18px;height:1px;background:var(--cinnabar);}
+.pg-l .pg-header{left:44px;}
+.pg-r .pg-header{right:44px;flex-direction:row-reverse;}
+.pg-r .pg-header::after{background:var(--gold);}
+
+.pg-num{
+  position:absolute;bottom:11px;
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:.76rem;color:var(--ink-mist);z-index:10;
+}
+.pg-l .pg-num{left:44px;}
+.pg-r .pg-num{right:44px;}
+
+/* 章节 */
+.ch-heading{margin-top:5px;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid rgba(168,112,16,.2);}
+.ch-num{font-family:'Ma Shan Zheng',cursive;font-size:1.25rem;color:var(--cinnabar);display:block;margin-bottom:-5px;opacity:.85;}
+.ch-title{font-family:'Ma Shan Zheng',cursive;font-size:2.2rem;color:var(--ink-black);line-height:1.15;letter-spacing:.06em;}
+.ch-sub{font-family:'ZCOOL QingKe HuangYou',cursive;font-size:.67rem;color:var(--ink-medium);letter-spacing:.12em;margin-top:4px;}
+
+/* 排版 */
+.text-lead{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.85rem;color:var(--ink-deep);
+  line-height:1.85;margin-bottom:9px;text-align:justify;
+  border-left:3px solid var(--cinnabar);padding-left:11px;
+  position:relative;z-index:2;
+}
+.text-body{
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.75rem;color:var(--ink-medium);
+  line-height:1.95;letter-spacing:.03em;
+  margin-bottom:8px;text-align:justify;position:relative;z-index:2;
+}
+.drop-cap::first-letter{
+  float:left;font-family:'Ma Shan Zheng',cursive;
+  font-size:2.85rem;line-height:.8;
+  padding-top:2px;padding-right:7px;color:var(--cinnabar);
+  text-shadow:1px 1px 0 rgba(184,48,32,.18);
+}
+.side-note{
+  float:right;writing-mode:vertical-rl;padding:9px 8px;margin-left:11px;
+  background:rgba(168,112,16,.06);border:1px solid rgba(168,112,16,.2);
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.68rem;color:var(--ink-deep);
+  line-height:1.85;letter-spacing:.1em;
+  box-shadow:2px 2px 0 rgba(184,48,32,.07);
+  max-height:305px;position:relative;z-index:2;
+}
+
+/* 知识卡片 */
+.knowledge-card{
+  background:rgba(168,112,16,.06);
+  border:1px solid rgba(168,112,16,.18);
+  border-left:3px solid var(--gold);
+  padding:8px 12px;margin-bottom:9px;
+  border-radius:0 3px 3px 0;
+  position:relative;z-index:2;
+}
+.knowledge-card-title{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.7rem;color:var(--gold);
+  letter-spacing:.12em;margin-bottom:5px;
+  display:flex;align-items:center;gap:5px;
+}
+.knowledge-card-title::before{content:'▸';font-size:.6rem;}
+.knowledge-card p{
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.7rem;color:var(--ink-medium);
+  line-height:1.7;text-align:justify;margin:0;
+}
+
+/* 诗词引用块 */
+.poetry-block{
+  text-align:center;padding:10px 16px;margin:9px 0;
+  background:rgba(184,48,32,.04);
+  border-top:1px solid rgba(184,48,32,.15);
+  border-bottom:1px solid rgba(184,48,32,.15);
+  position:relative;z-index:2;
+}
+.poetry-block p{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.8rem;color:var(--ink-deep);
+  line-height:1.9;letter-spacing:.15em;
+}
+.poetry-block cite{
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.62rem;color:var(--ink-light);
+  letter-spacing:.1em;display:block;margin-top:5px;
+}
+
+/* 要点列表 */
+.point-list{
+  list-style:none;display:flex;flex-direction:column;gap:4px;
+  margin-bottom:9px;position:relative;z-index:2;
+}
+.point-list li{
+  display:flex;align-items:flex-start;gap:7px;
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.73rem;color:var(--ink-medium);line-height:1.7;
+}
+.point-list li::before{
+  content:'◆';font-size:.42rem;color:var(--cinnabar);
+  flex-shrink:0;margin-top:.32rem;
+}
+
+/* 图片 */
+.book-img{position:relative;border-radius:3px;overflow:hidden;box-shadow:0 3px 14px rgba(40,24,8,.12);border:1px solid rgba(168,112,16,.14);height: 450px;px;}
+.book-img img{width:100%;height:100%;object-fit:cover;transition:transform 3s ease;display:block;filter:sepia(10%) brightness(.98) contrast(1.02);}
+.book-img:hover img{transform:scale(1.04);filter:sepia(0%) brightness(1);}
+.img-cap{
+  position:absolute;bottom:0;left:0;right:0;
+  background:rgba(40,24,8,.6);backdrop-filter:blur(5px);
+  color:var(--paper);padding:5px 11px;
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.62rem;letter-spacing:.08em;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.img-cap span:last-child{color:rgba(200,178,90,.9);font-size:.55rem;}
+
+.verse{
+  margin-top:auto;text-align:right;
+  font-family:'Liu Jian Mao Cao',cursive;
+  font-size:1.5rem;color:rgba(184,48,32,.22);line-height:1.4;
+}
+
+/* ═══════════════════════════════
+   FLIP ENGINE
+═══════════════════════════════ */
+.flip-canvas{position:absolute;top:0;bottom:0;width:50%;transform-style:preserve-3d;pointer-events:none;z-index:30;opacity:0;visibility:hidden;}
+.flip-canvas.live{opacity:1;visibility:visible;}
+.flip-canvas.dir-fwd{left:50%;transform-origin:left center;}
+.flip-canvas.dir-bwd{left:0;transform-origin:right center;}
+.flip-face{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:linear-gradient(152deg,#fefbf0 0%,#f8f0d8 50%,#f0e6c0 100%);}
+.flip-face::before{content:'';position:absolute;inset:0;z-index:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 25px,rgba(168,112,16,.06) 25px,rgba(168,112,16,.06) 26px);pointer-events:none;}
+.flip-back{transform:rotateY(180deg);}
+.flip-shadow{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:0;transition:opacity .06s;}
+.dir-fwd .flip-shadow{background:linear-gradient(to left,rgba(40,24,8,.32) 0%,transparent 68%);}
+.dir-bwd .flip-shadow{background:linear-gradient(to right,rgba(40,24,8,.32) 0%,transparent 68%);}
+.flip-canvas.live .flip-shadow{opacity:1;}
+@keyframes fwdOut{0%{transform:rotateY(0deg)translateZ(0px);}16%{transform:rotateY(-28deg)translateZ(16px);}50%{transform:rotateY(-90deg)translateZ(22px);}84%{transform:rotateY(-152deg)translateZ(10px);}100%{transform:rotateY(-180deg)translateZ(0px);}}
+@keyframes fwdIn{0%{transform:rotateY(180deg)translateZ(0px);}16%{transform:rotateY(152deg)translateZ(10px);}50%{transform:rotateY(90deg)translateZ(22px);}84%{transform:rotateY(28deg)translateZ(16px);}100%{transform:rotateY(0deg)translateZ(0px);}}
+@keyframes bwdOut{0%{transform:rotateY(0deg)translateZ(0px);}16%{transform:rotateY(28deg)translateZ(16px);}50%{transform:rotateY(90deg)translateZ(22px);}84%{transform:rotateY(152deg)translateZ(10px);}100%{transform:rotateY(180deg)translateZ(0px);}}
+@keyframes bwdIn{0%{transform:rotateY(-180deg)translateZ(0px);}16%{transform:rotateY(-152deg)translateZ(10px);}50%{transform:rotateY(-90deg)translateZ(22px);}84%{transform:rotateY(-28deg)translateZ(16px);}100%{transform:rotateY(0deg)translateZ(0px);}}
+.flip-canvas.a-fo{animation:fwdOut calc(var(--flip-ms)*1ms) cubic-bezier(.4,0,.25,1) forwards;}
+.flip-canvas.a-fi{animation:fwdIn  calc(var(--flip-ms)*1ms) cubic-bezier(.4,0,.25,1) forwards;}
+.flip-canvas.a-bo{animation:bwdOut calc(var(--flip-ms)*1ms) cubic-bezier(.4,0,.25,1) forwards;}
+.flip-canvas.a-bi{animation:bwdIn  calc(var(--flip-ms)*1ms) cubic-bezier(.4,0,.25,1) forwards;}
+
+.book-btn{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:38px;height:58px;
+  background:rgba(248,244,230,.92);
+  border:1px solid rgba(168,112,16,.3);color:var(--cinnabar);
+  font-family:'Ma Shan Zheng',cursive;font-size:1.15rem;
+  cursor:pointer;z-index:40;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 18px rgba(40,24,8,.22);transition:all .24s ease;
+}
+.book-btn:hover{background:var(--ink-deep);color:var(--paper-warm);border-color:var(--ink-deep);transform:translateY(-50%) scale(1.05);}
+.book-btn:disabled{opacity:0;pointer-events:none;}
+.book-btn.prev{left:0;border-radius:0 4px 4px 0;}
+.book-btn.next{right:0;border-radius:4px 0 0 4px;}
+
+.page-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:40;}
+.pdot{width:6px;height:6px;border-radius:50%;background:rgba(168,112,16,.25);cursor:pointer;border:1px solid rgba(168,112,16,.15);transition:all .22s;}
+.pdot.on{background:var(--cinnabar);border-color:var(--cinnabar);transform:scale(1.55);box-shadow:0 0 5px rgba(184,48,32,.4);}
+.pdot:hover:not(.on){background:rgba(184,48,32,.4);}
+
+.kbd-hint{
+  position:absolute;bottom:10px;right:13px;
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.5rem;color:var(--ink-mist);letter-spacing:.09em;
+  display:flex;align-items:center;gap:4px;z-index:40;
+}
+.k{display:inline-flex;align-items:center;justify-content:center;width:15px;height:13px;border:1px solid rgba(168,112,16,.22);border-radius:2px;font-size:.44rem;color:var(--ink-mist);background:rgba(168,112,16,.06);}
+
+/* ═══════════════════════════════
+   FOOTER
+═══════════════════════════════ */
+.site-footer{
+  background:rgba(245,240,232,1);
+  backdrop-filter:blur(14px);
+  padding:9px 50px;position:relative;z-index:10;flex-shrink:0;
+  border-top:1px solid rgba(168,112,16,.2);
+  box-shadow:0 -4px 20px rgba(60,35,10,.1);
+}
+.site-footer::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(to right,transparent,var(--cinnabar) 20%,var(--gold) 50%,var(--cinnabar) 80%,transparent);
+  opacity:.5;
+}
+.footer-inner{display:flex;align-items:center;justify-content:space-between;}
+.footer-location{font-family:'ZCOOL XiaoWei',serif;font-size:.65rem;letter-spacing:.14em;color:var(--ink-light);}
+.footer-brand{font-family:'Ma Shan Zheng',cursive;font-size:.98rem;color:var(--ink-medium);letter-spacing:.14em;}
+.footer-text{font-family:'ZCOOL XiaoWei',serif;font-size:.58rem;letter-spacing:.1em;color:var(--ink-light);}
+.footer-copy{font-family:'ZCOOL QingKe HuangYou',cursive;font-size:.52rem;color:var(--ink-mist);letter-spacing:.08em;}
+
+/* 印章 */
+.seal{
+  position:fixed;bottom:26px;right:26px;width:46px;height:46px;border-radius:4px;
+  border:2px solid var(--cinnabar);
+  display:flex;align-items:center;justify-content:center;
+  z-index:200;opacity:.42;transition:opacity .3s,transform .35s;
+  background:rgba(248,244,230,.5);backdrop-filter:blur(8px);
+  box-shadow:2px 2px 0 rgba(184,48,32,.15);
+}
+.seal:hover{opacity:.9;transform:rotate(4deg) scale(1.1);}
+.seal-inner{font-family:'Ma Shan Zheng',cursive;color:var(--cinnabar);font-size:.55rem;text-align:center;line-height:1.35;letter-spacing:.04em;}
+</style>
 </head>
-
 <body>
 
-    <!-- 背景视频 -->
-    <video id="bgVideo" class="bg-video" autoplay loop muted playsinline>
-        <source src="public/9ba0a2e6346f2a8446c8b10f630c6071.mp4" type="video/mp4" />
-    </video>
+<video id="bgVideo" autoplay loop muted playsinline
+  style="position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;">
+  <source src="素材/9ba0a2e6346f2a8446c8b10f630c6071.mp4" type="video/mp4"/>
+</video>
 
-    <!-- 侧边导航 -->
-    <nav id="circleNav">
-        <a href="index.html" class="circle-btn" data-page="index">
-            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                stroke-linejoin="round">
-                <path d="M5 16L16 5l11 11" />
-                <path d="M8 14v13h16V14" />
-            </svg>
-            <span>首页</span>
-        </a>
-        <a href="matouqiang.html" class="circle-btn" data-page="matouqiang">
-            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                stroke-linejoin="round">
-                <path d="M7 28V21h5V15h4V9h4v6h4v6h5v7" />
-            </svg>
-            <span>马头墙</span>
-        </a>
-        <a href="tianjing.html" class="circle-btn active" data-page="tianjing">
-            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8">
-                <rect x="6" y="6" width="20" height="20" rx="2" />
-                <rect x="12" y="12" width="8" height="8" rx="1" />
-                <line x1="16" y1="6" x2="16" y2="12" />
-                <line x1="16" y1="20" x2="16" y2="26" />
-                <line x1="6" y1="16" x2="12" y2="16" />
-                <line x1="20" y1="16" x2="26" y2="16" />
-            </svg>
-            <span>天井</span>
-        </a>
-        <a href="sandiao.html" class="circle-btn" data-page="sandiao">
-            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-                <path d="M8 26Q14 18 16 16T24 6" />
-                <path d="M6 22Q10 18 14 14" />
-                <path d="M18 18Q22 14 26 10" />
-                <circle cx="24" cy="6" r="2" />
-                <circle cx="8" cy="26" r="2" />
-            </svg>
-            <span>三雕</span>
-        </a>
-        <a href="zongzu.html" class="circle-btn" data-page="zongzu">
-            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                stroke-linejoin="round">
-                <path d="M3 18L16 6l13 12" />
-                <path d="M6 16v12h20V16" />
-                <path d="M13 28v-8h6v8" />
-            </svg>
-            <span>宗族</span>
-        </a>
-        <a href="baohu.html" class="circle-btn" data-page="baohu">
-            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                stroke-linejoin="round">
-                <path d="M16 4L6 9v7c0 7 4 13 10 15 6-2 10-8 10-15V9L16 4z" />
-                <path d="M12 16l3 3 5-6" />
-            </svg>
-            <span>保护</span>
-        </a>
-        <a href="kuawenhua.html" class="circle-btn" data-page="kuawenhua">
-            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                stroke-linejoin="round">
-                <path d="M6 8h20a2 2 0 012 2v10a2 2 0 01-2 2H16l-6 5v-5H6a2 2 0 01-2-2V10a2 2 0 012-2z" />
-                <circle cx="12" cy="15" r="1" fill="currentColor" />
-                <circle cx="16" cy="15" r="1" fill="currentColor" />
-                <circle cx="20" cy="15" r="1" fill="currentColor" />
-            </svg>
-            <span>跨文化</span>
-        </a>
-    </nav>
+<!-- 宣纸纹理背景 -->
+<div class="paper-texture"></div>
 
-    <div class="page-wrapper">
-        <!-- 顶部 Header -->
-        <header class="hero-header">
-            <div class="hero-inner">
-                <!-- 左侧标题 -->
-                <div class="hero-left">
-                    <div class="hero-badge"><span>徽派建筑文化</span></div>
-                    <h1 class="hero-title-zh">天井</h1>
-                    <p class="hero-title-en">Skywell Courtyard</p>
-                </div>
-                <!-- 右侧说明：样式修改为无缝衔接书本的“页眉标签” -->
-                <div class="hero-right">
-                    <div class="hero-desc">
-                        <p class="hero-intro">
-                            天井是徽派建筑核心，兼具采光通风、调节微气候功能，“四水归堂” 既利排水又藏聚财寓意，还作为过渡空间打破封闭压抑。
-                        </p>
-                        <div class="hero-history">
-                            <div class="history-item"><strong>溯源</strong> 中原四合院与本土干阑式建筑的融合，为适应气候与聚居需求，演变为高墙围合、天井为中心的形制，也与原始穴居 “天霤” 意象相关。</div>
-                            <div class="history-item"><strong>演化</strong> 尺度缩小以节约用地、增强防御，数量随家族繁衍增多，形成 “单体多井” 布局，出现拥有数十天井的豪门大宅，地域特征鲜明。</div>
-                            <div class="history-item"><strong>内涵</strong> 天井承载徽商 “积聚为本” 心态与儒家伦理，“四水归堂” 象征聚财，石漏雕作钱形寓意 “流银”，也体现 “天人合一” 的哲学追求。</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
+<!-- 边缘晕染效果 -->
+<div class="ink-edge ink-edge-top"></div>
+<div class="ink-edge ink-edge-bottom"></div>
+<div class="ink-edge ink-edge-left"></div>
+<div class="ink-edge ink-edge-right"></div>
 
-        <div class="main-content">
-            <!-- === 左侧栏 (包含渊源与滚动卷轴) === -->
-            <aside class="sidebar">
-                <div class="ds-controls" style="background: transparent; border: none; padding-bottom: 8px;">
-                    <button class="ds-play-btn" id="dsPlayBtn_Tpl" onclick="dsTogglePlay_Tpl()">&#9646;&#9646;</button>
-                    <span class="ds-speed-label"
-                        style="font-size:.62rem; color:var(--ink-faint); font-family:'Noto Serif SC'; letter-spacing:.1em;">自动滚动控制</span>
-                </div>
+<div class="bg-overlay"></div>
+<div class="bg-vignette"></div>
+<div class="bg-texture"></div>
+<div class="particles" id="particles"></div>
+<div class="page-progress" id="pageProgress" style="width:20%"></div>
 
-                <!-- 面板：使用 flex: 1 向下完美撑满，底部与右侧书籍绝对平齐 -->
-                <div class="data-scroll-outer">
-                    <div class="data-scroll-mask-t"></div>
-                    <div class="data-scroll-mask-b"></div>
-                    <div class="data-scroll-track" id="tianjingScrollTrack">
-                        <div class="data-scroll-belt" id="dataScrollBelt_Tpl">
-                            <div class="ds-panel">
-                                <img src="./素材/天井与保护补充素材/天井1.jpg"
-                                    onerror="this.src='https://images.unsplash.com/photo-1542259009477-d625272157b7?auto=format&fit=crop&q=80'"
-                                    class="ds-panel-img">
-                                <div class="ds-panel-num">01 · 气象万千</div>
-                                <div class="ds-panel-title">堂前天光</div>
-                                <span class="ds-panel-en">Sky Light Over the Hall</span>
-                                <div class="ds-divider"></div>
-                                <div class="ds-panel-desc">以天井为框引蓝天白云入画，木构厅堂与匾额楹联错落，笔墨勾勒梁柱榫卯，传递徽派宗祠的庄重与通透之美。</div>
-                            </div>
-                            <div class="ds-panel">
-                                <img src="./素材/天井与保护补充素材/天井2.jpg"
-                                    onerror="this.src='https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=80'"
-                                    class="ds-panel-img">
-                                <div class="ds-panel-num">02 · 雕梁画栋</div>
-                                <div class="ds-panel-title">回廊天井</div>
-                                <span class="ds-panel-en">Corridor Courtyard</span>
-                                <div class="ds-divider"></div>
-                                <div class="ds-panel-desc">繁复木雕回廊环绕中央天井，暖黄宫灯悬于梁间，淡墨铺陈木色，展现徽派建筑精巧的空间层次与工艺细节。</div>
-                            </div>
-                            <div class="ds-panel">
-                                <img src="./素材/天井与保护补充素材/天井3.jpg"
-                                    onerror="this.src='https://images.unsplash.com/photo-1526481280693-3b1452d261de?auto=format&fit=crop&q=80'"
-                                    class="ds-panel-img">
-                                <div class="ds-panel-num">03 · 岁月留痕</div>
-                                <div class="ds-panel-title">厅堂盛景</div>
-                                <span class="ds-panel-en">Hall Scene</span>
-                                <div class="ds-divider"></div>
-                                <div class="ds-panel-desc">对称布局的厅堂以大缸为前景，匾额与祖像居中，水墨晕染木柱与家具，尽显徽派民居的规整与家族仪式感。</div>
-                            </div>
-                            <div class="ds-panel">
-                                <img src="./素材/天井与保护补充素材/天井4.jpg"
-                                    onerror="this.src='https://images.unsplash.com/photo-1542259009477-d625272157b7?auto=format&fit=crop&q=80'"
-                                    class="ds-panel-img">
-                                <div class="ds-panel-num">04 · 四水归堂</div>
-                                <div class="ds-panel-title">福字天井</div>
-                                <span class="ds-panel-en">Patio with Fu Character</span>
-                                <div class="ds-divider"></div>
-                                <div class="ds-panel-desc">仰视视角聚焦“福”字匾额与镂空木构，青瓦天井漏下天光，笔墨刚劲勾勒梁架，凸显徽派建筑的祈福意涵与结构之美。</div>
-                            </div>
-                            <div class="ds-panel">
-                                <img src="./素材/天井与保护补充素材/天井5.jpg"
-                                    onerror="this.src='https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=80'"
-                                    class="ds-panel-img">
-                                <div class="ds-panel-num">05 · 光影错落</div>
-                                <div class="ds-panel-title">梁间清韵</div>
-                                <span class="ds-panel-en">Elegance Between Beams</span>
-                                <div class="ds-divider"></div>
-                                <div class="ds-panel-desc">纵深感极强的木梁结构层层递进，天光穿堂而过，淡墨晕染墙面与陈设，传递徽派建筑的静谧与文人气息。</div>
-                            </div>
-                            <div class="ds-panel">
-                                <img src="./素材/天井与保护补充素材/天井6.jpg"
-                                    onerror="this.src='https://images.unsplash.com/photo-1526481280693-3b1452d261de?auto=format&fit=crop&q=80'"
-                                    class="ds-panel-img">
-                                <div class="ds-panel-num">06 · 古韵悠长</div>
-                                <div class="ds-panel-title">檐下灯影</div>
-                                <span class="ds-panel-en">Lantern Shadows Under Eaves</span>
-                                <div class="ds-divider"></div>
-                                <div class="ds-panel-desc">仰视角捕捉徽派木构屋檐与垂挂宫灯，墨色浓淡晕染木梁肌理，朱红流苏点缀，尽显古建雅致与生活温度。</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </aside>
+<!-- NAV -->
+<nav id="circleNav">
+  <a href="index.html" class="circle-btn"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16L16 5l11 11"/><path d="M8 14v13h16V14"/></svg><span>首页</span></a>
+  <a href="matouqiang.html" class="circle-btn"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 28V21h5V15h4V9h4v6h4v6h5v7"/></svg><span>马头墙</span></a>
+  <a href="tianjing.html" class="circle-btn active"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="6" width="20" height="20" rx="2"/><rect x="12" y="12" width="8" height="8" rx="1"/><line x1="16" y1="6" x2="16" y2="12"/><line x1="16" y1="20" x2="16" y2="26"/><line x1="6" y1="16" x2="12" y2="16"/><line x1="20" y1="16" x2="26" y2="16"/></svg><span>天井</span></a>
+  <a href="sandiao.html" class="circle-btn"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 26Q14 18 16 16T24 6"/><path d="M6 22Q10 18 14 14"/><path d="M18 18Q22 14 26 10"/><circle cx="24" cy="6" r="2"/><circle cx="8" cy="26" r="2"/></svg><span>三雕</span></a>
+  <a href="zongzu.html" class="circle-btn"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L16 6l13 12"/><path d="M6 16v12h20V16"/><path d="M13 28v-8h6v8"/></svg><span>宗族</span></a>
+  <a href="baohu.html" class="circle-btn"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4L6 9v7c0 7 4 13 10 15 6-2 10-8 10-15V9L16 4z"/><path d="M12 16l3 3 5-6"/></svg><span>保护</span></a>
+  <a href="kuawenhua.html" class="circle-btn"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20a2 2 0 012 2v10a2 2 0 01-2 2H16l-6 5v-5H6a2 2 0 01-2-2V10a2 2 0 012-2z"/><circle cx="12" cy="15" r="1" fill="currentColor"/><circle cx="16" cy="15" r="1" fill="currentColor"/><circle cx="20" cy="15" r="1" fill="currentColor"/></svg><span>跨文化</span></a>
+</nav>
 
-            <!-- === 右侧核心区：数字古籍 === -->
-            <main class="content-area">
-                <!-- 书籍翻页按钮 -->
-                <button id="bookPrevBtn" class="book-nav-btn prev">〈</button>
-                <button id="bookNextBtn" class="book-nav-btn next">〉</button>
-
-                <div class="book-wrapper">
-                    <div class="book" id="theBook">
-                        <div class="book-spine" id="bookSpine"></div>
-                        <div class="book-seam" id="bookSeam"></div>
-
-                        <!-- ================= PAGE 0: 卷首语 (左) ================= -->
-                        <div class="flip-page">
-                            <div class="page-watermark">序</div>
-                            <div class="page-header">序言 Preface</div>
-                            <div class="book-content" style="justify-content: flex-start; padding-top: 60px;">
-                                <h1 style="font-family: 'Ma Shan Zheng', cursive; font-size: 3.2rem; line-height: 1.2; margin-bottom: 10px; color: var(--ink-black);">
-                                    一方天井，四水归堂</h1>
-                                <div style="font-size: 0.9rem; color: var(--cinnabar); letter-spacing: 0.5em; margin-bottom: 25px; font-weight: 600;">
-                                    徽派建筑之魂</div>
-                                <div class="text-lead" style="font-size: 1rem; line-height: 1.8; margin-bottom: 15px;">
-                                    在徽州的粉墙黛瓦之间，藏着一方通向天空的窗——天井。
-                                </div>
-                                <div class="text-body" style="font-size: 0.85rem; line-height: 1.8;">
-                                    窗子很小，小得容不下一个人进出；天井很大，大得装得下一整个天空。它是徽州老房子的“心”，是深宅大院中唯一敢于敞开胸襟、仰望苍穹的地方。每逢雨天，四面的屋檐将雨水引入天井，形成“四水归堂”的奇观——这不是简单的排水，而是徽商“肥水不流外人田”的财富密码，是“财源滚滚归家来”的世代祈愿。
-                                    <br><br>
-                                    天井，是徽州人写给天空的情书。
-                                    <br><br>天井还是徽州女人的守望台。当丈夫背着包袱雨伞远走他乡，徽州女人便开始了日复一日的空房独守。更深夜静，月光如洗，她只能对着天井托寄一缕相思；狂风大作，雷电交织，娇小的身躯只能依偎着软绵的被衾。直到有一天，青鸟从天井飞落，带来远方的音讯……天井见证了太多徽州女人的青春、相思与白发。
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ================= PAGE 1: 卷首语续 (右) ================= -->
-                        <div class="flip-page">
-                            <div class="page-header">序言续 Preface - Continued</div>
-                            <div class="book-content" style="justify-content: flex-start; padding-top: 40px;">
-                                <div class="text-body" style="font-size: 0.82rem; line-height: 1.7;">
-                                    晴天，阳光从天井洒落，在青石板上铺成温暖的光斑；雪天，万千六边形精灵争相涌入，把清石板染成洁白。此时，老宅的主人总会捋须感叹：“四水归门堂，瑞雪兆丰年。”这不仅是诗意的咏叹，更是一个家族的期盼——期盼远走沪杭经商的儿郎早日归家，期盼天井之下的人丁兴旺、世代绵延。
-                                </div>
-                                <div class="book-img-wrapper" style="height: 155px; flex-shrink: 0; margin: 10px 0;">
-                                    <img src="./素材/天井与保护补充素材/右侧天井图.jpg" style="object-fit: cover; width: 100%; height: 100%; border-radius: 4px;">
-                                    <div class="img-caption" style="padding: 3px 10px; font-size: 0.65rem;"><span>图 / 徽州深宅天井实景</span></div>
-                                </div>
-                                <div class="text-body" style="font-size: 0.78rem; line-height: 1.6; margin-top: 10px;">
-                                    从功能上看，天井解决了封闭高墙内的采光、通风问题，其高深形态形成的"拔风"效应，能有效调节室内微气候。从文化上看，天井体现了"天人合一"的哲学追求，既是建筑中"以虚带实"的留白，也是人与天地对话的精神空间。
-                                    <br><br>内敛的徽州人开着小小的窗子，谨小慎微地做人，却在磨砺中开阔了心胸。这，或许就是天井真正本真的意义。今以是书，献与天下爱徽州者。愿君在翻阅之间，能透过这一方天井，看见徽州人的智慧、坚守与深情。
-                                    <br><br>
-                                    <span style="float: right; font-family: 'Ma Shan Zheng', cursive; font-size: 1.2rem; color: var(--cinnabar);">是为序。</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ================= PAGE 2: 壹·造境 P1 (左) ================= -->
-                        <div class="flip-page">
-                            <div class="page-watermark">壁</div>
-                            <div class="page-header">第一章 Chapter I</div>
-                            <div class="book-content">
-                                <div class="chapter-heading">
-                                    <span class="chapter-num">壹</span>
-                                    <h2 class="chapter-title">内敛的堡垒</h2>
-                                    <div class="chapter-subtitle">防御与宗法交织的空间起源</div>
-                                </div>
-                                <div class="side-note-vert" style="max-height: 480px; overflow-y: auto; font-size: 0.72rem; line-height: 1.5;">
-                                    粉墙黛瓦马头墙，厅堂左右有厢房。<br>
-                                    高墙深院小窗户，飞檐翘角花格窗。<br>
-                                    肥梁瘦柱内天井，四方财水归明堂。<br>
-                                    <span style="color:var(--cinnabar); font-size:0.6rem;">—— 流传于歙县、黟县的民间建筑口诀，这句民谣是徽州民间对徽派建筑核心特征的高度概括，精准描绘了天井在整体格局中的位置与功能。</span>
-                                    <br><br>
-                                    家有天井一方，子子孙孙兴旺。<br>
-                                    四水归明堂，肥水不外流。<br>
-                                    <span style="color:var(--cinnabar); font-size:0.6rem;">—— 徽州民间祈福歌谣，承载了徽州人对天井的情感寄托与风水信仰，是天井从建筑功能升华为文化符号的直接体现。</span>
-                                </div>
-                                <div class="text-lead drop-cap">
-                                    徽州地处皖南山区，“七山一水一分田”。在极其有限的平地上，为了聚族而居，民居往往比邻而建，密度极高。
-                                </div>
-                                <div class="text-body">
-                                    古代徽商富甲一方，常年在外经商，家中多留妇孺老弱。出于防范盗贼与火灾蔓延的绝对需求，徽州人将房屋四周的实墙砌得极高，对外几乎不留大窗。这种“重檐高墙”的格局，在提供了极致安全感的同时，也使内部空间陷入了窒息。
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ================= PAGE 3: 壹·造境 P2 (右) ================= -->
-                        <div class="flip-page">
-                            <div class="page-header"> Chapter I Continued</div>
-                            <div class="book-content">
-                                <div class="text-body">
-                                    传统徽派民居习惯于在平面上横向扩张，形成“三间开”或“五间开”的多进院落。随着深度的增加，光线逐渐衰减。如何在不见天日的堡垒中引入大自然的生机？
-                                    <br><br>
-                                    于是，“天井”应运而生。它像是工匠在顶部精巧切开的一扇天窗，成为唯一与外部世界沟通的“气口”。通过这一道长方孔洞，光、风与雨水得以进入这方内向的宇宙。
-                                    <br><br>
-                                    这种设计不仅解决了生存的基础物理问题，更在宗法制度森严的徽州，塑造了一种绝对私密且向心凝聚的家庭氛围。天井暗合 “四水归明堂” 的风水观念，象征财富汇聚，也成为聚族而居的家族情感核心，在宗法社会中维系着家族凝聚力。
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ================= PAGE 4: 壹·图 (左) ================= -->
-                        <div class="flip-page">
-                            <div class="page-header">仰望 Perspective</div>
-                            <div class="book-content">
-                                <div class="img-grid layout-hero">
-                                    <div class="book-img-wrapper">
-                                        <img src="素材\天井与保护补充素材\天井4.jpg" alt="天井仰视" style="object-fit: cover; width: 100%; height: 100%; border-radius: 4px;">
-                                        <div class="img-caption"><span>高墙隔绝尘世喧嚣。</span><span>图 / 天井仰视</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ================= PAGE 5: 贰·图 (右) ================= -->
-                        <div class="flip-page">
-                            <div class="page-header">光影 Light & Shadow</div>
-                            <div class="book-content">
-                                <div class="img-grid layout-hero">
-                                    <div class="book-img-wrapper">
-                                         <img src="素材\天井与保护补充素材\天井1.jpg" alt="天井正午" style="object-fit: cover; width: 100%; height: 100%; border-radius: 4px;">
-                                        <div class="img-caption"><span>一束天光，划分阴阳。</span><span>图 / 天井正午</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ================= PAGE 6: 贰·阴阳 P1 (左) ================= -->
-                        <div class="flip-page">
-                            <div class="page-watermark">光</div>
-                            <div class="page-header">第二章 Chapter II</div>
-                            <div class="book-content">
-                                <div class="chapter-heading">
-                                    <span class="chapter-num">贰</span>
-                                    <h2 class="chapter-title">阴阳交汇</h2>
-                                    <div class="chapter-subtitle">天然的建筑光学调光器</div>
-                                </div>
-                                <div class="text-lead drop-cap">
-                                    “明堂暗室”，是徽派建筑独特的光影美学。天井是光之容器，它通过精密的物理反射，将烈日驯化为流光。
-                                </div>
-                                <div class="text-body">
-                                    在夏季，太阳高度角大。由于马头墙极高，直射的烈日被重檐高墙阻挡，无法直接暴晒到底层的木质厅堂。阳光打在天井四周粉刷雪白的墙壁上，经过石灰颗粒的细致折射，将刺眼的光线驯化。
-                                    <br><br>
-                                    这种漫反射不仅均匀地照亮了原本昏暗的中堂，更因其间接性而让室内保持了低于外界数度的体感。这不仅是古人的建筑智慧，更是一种“光而不耀”的中正美学。
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ================= PAGE 7: 贰·阴阳 P2 (右) ================= -->
-                        <div class="flip-page">
-                            <div class="page-header"> Chapter II Continued</div>
-                            <div class="book-content">
-                                <div class="text-body">
-                                    幽暗的内堂（阴）与明亮的天井（阳）形成了强烈的对比。古人云“阴阳交泰方能生生不息”。随着一日之内太阳在苍穹的位移，光束在木梁与屏风上缓缓爬动。
-                                    <br><br>
-                                    天井在这里充当了精准的光学传感器。在微雨之晨与落日黄昏，天井赋予了老宅截然不同的表情：或清冷宁静，或温暖而肃穆，为凝固的木构建筑注入了生动的视觉节奏。
-                                </div>
-                                <div
-                                    style="margin-top: 30px; text-align: right; font-family: 'Ma Shan Zheng', cursive; font-size: 1.8rem; color: rgba(167,45,35,0.3);">
-                                    半明半暗，乃见天地。
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ================= PAGE 8: 叁·聚水 P1 (左) ================= -->
-                        <div class="flip-page">
-                            <div class="page-watermark">水</div>
-                            <div class="page-header">第三章 Chapter III</div>
-                            <div class="book-content">
-                                <div class="chapter-heading">
-                                    <span class="chapter-num">叁</span>
-                                    <h2 class="chapter-title">四水归堂</h2>
-                                    <div class="chapter-subtitle">理水哲学与微观理学</div>
-                                </div>
-                                <div class="side-note-vert">
-                                    水聚天心，财不外流。<br>
-                                    <span style="color:var(--cinnabar); font-size:0.6rem;">—— 徽商信条</span>
-                                 <br><br>
-                                    天井有明堂，财气不外淌。<br>
-                                    <span style="color:var(--cinnabar); font-size:0.6rem;">—— 休宁民间风水谚语</span>
-                                    <br><br>
-                                    天井檐滴雨，儿孙绕膝喜。<br>
-                                    一方天井纳天光，半盏清茶话家常。<br>
-                                    <span style="color:var(--cinnabar); font-size:0.6rem;">—— 生活歌谣</span>
-                                    <br><br>
-                                    “搞什么名堂”（搞 mai ai 名堂）语源出自天井“明堂”。<br>
-                                    <span style="color:var(--cinnabar); font-size:0.6rem;">—— 趣闻轶事</span>
-                                </div>
-                                
-                                <div class="text-lead drop-cap">
-                                    在徽商的宇宙观里，“山主人丁水主财”。水，不仅是生命的源泉，更是财富的具象化身。
-                                </div>
-                                <div class="text-body">
-                                    巧妙的屋顶设计是徽州理水哲学的核心。天井四周的屋面皆被设计为向内倾斜的坡面，构成漏斗状的形态。每逢降雨，雨水绝不会溢流向外，而是顺着四面黛瓦，如珍珠断线般整齐地汇聚于院落中央的“明堂”。
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ================= PAGE 9: 叁·聚水 P2 (右) ================= -->
-                        <div class="flip-page">
-                            <div class="page-header"> Chapter III Continued</div>
-                            <div class="book-content">
-                                <div class="text-body">
-                                    这便是闻名于世的<strong>“四水归堂”</strong>布局。这不仅是高效的物理排水系统，在资源稀缺的内陆山区，雨水亦被收集用于生活与防火。而在徽商的商道逻辑中，这也象征着“肥水不流外人田”。
-                                    <br><br>
-                                    听雨看漏，在天井中静观财富从天而降，落入长满青苔的石槽。这种与自然韵律高度和谐的居住方式，既安妥了徽商追求积累的心理基石，也成就了徽派古村落连绵不绝的生动水韵。
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ================= PAGE 10: 叁·图 (左) ================= -->
-                        <div class="flip-page">
-                            <div class="page-header">财富 Wealth</div>
-                            <div class="book-content">
-                                <div class="img-grid layout-hero">
-                                    <div class="book-img-wrapper">
-                                        <img src="素材\天井与保护补充素材\天井3.jpg" alt="雨落屋檐" style="object-fit: cover; width: 100%; height: 100%; border-radius: 4px;">
-                                        <div class="img-caption"><span>水利万物而不争。</span><span>图 / 雨落屋檐</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ================= PAGE 11: 肆·图 (右) ================= -->
-                        <div class="flip-page">
-                            <div class="page-header">气流 Microclimate</div>
-                            <div class="book-content">
-                                <div class="img-grid layout-hero">
-                                    <div class="book-img-wrapper">
-                                        <div class="img-placeholder">                                       
-                                             <img src="素材\天井与保护补充素材\天井5.jpg" alt="拔风效应" style="object-fit: cover; width: 100%; height: 100%; border-radius: 4px;">
-                                        <div class="img-caption"><span>冷热交替，吐故纳新。</span><span>图 / 拔风效应</span></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ================= PAGE 12: 肆·吐故 P1 (左) ================= -->
-                        <div class="flip-page">
-                            <div class="page-watermark">风</div>
-                            <div class="page-header">第四章 Chapter IV</div>
-                            <div class="book-content">
-                                <div class="chapter-heading">
-                                    <span class="chapter-num">肆</span>
-                                    <h2 class="chapter-title">天然呼吸</h2>
-                                    <div class="chapter-subtitle">基于“烟囱效应”的微气候调节</div>
-                                </div>
-                                <div class="text-lead drop-cap">
-                                    如果说水缸是徽派建筑的胃，那天井就是它的肺。在没有电力的古代，它是应对酷暑最精妙的生态机器。
-                                </div>
-                                <div class="text-body">
-                                    高耸的马头墙与深陷的天井共同构成了一个巨大的竖向通风系统。物理学上的“热压通风”（烟囱效应），在这里被古人发挥到了极致。
-                                    <br><br>
-                                    即便在烈日当头的酷暑，虽然屋顶处空气受热膨胀并向上排散，但天井底部却阴凉宜人。这种自然的底部负压，源源不断地从阴凉的门缝与巷道中抽取冷气补充，形成了持续且清爽的循环流动力。
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ================= PAGE 13: 肆·吐故 P2 (右) ================= -->
-                        <div class="flip-page">
-                            <div class="page-header"> Chapter IV Continued</div>
-                            <div class="book-content">
-                                <div class="text-body">
-                                    这种自然的吐故纳新，使得身处深宅大院的人们，无需借助外力即可获得流动的活氧。它不仅带走了室内的潮湿与烟尘，更调节了微观区域的温湿度。
-                                    <br><br>
-                                    天井，作为这桩生命有机体的“呼吸接口”，确保了在最密闭的空间中，依然能呼吸到来自皖南山林的最纯净气息。这不仅是智慧的生存手段，更是徽派建筑天人合一的核心证明。
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ================= 页面序列结束 ================= -->
-
-
-                    </div>
-                </div>
-            </main>
-        </div><!-- end main-content -->
-
-        <footer class="site-footer">
-            <div class="footer-inner">
-                <div class="footer-location">安徽省黄山市黟县宏村</div>
-                <div class="footer-brand">徽派建筑</div>
-                <div class="footer-text">文化信息交互可视化展示</div>
-            </div>
-        </footer>
-    </div><!-- end page-wrapper -->
-
-    <div class="seal">
-        <div class="seal-inner">徽<br>州<br>印</div>
+<div class="page-wrapper">
+  <!-- HERO -->
+  <header class="hero-header">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-badge"><span>徽派建筑文化</span></div>
+        <h1 class="hero-title-zh">天井</h1>
+        <div class="hero-title-rule"></div>
+        <p class="hero-title-en">Skywell · Huizhou Architecture</p>
+        <div class="hero-seal"><div class="hero-seal-txt">天<br>井<br>记</div></div>
+      </div>
+      <div class="hero-right">
+        <div class="hero-quote-bar">
+          <div class="hero-quote-bar-icon">「</div>
+          <div class="hero-quote-bar-text">一方天井，四水归堂；半亩方塘，仰见天光</div>
+        </div>
+        <div class="hero-desc">
+          <p class="hero-intro">天井是徽派建筑的核心空间，兼具采光通风、调节微气候之功能，"四水归堂"格局既利排水又蕴聚财寓意，是徽人与天地对话的精神场所。</p>
+          <div class="hero-history">
+            <div class="history-item"><strong>溯源</strong>中原四合院与本土干阑式建筑融合而成，演变为高墙围合、天井居中的形制，与原始穴居"天霤"意象一脉相承。</div>
+            <div class="history-item"><strong>演化</strong>宋元以降尺度渐缩，以节约用地、增强防御，形成"单体多井"层进布局，地域特征愈发鲜明。</div>
+            <div class="history-item"><strong>哲学</strong>"四水归堂"象征聚财，石漏雕作钱形寓意"流银入库"，深刻体现儒家"天人合一"的宇宙观。</div>
+          </div>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-num">千年</span>
+            <span class="stat-label">历史渊源</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">四水</span>
+            <span class="stat-label">归堂格局</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">七山</span>
+            <span class="stat-label">一水一分田</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">国遗</span>
+            <span class="stat-label">文化遗产</span>
+          </div>
+        </div>
+      </div>
     </div>
+  </header>
 
-    <script>
-        // 动态面板自动滚动
-        const beltTpl = document.getElementById('dataScrollBelt_Tpl');
-        if (beltTpl) {
-            const origPanels = Array.from(beltTpl.querySelectorAll('.ds-panel'));
-            origPanels.forEach(p => { beltTpl.appendChild(p.cloneNode(true)); });
-        }
-        let isPlay_Tpl = true;
-        window.dsTogglePlay_Tpl = function () {
-            isPlay_Tpl = !isPlay_Tpl;
-            beltTpl.classList.toggle('paused', !isPlay_Tpl);
-            document.getElementById('dsPlayBtn_Tpl').innerHTML = isPlay_Tpl ? '&#9646;&#9646;' : '&#9654;';
-        };
+  <div class="main-content">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="ds-ctrl">
+        <button class="ds-play-btn" id="dsPlayBtn" onclick="dsToggle()">&#9646;&#9646;</button>
+        <span class="ds-speed-label">图卷自动滚动</span>
+      </div>
+      <!-- 章节快速导航 -->
+      <div class="sidebar-chapters" id="chapterNav">
+        <div class="ch-nav-item active-ch" onclick="goTo(0)"><span class="ch-nav-num">序</span><span class="ch-nav-title">一方天井·四水归堂</span><span class="ch-nav-dot"></span></div>
+        <div class="ch-nav-item" onclick="goTo(1)"><span class="ch-nav-num">壹</span><span class="ch-nav-title">内敛的堡垒</span><span class="ch-nav-dot"></span></div>
+        <div class="ch-nav-item" onclick="goTo(2)"><span class="ch-nav-num">贰</span><span class="ch-nav-title">阴阳交汇</span><span class="ch-nav-dot"></span></div>
+        <div class="ch-nav-item" onclick="goTo(3)"><span class="ch-nav-num">叁</span><span class="ch-nav-title">四水归堂</span><span class="ch-nav-dot"></span></div>
+        <div class="ch-nav-item" onclick="goTo(4)"><span class="ch-nav-num">肆</span><span class="ch-nav-title">天然呼吸</span><span class="ch-nav-dot"></span></div>
+      </div>
+      <div class="data-scroll-outer">
+        <div class="dsm-top"></div><div class="dsm-bot"></div>
+        <div class="data-scroll-track">
+          <div class="data-scroll-belt" id="dsBelt">
+            <div class="ds-panel"><img src="./素材/天井与保护补充素材/天井1.jpg" onerror="this.style.display='none'" class="ds-panel-img"><div class="ds-panel-num">01 · 气象万千</div><div class="ds-panel-title">堂前天光</div><span class="ds-panel-en">Sky Light Over the Hall</span><div class="ds-divider"></div><div class="ds-panel-desc">以天井为框引蓝天白云入画，木构厅堂与匾额楹联错落，传递徽派宗祠的庄重通透之美。</div></div>
+            <div class="ds-panel"><img src="./素材/天井与保护补充素材/天井2.jpg" onerror="this.style.display='none'" class="ds-panel-img"><div class="ds-panel-num">02 · 雕梁画栋</div><div class="ds-panel-title">回廊天井</div><span class="ds-panel-en">Corridor Courtyard</span><div class="ds-divider"></div><div class="ds-panel-desc">繁复木雕回廊环绕中央天井，暖黄宫灯悬于梁间，展现精巧的空间层次感。</div></div>
+            <div class="ds-panel"><img src="./素材/天井与保护补充素材/天井3.jpg" onerror="this.style.display='none'" class="ds-panel-img"><div class="ds-panel-num">03 · 岁月留痕</div><div class="ds-panel-title">厅堂盛景</div><span class="ds-panel-en">Ancestral Hall</span><div class="ds-divider"></div><div class="ds-panel-desc">对称布局的厅堂以大缸为前景，匾额与祖像居中，尽显徽派民居的规整与家族仪式感。</div></div>
+            <div class="ds-panel"><img src="./素材/天井与保护补充素材/天井4.jpg" onerror="this.style.display='none'" class="ds-panel-img"><div class="ds-panel-num">04 · 四水归堂</div><div class="ds-panel-title">福字天井</div><span class="ds-panel-en">Patio with Fu Character</span><div class="ds-divider"></div><div class="ds-panel-desc">仰视视角聚焦"福"字匾额与镂空木构，青瓦天井漏下天光，凸显祈福意涵。</div></div>
+            <div class="ds-panel"><img src="./素材/天井与保护补充素材/天井5.jpg" onerror="this.style.display='none'" class="ds-panel-img"><div class="ds-panel-num">05 · 光影错落</div><div class="ds-panel-title">梁间清韵</div><span class="ds-panel-en">Elegance Between Beams</span><div class="ds-divider"></div><div class="ds-panel-desc">纵深感极强的木梁结构层层递进，天光穿堂而过，传递徽派建筑的静谧文人气息。</div></div>
+            <div class="ds-panel"><img src="./素材/天井与保护补充素材/天井6.jpg" onerror="this.style.display='none'" class="ds-panel-img"><div class="ds-panel-num">06 · 古韵悠长</div><div class="ds-panel-title">檐下灯影</div><span class="ds-panel-en">Lantern Shadows</span><div class="ds-divider"></div><div class="ds-panel-desc">仰视角捕捉徽派木构屋檐与垂挂宫灯，朱红流苏点缀，尽显古建雅致与生活温度。</div></div>
+          </div>
+        </div>
+      </div>
+    </aside>
 
-        // --- 纯 CSS 驱动的丝滑卷起式古籍翻页系统 ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const pages = document.querySelectorAll('.flip-page');
-            const prevBtn = document.getElementById('bookPrevBtn');
-            const nextBtn = document.getElementById('bookNextBtn');
-            const bookSpine = document.getElementById('bookSpine');
-            const bookSeam = document.getElementById('bookSeam');
-            const bookWrapper = document.querySelector('.book-wrapper');
+    <main class="content-area">
+      <div class="book-stage">
+        <div class="book-wrap">
+          <div class="book-open" id="bookOpen">
+            <div class="pg pg-l" id="pgL"><div class="pg-content" id="pgLC"></div></div>
+            <div class="pg pg-r" id="pgR"><div class="pg-content" id="pgRC"></div></div>
+            <div class="book-spine-crease"></div>
+            <div class="book-spine-line"></div>
+          </div>
+          <div class="flip-canvas" id="flipC">
+            <div class="flip-face" id="flipFront"><div class="pg-content" id="flipFC"></div></div>
+            <div class="flip-face flip-back" id="flipBack"><div class="pg-content" id="flipBC"></div></div>
+            <div class="flip-shadow"></div>
+          </div>
+          <button id="btnPrev" class="book-btn prev" disabled>〈</button>
+          <button id="btnNext" class="book-btn next">〉</button>
+          <div class="page-dots" id="pageDots"></div>
+          <div class="kbd-hint"><span class="k">←</span><span class="k">→</span> 翻页</div>
+        </div>
+      </div>
+    </main>
+  </div>
 
-            let currentPageIndex = 0;
-            let isTwoPageMode = bookWrapper.offsetWidth > 900;
-            const totalPages = pages.length;
-            let isAnimating = false;
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-location">📍 安徽省黄山市黟县宏村</div>
+      <div class="footer-brand">徽派建筑文化</div>
+      <div class="footer-text">文化信息交互可视化展示</div>
+      <div class="footer-copy">非物质文化遗产数字化保护项目</div>
+    </div>
+  </footer>
+</div>
 
-            // 注入页码
-            pages.forEach((page, i) => {
-                const pageNum = document.createElement('div');
-                pageNum.className = 'page-number';
-                pageNum.innerText = `— ${i + 1} —`;
-                page.appendChild(pageNum);
+<div class="seal"><div class="seal-inner">徽<br>州<br>印</div></div>
 
-                // 预分配左右侧属性
-                if (i % 2 === 0) {
-                    page.classList.add('left-side');
-                } else {
-                    page.classList.add('right-side');
-                }
-            });
+<script>
+/* 金色粒子 */
+(function(){
+  const c=document.getElementById('particles');
+  for(let i=0;i<14;i++){
+    const p=document.createElement('div');p.className='p';
+    const s=Math.random()*2.4+.6;
+    const sq=Math.random()>.65;
+    p.style.cssText=
+      `width:${s}px;height:${s}px;left:${Math.random()*100}%;`+
+      `border-radius:${sq?'1px':'50%'};`+
+      `animation-duration:${Math.random()*18+12}s;`+
+      `animation-delay:${Math.random()*-24}s;`+
+      `opacity:${Math.random()*.4+.1};`+
+      `background:rgba(${168+Math.floor(Math.random()*30)},${100+Math.floor(Math.random()*22)},${10+Math.floor(Math.random()*16)},.55);`;
+    c.appendChild(p);
+  }
+})();
 
-            function renderBook(direction = null) {
-                if (isAnimating) return;
+/* 页面内容 */
+const S=[
+  /* 序 */
+  {L:`<div class="pg-watermark">序</div>
+      <div class="pg-header">序言 · Preface</div>
+      <div style="margin-top:36px"></div>
+      <h1 style="font-family:'Ma Shan Zheng',cursive;font-size:2.35rem;line-height:1.2;margin-bottom:6px;color:var(--ink-black);">一方天井，四水归堂</h1>
+      <div style="font-family:'ZCOOL QingKe HuangYou',cursive;font-size:.72rem;color:var(--cinnabar);letter-spacing:.42em;margin-bottom:12px;">徽派建筑之魂</div>
+      <div class="text-lead">在徽州的粉墙黛瓦之间，藏着一方通向天空的窗——天井。</div>
+      <div class="text-body">窗子很小，小得容不下一个人进出；天井很大，大得装得下一整个天空。它是徽州老房子的"心"，是深宅大院中唯一敢于敞开胸襟、仰望苍穹的地方。每逢雨天，四面的屋檐将雨水引入天井，形成"四水归堂"的奇观——这不是简单的排水，而是徽商"肥水不流外人田"的财富密码，是"财源滚滚归家来"的世代祈愿。</div>
+      <div class="poetry-block">
+        <p>粉墙黛瓦马头墙，<br>天井一方见苍茫。<br>四水归堂财运聚，<br>月光如洗照故乡。</p>
+        <cite>—— 徽州民间咏天井</cite>
+      </div>
+      <div class="pg-num">— 一 —</div>`,
+   R:`<div class="pg-header" style="right:44px;left:auto;flex-direction:row-reverse;">序言续 · Continued</div>
+      <div style="margin-top:36px"></div>
+      <div class="text-body">天井，是徽州人写给天空的情书，也是徽州女人的守望台。当丈夫背着包袱雨伞远走他乡，徽州女人便开始了日复一日的空房独守。更深夜静，月光如洗，她只能对着天井托寄一缕相思……天井见证了太多徽州女人的青春、相思与白发。</div>
+      <div class="book-img" style="height:145px;margin:9px 0 10px;">
+        <img src="./素材/天井与保护补充素材/右侧天井图.jpg" alt="" onerror="this.style.display='none'">
+        <div class="img-cap"><span>图 / 徽州深宅天井实景</span><span>Skywell Interior</span></div>
+      </div>
+      <div class="text-body">晴天，阳光从天井洒落，在青石板上铺成温暖的光斑；雪天，万千六边形精灵争相涌入，把清石板染成洁白。从功能上看，天井解决了封闭高墙内的采光、通风问题；从文化上看，天井体现了"天人合一"的哲学追求，是人与天地对话的精神空间。</div>
+      <div class="verse">是为序。</div>
+      <div class="pg-num" style="right:44px;left:auto;">— 二 —</div>`},
 
-                // 强制全局清理：确保没有残留的 flipping 类
-                pages.forEach(p => {
-                    p.classList.remove('flipping-out', 'flipping-in');
-                });
+  /* 壹 */
+  {L:`<div class="pg-watermark">壁</div>
+      <div class="pg-header">第一章 · Chapter I</div>
+      <div style="margin-top:36px"></div>
+      <div class="ch-heading"><span class="ch-num">壹</span><h2 class="ch-title">内敛的堡垒</h2><div class="ch-sub">防御与宗法交织的空间起源</div></div>
+      <div class="side-note">粉墙黛瓦马头墙，<br>厅堂左右有厢房。<br>高墙深院小窗户，<br>四方财水归明堂。<br><span style="color:var(--cinnabar);font-size:.54rem;font-family:'ZCOOL QingKe HuangYou',cursive;">—— 歙县民间口诀</span><br><br>家有天井一方，<br>子子孙孙兴旺。<br>四水归明堂，<br>肥水不外流。<br><span style="color:var(--cinnabar);font-size:.54rem;font-family:'ZCOOL QingKe HuangYou',cursive;">—— 徽州祈福歌谣</span></div>
+      <div class="text-lead drop-cap">徽州地处皖南山区，"七山一水一分田"。在极其有限的平地上，为了聚族而居，民居往往比邻而建，密度极高。</div>
+      <div class="text-body">古代徽商富甲一方，常年在外经商，家中多留妇孺老弱。出于防范盗贼与火灾蔓延的绝对需求，徽州人将房屋四周的实墙砌得极高，对外几乎不留大窗。这种"重檐高墙"的格局，在提供了极致安全感的同时，也使内部空间陷入了窒息。</div>
+      <div class="pg-num">— 三 —</div>`,
+   R:`<div class="pg-header" style="right:44px;left:auto;flex-direction:row-reverse;">第一章续 · Chapter I</div>
+      <div style="margin-top:36px"></div>
+      <div class="text-body">传统徽派民居习惯于在平面上横向扩张，形成"三间开"或"五间开"的多进院落。随着深度的增加，光线逐渐衰减。如何在不见天日的堡垒中引入大自然的生机？</div>
+      <div class="knowledge-card">
+        <div class="knowledge-card-title">建筑知识 · 天井的起源</div>
+        <p>天井最早见于汉代文献"天霤"，指屋顶开孔以纳天光。宋代理学家朱熹故里徽州，将儒家宗法秩序与建筑空间高度融合，使天井成为家族向心力的物质载体。</p>
+      </div>
+      <div class="text-body">于是，"天井"应运而生。它像是工匠在顶部精巧切开的一扇天窗，成为唯一与外部世界沟通的"气口"。通过这一道长方孔洞，光、风与雨水得以进入这方内向的宇宙。</div>
+      <div class="book-img" style="flex:1;margin-top:10px;min-height:0;">
+        <img src="./素材/天井与保护补充素材/天井4.jpg" alt="" onerror="this.style.display='none'">
+        <div class="img-cap"><span>高墙隔绝尘世喧嚣。</span><span>图 / 天井仰视</span></div>
+      </div>
+      <div class="pg-num" style="right:44px;left:auto;">— 四 —</div>`},
 
-                // 确定参与本次翻页的页面集
-                let prevPageIndex = currentPageIndex;
-                const step = isTwoPageMode ? 2 : 1;
-                if (direction === 'next') prevPageIndex -= step;
-                if (direction === 'prev') prevPageIndex += step;
+  /* 贰 */
+  {L:`<div class="pg-watermark">光</div>
+      <div class="pg-header">第二章 · Chapter II</div>
+      <div style="margin-top:36px"></div>
+      <div class="ch-heading"><span class="ch-num">贰</span><h2 class="ch-title">阴阳交汇</h2><div class="ch-sub">天然的建筑光学调光器</div></div>
+      <div class="text-lead drop-cap">"明堂暗室"，是徽派建筑独特的光影美学。天井是光之容器，通过精密的物理反射，将烈日驯化为流光。</div>
+      <div class="text-body">在夏季，太阳高度角大。由于马头墙极高，直射的烈日被重檐高墙阻挡，无法直接暴晒到底层的木质厅堂。阳光打在天井四周粉刷雪白的墙壁上，经过石灰颗粒的细致漫射，将刺眼的强光驯化为柔和的散射光。</div>
+      <ul class="point-list">
+        <li>夏季遮阳：高墙阻挡直射，墙面漫反射补光，室内清凉舒适</li>
+        <li>冬季采暖：太阳高度角低，阳光可直射入堂，温暖木构厅堂</li>
+        <li>晨昏变化：随日光角度移动，光影在梁柱间缓缓爬行，如活画卷</li>
+      </ul>
+      <div class="pg-num">— 五 —</div>`,
+   R:`<div class="pg-header" style="right:44px;left:auto;flex-direction:row-reverse;">第二章续 · Chapter II</div>
+      <div style="margin-top:36px"></div>
+      <div class="book-img" style="height:168px;margin-bottom:11px;">
+        <img src="./素材/天井与保护补充素材/天井1.jpg" alt="" onerror="this.style.display='none'">
+        <div class="img-cap"><span>一束天光，划分阴阳。</span><span>图 / 天井正午</span></div>
+      </div>
+      <div class="text-body">幽暗的内堂（阴）与明亮的天井（阳）形成了强烈的对比。古人云"阴阳交泰方能生生不息"。随着一日之内太阳在苍穹的位移，光束在木梁与屏风上缓缓爬动，天井成为了精准的光学计时仪。</div>
+      <div class="knowledge-card">
+        <div class="knowledge-card-title">光学原理 · 漫反射调光</div>
+        <p>徽州匠人将天井四壁涂以纯白石灰，利用漫反射原理，将烈日转化为柔和的散射光，使室内照度均匀而不刺眼，这一做法比现代建筑"光导管"技术早了数百年。</p>
+      </div>
+      <div class="verse">半明半暗，乃见天地。</div>
+      <div class="pg-num" style="right:44px;left:auto;">— 六 —</div>`},
 
-                const oldL = pages[prevPageIndex];
-                const oldR = pages[prevPageIndex + 1];
-                const newL = pages[currentPageIndex];
-                const newR = pages[currentPageIndex + 1];
+  /* 叁 */
+  {L:`<div class="pg-watermark">水</div>
+      <div class="pg-header">第三章 · Chapter III</div>
+      <div style="margin-top:36px"></div>
+      <div class="ch-heading"><span class="ch-num">叁</span><h2 class="ch-title">四水归堂</h2><div class="ch-sub">理水哲学与徽商财富观</div></div>
+      <div class="side-note" style="font-size:.66rem;max-height:285px;">水聚天心，财不外流。<br><span style="color:var(--cinnabar);font-size:.54rem;font-family:'ZCOOL QingKe HuangYou',cursive;">—— 徽商信条</span><br><br>天井有明堂，<br>财气不外淌。<br><span style="color:var(--cinnabar);font-size:.54rem;font-family:'ZCOOL QingKe HuangYou',cursive;">—— 休宁风水谚语</span><br><br>天井檐滴雨，<br>儿孙绕膝喜。<br><span style="color:var(--cinnabar);font-size:.54rem;font-family:'ZCOOL QingKe HuangYou',cursive;">—— 民间生活歌谣</span></div>
+      <div class="text-lead drop-cap">在徽商的宇宙观里，"山主人丁水主财"。水，不仅是生命的源泉，更是财富的具象化身。</div>
+      <div class="text-body">巧妙的屋顶设计是徽州理水哲学的核心。天井四周的屋面皆被设计为向内倾斜的坡面，构成漏斗状的形态。每逢降雨，雨水绝不会溢流向外，而是顺着四面黛瓦，如珍珠断线般整齐地汇聚于院落中央的"明堂"。</div>
+      <div class="pg-num">— 七 —</div>`,
+   R:`<div class="pg-header" style="right:44px;left:auto;flex-direction:row-reverse;">第三章续 · Chapter III</div>
+      <div style="margin-top:36px"></div>
+      <div class="book-img" style="height:155px;margin-bottom:11px;">
+        <img src="./素材/天井与保护补充素材/天井3.jpg" alt="" onerror="this.style.display='none'">
+        <div class="img-cap"><span>水利万物而不争。</span><span>图 / 雨落屋檐</span></div>
+      </div>
+      <div class="text-body">这便是闻名于世的<strong style="font-family:'Ma Shan Zheng',cursive;font-size:.9rem;color:var(--cinnabar);">"四水归堂"</strong>格局。这不仅是高效的物理排水系统，在资源稀缺的内陆山区，雨水亦被收集用于生活与防火；而在徽商的商道哲学中，这更象征着"肥水不流外人田"。</div>
+      <div class="knowledge-card">
+        <div class="knowledge-card-title">风水密码 · 石漏与钱形</div>
+        <p>天井地面中央设圆形石漏，其形酷似古铜钱，喻"财从天降、流入钱孔"。漏水之声，在夜深人静时，是徽商之家最美妙的聆听——那是财富汇聚的声音。</p>
+      </div>
+      <div class="pg-num" style="right:44px;left:auto;">— 八 —</div>`},
 
-                if (isTwoPageMode) {
-                    bookSpine.style.display = 'block';
-                    bookSeam.style.display = 'block';
-                    // 强制对齐偶数索引
-                    if (currentPageIndex % 2 !== 0) currentPageIndex -= 1;
+  /* 肆 */
+  {L:`<div class="pg-watermark">风</div>
+      <div class="pg-header">第四章 · Chapter IV</div>
+      <div style="margin-top:36px"></div>
+      <div class="ch-heading"><span class="ch-num">肆</span><h2 class="ch-title">天然呼吸</h2><div class="ch-sub">"烟囱效应"与生态智慧</div></div>
+      <div class="text-lead drop-cap">如果说水缸是徽派建筑的胃，那天井就是它的肺。在没有电力的古代，它是应对酷暑最精妙的生态机器。</div>
+      <div class="text-body">高耸的马头墙与深陷的天井共同构成了一个巨大的竖向通风系统。物理学上的"热压通风"（烟囱效应），在这里被古人发挥到了极致。日照使顶部空气受热膨胀上升，天井底部便产生持续的负压区，源源不断地从门缝、巷道抽取凉风入室。</div>
+      <ul class="point-list">
+        <li>夏季降温：烟囱效应使室内气温低于室外约3—5℃</li>
+        <li>除湿排浊：流动的气流带走潮湿水汽与炊烟灰尘</li>
+        <li>防火隔离：高墙分隔与天井气流可有效阻止火势蔓延</li>
+      </ul>
+      <div class="pg-num">— 九 —</div>`,
+   R:`<div class="pg-header" style="right:44px;left:auto;flex-direction:row-reverse;">第四章续 · Chapter IV</div>
+      <div style="margin-top:36px"></div>
+      <div class="book-img" style="height:158px;margin-bottom:11px;">
+        <img src="./素材/天井与保护补充素材/天井5.jpg" alt="" onerror="this.style.display='none'">
+        <div class="img-cap"><span>冷热交替，吐故纳新。</span><span>图 / 拔风效应</span></div>
+      </div>
+      <div class="text-body">这种自然的吐故纳新，使得身处深宅大院的人们，无需借助外力即可获得流动的活氧。天井，作为这桩生命有机体的"呼吸接口"，确保了在最密闭的空间中，依然能呼吸到来自皖南山林的最纯净气息。</div>
+      <div class="knowledge-card">
+        <div class="knowledge-card-title">生态启示 · 古代被动式设计</div>
+        <p>现代绿色建筑学研究表明，徽派天井的"被动式通风降温"体系，与当代LEED绿色建筑标准高度契合。这是古人在千年实践中积累的朴素生态智慧，至今仍有深刻的现实价值。</p>
+      </div>
+      <div class="verse">此中有真意，欲辨已忘言。</div>
+      <div class="pg-num" style="right:44px;left:auto;">— 十 —</div>`}
+];
 
-                    if (!direction) {
-                        // 初始化或强制重置
-                        pages.forEach(p => p.classList.remove('active', 'target-page', 'flipping-out', 'flipping-in'));
-                        if (newL) newL.classList.add('active');
-                        if (newR) newR.classList.add('active');
-                    } else if (direction === 'next') {
-                        // 【向后翻】新页立即标记为 target-page (Z=12)
-                        if (newL) newL.classList.add('active', 'target-page');
-                        if (newR) newR.classList.add('active', 'target-page');
-                        
-                        if (oldR) {
-                            oldR.classList.add('flipping-out'); // 0 -> -180 (Z=20)
-                            isAnimating = true;
-                            setTimeout(() => {
-                                // 动画结束：彻底清理非目标页
-                                pages.forEach((p, idx) => {
-                                    if (idx !== currentPageIndex && idx !== currentPageIndex + 1) {
-                                        p.classList.remove('active', 'target-page');
-                                    }
-                                    p.classList.remove('flipping-out', 'flipping-in', 'target-page');
-                                });
-                                isAnimating = false;
-                            }, 2000);
-                        }
-                    } else if (direction === 'prev') {
-                        // 【向前翻】新页立即标记为 target-page (Z=12)，旧左页卷回 (Z=20)
-                        if (newL) newL.classList.add('active', 'target-page');
-                        if (newR) newR.classList.add('active', 'target-page');
-                        
-                        if (oldL) {
-                            oldL.classList.add('flipping-out'); // animation: pageFlipOutLeft (0 -> 180)
-                            isAnimating = true;
-                            setTimeout(() => {
-                                // 动画结束：强制清理
-                                pages.forEach((p, idx) => {
-                                    if (idx !== currentPageIndex && idx !== currentPageIndex + 1) {
-                                        p.classList.remove('active', 'target-page');
-                                    }
-                                    p.classList.remove('flipping-out', 'flipping-in', 'target-page');
-                                });
-                                isAnimating = false;
-                            }, 2000);
-                        }
-                    }
+const T=S.length;let cur=0,busy=false;
+const pLC=document.getElementById('pgLC'),pRC=document.getElementById('pgRC');
+const fC=document.getElementById('flipC'),fFC=document.getElementById('flipFC'),fBC=document.getElementById('flipBC');
+const bP=document.getElementById('btnPrev'),bN=document.getElementById('btnNext');
+const dots=document.getElementById('pageDots');
+const prog=document.getElementById('pageProgress');
 
-                    prevBtn.disabled = currentPageIndex === 0;
-                    nextBtn.disabled = currentPageIndex + 2 >= totalPages;
-                } else {
-                    // 单页模式（手机端）
-                    bookSpine.style.display = 'none';
-                    bookSeam.style.display = 'none';
-
-                    const oldPage = pages[prevPageIndex];
-                    const activePage = pages[currentPageIndex];
-
-                    if (!direction) {
-                        pages.forEach(p => p.classList.remove('active', 'flipping-out', 'flipping-in'));
-                        if (activePage) activePage.classList.add('active');
-                    } else if (direction === 'next' && oldPage) {
-                        activePage.classList.add('active', 'target-page');
-                        oldPage.classList.add('flipping-out');
-                        isAnimating = true;
-                        setTimeout(() => {
-                            pages.forEach(p => { if (p !== activePage) p.classList.remove('active', 'target-page'); });
-                            oldPage.classList.remove('flipping-out');
-                            isAnimating = false;
-                        }, 2000);
-                    } else if (direction === 'prev' && activePage) {
-                        activePage.classList.add('active', 'target-page', 'flipping-in');
-                        isAnimating = true;
-                        setTimeout(() => {
-                            pages.forEach(p => { if (p !== activePage) p.classList.remove('active', 'target-page'); });
-                            activePage.classList.remove('flipping-in');
-                            isAnimating = false;
-                        }, 2000);
-                    }
-
-                    prevBtn.disabled = currentPageIndex === 0;
-                    nextBtn.disabled = currentPageIndex + 1 >= totalPages;
-                }
-            }
-
-            nextBtn.addEventListener('click', () => {
-                if (isAnimating) return;
-                const step = isTwoPageMode ? 2 : 1;
-                if (currentPageIndex + step < totalPages) {
-                    currentPageIndex += step;
-                    renderBook('next');
-                }
-            });
-
-            prevBtn.addEventListener('click', () => {
-                if (isAnimating) return;
-                const step = isTwoPageMode ? 2 : 1;
-                if (currentPageIndex - step >= 0) {
-                    currentPageIndex -= step;
-                    renderBook('prev');
-                }
-            });
-
-            // 监听响应式切换
-            const resizeObserver = new ResizeObserver(entries => {
-                for (let entry of entries) {
-                    const currentMode = entry.contentRect.width > 900;
-                    if (currentMode !== isTwoPageMode) {
-                        isTwoPageMode = currentMode;
-                        renderBook();
-                    }
-                }
-            });
-            resizeObserver.observe(bookWrapper);
-
-            // 初始化
-            renderBook();
-        });
-    </script>
+function updateChapterNav(i){
+  document.querySelectorAll('.ch-nav-item').forEach((el,j)=>{
+    el.classList.toggle('active-ch',j===i);
+  });
+}
+function paint(i){
+  pLC.innerHTML=S[i].L;pRC.innerHTML=S[i].R;
+  bP.disabled=i===0;bN.disabled=i===T-1;
+  dots.innerHTML=S.map((_,j)=>`<div class="pdot${j===i?' on':''}" onclick="goTo(${j})"></div>`).join('');
+  prog.style.width=((i+1)/T*100)+'%';
+  updateChapterNav(i);
+}
+function flip(d){
+  if(busy)return;
+  const n=cur+d;if(n<0||n>=T)return;
+  busy=true;
+  const from=S[cur],to=S[n];
+  if(d>0){fFC.innerHTML=from.R;fBC.innerHTML=to.L;fC.className='flip-canvas dir-fwd live';pLC.innerHTML=from.L;pRC.innerHTML=to.R;requestAnimationFrame(()=>requestAnimationFrame(()=>fC.classList.add('a-fo')));}
+  else{fFC.innerHTML=from.L;fBC.innerHTML=to.R;fC.className='flip-canvas dir-bwd live';pLC.innerHTML=to.L;pRC.innerHTML=from.R;requestAnimationFrame(()=>requestAnimationFrame(()=>fC.classList.add('a-bo')));}
+  setTimeout(()=>{cur=n;paint(cur);fC.className='flip-canvas';busy=false;},1050);
+}
+function goTo(i){if(busy||i===cur)return;if(Math.abs(i-cur)>1){cur=i>cur?i-1:i+1;paint(cur);}flip(i>cur?1:-1);}
+bN.addEventListener('click',()=>flip(1));
+bP.addEventListener('click',()=>flip(-1));
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')flip(1);if(e.key==='ArrowLeft')flip(-1);});
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>52){dx<0?flip(1):flip(-1);}},{passive:true});
+const belt=document.getElementById('dsBelt');
+Array.from(belt.querySelectorAll('.ds-panel')).forEach(p=>belt.appendChild(p.cloneNode(true)));
+let dsOn=true;
+window.dsToggle=function(){dsOn=!dsOn;belt.classList.toggle('paused',!dsOn);document.getElementById('dsPlayBtn').innerHTML=dsOn?'&#9646;&#9646;':'&#9654;';};
+paint(0);
+</script>
 </body>
-
 </html>

@@ -18,11 +18,11 @@
 
 /* ========== 重置与全局 ========== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; font-size: 16px; }
+html { scroll-behavior: smooth; font-size: 18px; }
 body {
   font-family: "Noto Serif SC", "STSong", "SimSun", serif;
   color: var(--black-tile);
-  background: var(--whitewall);
+  background: #f5f0e8;
   line-height: 1.7;
   overflow-x: hidden;
 }
@@ -178,7 +178,7 @@ body {
   grid-template-columns: 1fr 380px;
   gap: 32px;
   width: 100%;
-  max-width: 1300px;
+  max-width: 1100px;
   margin-top: 36px;
   align-items: start;
   animation: fadeInUp 1s ease 0.2s both;
@@ -803,15 +803,9 @@ body {
   .landmark-btn { max-width: none; }
 }
 @media (max-width: 768px) {
-  #circleNav {
-    top: auto; bottom: 12px;
-    left: 50%; right: auto;
-    transform: translateX(-50%);
-    gap: 6px;
-  }
-  .circle-btn { width: 52px; height: 52px; }
-  .circle-btn svg { width: 18px; height: 18px; }
-  .circle-btn span { font-size: 0.5rem; }
+  .circle-btn { width: 64px; height: 64px; }
+  .circle-btn svg { width: 22px; height: 22px; }
+  .circle-btn span { font-size: 0.6rem; }
   .home-title { font-size: clamp(2rem, 8vw, 3rem); }
   .home-cards { flex-direction: column; }
   .page { padding: 80px 16px 80px; }
