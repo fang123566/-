@@ -6,8 +6,34 @@
   <title>跨文化对话 | 解码徽派民居</title>
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Ma+Shan+Zheng&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/extension/bmap.min.js"></script>
+  <!-- ✅ 使用 unpkg 作为主 CDN，jsDelivr 作为备用，移除百度地图 -->
+<script>
+  // 动态加载 ECharts，支持多 CDN 备用
+  (function loadECharts() {
+    const cdns = [
+      'https://unpkg.com/echarts@5.5.1/dist/echarts.min.js',
+      'https://cdn.staticfile.org/echarts/5.5.1/echarts.min.js',
+      'https://cdn.bootcdn.net/ajax/libs/echarts/5.5.1/echarts.min.js'
+    ];
+    let idx = 0;
+    function tryLoad() {
+      if (idx >= cdns.length) {
+        console.error('所有 ECharts CDN 均失败');
+        return;
+      }
+      const s = document.createElement('script');
+      s.src = cdns[idx++];
+      s.onerror = tryLoad; // 失败自动换下一个
+      s.onload = () => {
+        // ECharts 加载成功后，触发自定义事件通知页面初始化图表
+        document.dispatchEvent(new Event('echartsReady'));
+      };
+      document.head.appendChild(s);
+    }
+    tryLoad();
+  })();
+</script>
+  <!-- 替换原有bmap.min.js的引入代码 -->
 
   <style>
     /* ==============================
