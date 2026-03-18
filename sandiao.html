@@ -227,14 +227,13 @@
     #chartPie { width:100%; height:260px; }
 
     /* ══════════════════════════════
-       图片云 — 动态重排版本
+       图片云
     ══════════════════════════════ */
     .img-cloud {
       display: grid;
       gap: 5px;
       width: 100%;
-      height: 262px; /* 固定高度，与饼图对齐 */
-      transition: none;
+      height: 262px;
     }
 
     .img-cloud-item {
@@ -245,10 +244,10 @@
       border: 2px solid rgba(245,240,232,.5);
       box-shadow: 0 2px 8px rgba(26,20,16,.15);
       transition:
-        transform .4s cubic-bezier(.165,.84,.44,1),
+        transform .35s cubic-bezier(.165,.84,.44,1),
         box-shadow .3s ease,
         border-color .3s ease,
-        opacity .35s ease;
+        opacity .3s ease;
       z-index: 1;
       min-height: 0;
       min-width: 0;
@@ -261,13 +260,13 @@
       display: block;
     }
     .img-cloud-item:hover {
-      transform: scale(1.04);
+      transform: scale(1.03);
       z-index: 20;
       box-shadow: 0 6px 22px rgba(26,20,16,.3);
       border-color: rgba(245,240,232,.9);
     }
     .img-cloud-item:hover img {
-      transform: scale(1.08);
+      transform: scale(1.07);
       filter: sepia(0%) contrast(1.05);
     }
     .cloud-label {
@@ -279,6 +278,7 @@
       font-family: 'Ma Shan Zheng', cursive;
       letter-spacing: .06em;
       opacity: 0; transition: opacity .3s;
+      pointer-events: none;
     }
     .img-cloud-item:hover .cloud-label { opacity: 1; }
     .cloud-type-tag {
@@ -291,9 +291,7 @@
       z-index: 2;
     }
 
-    /* 图片云：饼图高亮 */
     .img-cloud-item.pie-highlight {
-      transform: scale(1.06) !important;
       z-index: 15 !important;
       border-color: var(--cinnabar) !important;
       box-shadow: 0 0 0 2px var(--cinnabar), 0 8px 28px rgba(192,57,43,.55) !important;
@@ -302,11 +300,18 @@
       filter: sepia(0%) contrast(1.08) brightness(1.05) !important;
     }
     .img-cloud-item.pie-dimmed {
-      opacity: 0.22 !important;
-      filter: grayscale(70%) !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
     }
 
-    /* ── 翻转知识卡 ── */
+    /* ══════════════════════════════
+       翻转知识卡 — 悬停自动展开覆盖整张卡片
+    ══════════════════════════════ */
+    #knowCard {
+      position: relative;
+      overflow: hidden;
+    }
+
     .knowledge-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -314,6 +319,8 @@
       gap: .6rem;
       height: 100%;
     }
+
+    /* 翻转卡基础样式 */
     .flip-card {
       height: 80px;
       perspective: 800px;
@@ -321,11 +328,14 @@
     }
     .flip-inner {
       width: 100%; height: 100%;
-      transition: transform 0.55s cubic-bezier(.4,0,.2,1);
+      transition: transform 0.45s cubic-bezier(.4,0,.2,1);
       transform-style: preserve-3d;
       position: relative;
     }
-    .flip-card:hover .flip-inner { transform: rotateY(180deg); }
+    /* 悬停时触发翻转动画 — 视觉提示，随后覆盖层会盖上 */
+    .flip-card:hover .flip-inner {
+      transform: rotateY(180deg);
+    }
     .flip-front, .flip-back {
       position: absolute; inset: 0;
       backface-visibility: hidden;
@@ -354,20 +364,102 @@
     .flip-back p { font-size: .65rem; line-height: 1.6; color: rgba(245,240,232,.82); }
     .flip-back .keyword { color: var(--gold-l); font-size: .72rem; font-weight: 700; margin-bottom: .2rem; font-family: 'Ma Shan Zheng', cursive; }
 
+    /* ── 展开覆盖层 — 悬停触发，覆盖整张 #knowCard ── */
+    .flip-expand-overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--ink-deep);
+      border-radius: 4px;
+      z-index: 50;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px;
+      padding: 1.6rem 1.8rem;
+      text-align: center;
+      /* 初始不可见 */
+      opacity: 0;
+      pointer-events: none;
+      /* 翻转进入的动画效果 */
+      transform: rotateY(-90deg);
+      transform-origin: left center;
+      transition:
+        opacity .35s cubic-bezier(.4,0,.2,1),
+        transform .4s cubic-bezier(.4,0,.2,1);
+    }
+    /* 悬停时展开 */
+    .flip-expand-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: rotateY(0deg);
+    }
+    .flip-expand-overlay .eo-icon {
+      font-size: 2.4rem;
+      line-height: 1;
+      margin-bottom: 4px;
+      filter: drop-shadow(0 2px 8px rgba(184,134,11,.4));
+    }
+    .flip-expand-overlay .eo-keyword {
+      color: var(--gold-l);
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 1.5rem;
+      letter-spacing: .12em;
+      text-shadow: 0 2px 12px rgba(184,134,11,.3);
+    }
+    .flip-expand-overlay .eo-divider {
+      width: 60px; height: 1px;
+      background: linear-gradient(to right, transparent, rgba(184,134,11,.6), transparent);
+    }
+    .flip-expand-overlay .eo-text {
+      font-size: .86rem;
+      line-height: 1.95;
+      color: rgba(245,240,232,.82);
+      font-family: 'Noto Serif SC', serif;
+      max-width: 88%;
+    }
+    .flip-expand-overlay .eo-sub {
+      font-size: .62rem;
+      color: rgba(245,240,232,.3);
+      letter-spacing: .14em;
+      font-family: Georgia, serif;
+      font-style: italic;
+    }
+    /* 右上角关闭按钮（鼠标离开时自动关闭，此按钮作为辅助） */
+    .flip-expand-overlay .eo-close {
+      position: absolute;
+      top: 10px; right: 12px;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: rgba(245,240,232,.1);
+      border: 1px solid rgba(245,240,232,.2);
+      color: rgba(245,240,232,.5);
+      font-size: .65rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s;
+    }
+    .flip-expand-overlay .eo-close:hover {
+      background: rgba(192,57,43,.55);
+      color: white;
+      border-color: var(--cinnabar);
+    }
+
     /* ══════════════════════════════
-       区块二：三列并排
+       区块二三列 — align-items: start
+       3D模型和历史沿革按内容完整高度展示
+       竖向滚动面板给定固定滚动区高度
     ══════════════════════════════ */
     .section-row-3b {
       display: grid;
       grid-template-columns: 1fr 300px 320px;
       gap: 1.2rem;
       margin-bottom: 1.2rem;
+      /* 关键：start 让各列按自身内容高度展示，互不拉伸 */
       align-items: start;
     }
 
     /* 3D 模型 */
     #threeCanvas {
-      width:100%; height:340px;
+      width:100%; height:280px;
       border-radius: 4px; overflow: hidden;
       background: linear-gradient(135deg, #1a1410 0%, #2d2318 50%, #1a1410 100%);
       position: relative; cursor: grab;
@@ -380,25 +472,33 @@
       font-size: .65rem; padding: 3px 12px; border-radius: 20px;
       pointer-events: none; white-space: nowrap;
     }
-    .model-selector { display: flex; flex-direction: column; gap: .35rem; margin-top: .6rem; }
+
+    .model-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .35rem;
+      margin-top: .6rem;
+    }
     .model-btn {
-      padding: .5rem .8rem;
+      padding: .45rem .65rem;
       background: var(--cream);
       border: 1.5px solid rgba(184,134,11,.22);
       border-radius: 3px; cursor: pointer;
-      font-family: 'Noto Serif SC', serif; font-size: .78rem;
+      font-family: 'Noto Serif SC', serif; font-size: .74rem;
       color: var(--ink-medium);
       text-align: left; transition: all .22s;
-      display: flex; align-items: center; gap: 7px;
+      display: flex; align-items: center; gap: 6px;
+      white-space: nowrap; overflow: hidden;
     }
-    .model-btn .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(184,134,11,.3); flex-shrink: 0; }
+    .model-btn .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(184,134,11,.3); flex-shrink: 0; }
     .model-btn.active, .model-btn:hover { background: var(--ink-deep); color: rgba(245,240,232,.9); border-color: var(--ink-deep); }
     .model-btn.active .dot, .model-btn:hover .dot { background: var(--cinnabar); }
+
     .model-desc {
       background: var(--paper-warm);
       border: 1px solid rgba(184,134,11,.18);
       border-left: 3px solid var(--cinnabar);
-      padding: .8rem; border-radius: 0 4px 4px 0;
+      padding: .7rem; border-radius: 0 4px 4px 0;
       font-size: .76rem; line-height: 1.8; color: var(--ink-medium);
       margin-top: .6rem;
     }
@@ -408,11 +508,15 @@
     .stat-label { font-size: .58rem; color: var(--ink-faint); display: block; margin-bottom: 2px; }
     .stat-value { font-family: 'Ma Shan Zheng', cursive; font-size: 1rem; color: var(--cinnabar); }
 
-    /* ── 竖向滚动数据面板 ── */
+    /* ── 竖向滚动数据面板 — 固定高度滚动区 ── */
+    #vsCard {
+      /* 无需 display:flex，自然高度即可 */
+    }
     .vs-outer {
       position: relative;
       overflow: hidden;
-      height: 420px;
+      /* 固定高度的滚动窗口，不依赖父容器拉伸 */
+      height: 590px;
       border-top: 2px solid rgba(184,134,11,.35);
       border-bottom: 2px solid rgba(184,134,11,.35);
     }
@@ -459,12 +563,16 @@
     .vs-bar-track { flex: 1; height: 7px; border-radius: 4px; background: rgba(184,134,11,.1); overflow: hidden; }
     .vs-bar-fill { height: 100%; border-radius: 4px; }
     .vs-bar-num { font-size: .62rem; color: var(--ink-faint); width: 24px; text-align: right; }
-    .vs-controls { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 6px 0 0; }
+    .vs-controls { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 8px 0 0; }
     .vs-play-btn { width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(192,57,43,.35); background: rgba(192,57,43,.06); color: var(--cinnabar); font-size: .7rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; }
     .vs-play-btn:hover { background: var(--cinnabar); color: white; }
     .vs-speed-label { font-size: .58rem; color: var(--ink-faint); letter-spacing: .08em; }
 
-    /* ── 时间轴 ── */
+    /* ── 历史沿革卡 — 自然高度，内容完整展示 ── */
+    #timeCard {
+      /* 无需特殊设置，自然高度 */
+      height: 708px;
+    }
     .timeline { position: relative; padding: .5rem 0; }
     .timeline::before {
       content: ''; position: absolute;
@@ -472,6 +580,7 @@
       background: linear-gradient(to bottom, transparent, var(--cinnabar), transparent);
     }
     .timeline-item { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; padding-left: 4px; }
+    .timeline-item:last-child { margin-bottom: 0; }
     .timeline-dot {
       flex-shrink: 0; width: 30px; height: 30px;
       background: var(--cinnabar); border-radius: 50%;
@@ -489,7 +598,7 @@
     .timeline-era { font-family: 'Ma Shan Zheng', cursive; font-size: .72rem; color: var(--cinnabar); letter-spacing: .1em; margin-bottom: .25rem; }
 
     /* ══════════════════════════════
-       区块三：三雕纹样图典（替换精品图录）
+       区块三：三雕纹样图典
     ══════════════════════════════ */
     .pattern-explorer {
       background: rgba(250,246,238,.92);
@@ -515,7 +624,6 @@
       align-items: start;
     }
 
-    /* 左：纹样导航树 */
     .pattern-nav { display: flex; flex-direction: column; gap: 4px; }
     .pattern-nav-group { margin-bottom: 6px; }
     .pattern-nav-title {
@@ -537,11 +645,10 @@
     .pattern-nav-item:hover { background: var(--cream); color: var(--ink-black); border-left-color: var(--gold); }
     .pattern-nav-item.active { background: rgba(192,57,43,.07); color: var(--cinnabar); border-left-color: var(--cinnabar); font-weight: 500; }
 
-    /* 中：SVG 纹样展示区 */
     .pattern-stage {
       background: var(--ink-deep);
       border-radius: 4px;
-      min-height: 320px;
+      min-height: 485px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -590,7 +697,6 @@
       100% { width: 340px; height: 340px; opacity: 0; }
     }
 
-    /* 右：纹样详情卡 */
     .pattern-info { display: flex; flex-direction: column; gap: .7rem; }
     .pattern-info-head {
       font-family: 'Ma Shan Zheng', cursive;
@@ -758,7 +864,7 @@
         <div id="chartPie"></div>
       </div>
 
-      <!-- 图片云（动态重排） -->
+      <!-- 图片云 -->
       <div class="card" id="cloudCard">
         <div class="card-header">
           <h3>三雕意象图云</h3>
@@ -767,37 +873,89 @@
         <div class="img-cloud" id="imgCloud"></div>
       </div>
 
-      <!-- 翻转知识卡 -->
+      <!-- 翻转知识卡 — 悬停自动展开 -->
       <div class="card" id="knowCard">
         <div class="card-header">
           <h3>工艺知识</h3>
-          <span class="badge">悬停翻转</span>
+          <span class="badge">悬停自动展开</span>
         </div>
+
+        <!-- 展开覆盖层：悬停任意翻转卡时弹出，覆盖整个 #knowCard -->
+        <div class="flip-expand-overlay" id="flipOverlay">
+          <button class="eo-close" id="flipOverlayClose">✕</button>
+          <div class="eo-icon" id="eoIcon"></div>
+          <div class="eo-keyword" id="eoKeyword"></div>
+          <div class="eo-divider"></div>
+          <div class="eo-text" id="eoText"></div>
+          <div class="eo-sub" id="eoSub"></div>
+        </div>
+
         <div class="knowledge-grid">
-          <div class="flip-card"><div class="flip-inner">
-            <div class="flip-front"><div class="icon">🪵</div><div class="label">木雕</div><div class="sub">Wood Carving</div></div>
-            <div class="flip-back"><div class="keyword">以楠、杉、银杏为材</div><p>梁架门窗隔扇，题材取戏文故事，透雕可达七层。</p></div>
-          </div></div>
-          <div class="flip-card"><div class="flip-inner">
-            <div class="flip-front"><div class="icon">🧱</div><div class="label">砖雕</div><div class="sub">Brick Carving</div></div>
-            <div class="flip-back"><div class="keyword">以青砖为纸</div><p>专用门楼照壁，选砖打坯细雕磨光四道工序。</p></div>
-          </div></div>
-          <div class="flip-card"><div class="flip-inner">
-            <div class="flip-front"><div class="icon">🪨</div><div class="label">石雕</div><div class="sub">Stone Carving</div></div>
-            <div class="flip-back"><div class="keyword">以黟县青石为主</div><p>柱础门框抱鼓石，线条硬朗，浮雕圆雕为主。</p></div>
-          </div></div>
-          <div class="flip-card"><div class="flip-inner">
-            <div class="flip-front"><div class="icon">🏮</div><div class="label">祥瑞寓意</div><div class="sub">Auspicious</div></div>
-            <div class="flip-back"><div class="keyword">福禄寿喜财</div><p>蝙蝠鹿鹤喜鹊铜钱，体现徽商对美好生活的祈愿。</p></div>
-          </div></div>
-          <div class="flip-card"><div class="flip-inner">
-            <div class="flip-front"><img src="素材/承志堂.png" alt="" class="flip-front-img"><div class="label">程朱礼教</div><div class="sub">Confucian Ethics</div></div>
-            <div class="flip-back"><div class="keyword">忠孝节义廉</div><p>程朱理学发源地，三雕以二十四孝故事教化后人。</p></div>
-          </div></div>
-          <div class="flip-card"><div class="flip-inner">
-            <div class="flip-front"><div class="icon">🌿</div><div class="label">自然山水</div><div class="sub">Nature</div></div>
-            <div class="flip-back"><div class="keyword">松竹梅兰</div><p>岁寒三友四君子，表达文人雅志，宛若天开之境。</p></div>
-          </div></div>
+          <div class="flip-card"
+               data-icon="🪵"
+               data-keyword="以楠、杉、银杏为材"
+               data-text="梁架门窗隔扇，题材取戏文故事，透雕可达七层，是三雕中工艺最为繁复者。刀法细腻，层次丰富，往往在咫尺之间构建出山水人物的宏大叙事。"
+               data-sub="Wood Carving · Transparent Relief">
+            <div class="flip-inner">
+              <div class="flip-front"><div class="icon">🪵</div><div class="label">木雕</div><div class="sub">Wood Carving</div></div>
+              <div class="flip-back"><div class="keyword">以楠、杉、银杏为材</div><p>梁架门窗隔扇，题材取戏文故事，透雕可达七层。</p></div>
+            </div>
+          </div>
+
+          <div class="flip-card"
+               data-icon="🧱"
+               data-keyword="以青砖为纸"
+               data-text="专用门楼照壁，选砖打坯细雕磨光四道工序，成品质感细腻如绢。每块砖上皆可见匠人以铁錾一笔一划凿刻出的山水楼阁，细节之精令人叹服。"
+               data-sub="Brick Carving · Gate Tower">
+            <div class="flip-inner">
+              <div class="flip-front"><div class="icon">🧱</div><div class="label">砖雕</div><div class="sub">Brick Carving</div></div>
+              <div class="flip-back"><div class="keyword">以青砖为纸</div><p>专用门楼照壁，选砖打坯细雕磨光四道工序。</p></div>
+            </div>
+          </div>
+
+          <div class="flip-card"
+               data-icon="🪨"
+               data-keyword="以黟县青石为主"
+               data-text="柱础门框抱鼓石，线条硬朗，浮雕圆雕为主，历经百年风雨而纹理清晰。黟县青石质地细腻，硬度适中，是徽州石雕首选材料，其灰绿色泽与白墙黑瓦相映成趣。"
+               data-sub="Stone Carving · Architectural Base">
+            <div class="flip-inner">
+              <div class="flip-front"><div class="icon">🪨</div><div class="label">石雕</div><div class="sub">Stone Carving</div></div>
+              <div class="flip-back"><div class="keyword">以黟县青石为主</div><p>柱础门框抱鼓石，线条硬朗，浮雕圆雕为主。</p></div>
+            </div>
+          </div>
+
+          <div class="flip-card"
+               data-icon="🏮"
+               data-keyword="福禄寿喜财"
+               data-text="蝙蝠鹿鹤喜鹊铜钱，谐音借意，体现徽商对美好生活的深切祈愿与期盼。五只蝙蝠环绕寿字即"五福捧寿"，寓意深远，是徽州三雕中最常见的吉祥组合图案。"
+               data-sub="Auspicious Symbols · Five Blessings">
+            <div class="flip-inner">
+              <div class="flip-front"><div class="icon">🏮</div><div class="label">祥瑞寓意</div><div class="sub">Auspicious</div></div>
+              <div class="flip-back"><div class="keyword">福禄寿喜财</div><p>蝙蝠鹿鹤喜鹊铜钱，体现徽商对美好生活的祈愿。</p></div>
+            </div>
+          </div>
+
+          <div class="flip-card"
+               data-icon="📜"
+               data-keyword="忠孝节义廉"
+               data-text="程朱理学发源地，三雕以二十四孝故事教化后人，将儒家伦理凝于刀刻之间。徽州是南宋理学大家朱熹故里，儒家伦常深刻浸润于每一处装饰纹样之中。"
+               data-sub="Confucian Ethics · Cheng-Zhu School">
+            <div class="flip-inner">
+              <div class="flip-front"><img src="素材/承志堂.png" alt="" class="flip-front-img"><div class="label">程朱礼教</div><div class="sub">Confucian Ethics</div></div>
+              <div class="flip-back"><div class="keyword">忠孝节义廉</div><p>程朱理学发源地，三雕以二十四孝故事教化后人。</p></div>
+            </div>
+          </div>
+
+          <div class="flip-card"
+               data-icon="🌿"
+               data-keyword="松竹梅兰"
+               data-text="岁寒三友四君子，表达文人雅志，宛若天开之境，是徽州文人审美的集中表达。梅以傲霜，竹以虚节，松以常青，兰以幽香，四君子各有其性，合而为雅。"
+               data-sub="Nature · Four Gentlemen of Plants">
+            <div class="flip-inner">
+              <div class="flip-front"><div class="icon">🌿</div><div class="label">自然山水</div><div class="sub">Nature</div></div>
+              <div class="flip-back"><div class="keyword">松竹梅兰</div><p>岁寒三友四君子，表达文人雅志，宛若天开之境。</p></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -811,9 +969,10 @@
       <div class="sec-line"></div>
     </div>
 
+    <!-- align-items: start — 各列按自身内容高度展示 -->
     <div class="section-row-3b">
 
-      <!-- 3D 模型 -->
+      <!-- 3D 模型卡 — 内容完整展示 -->
       <div class="card" id="modelCard">
         <div class="card-header">
           <h3>三维模型展示</h3>
@@ -841,7 +1000,7 @@
         </div>
       </div>
 
-      <!-- 竖向滚动数据 -->
+      <!-- 竖向滚动数据卡 — 固定高度滚动窗口 -->
       <div class="card" id="vsCard" style="padding:1.2rem 1.4rem .8rem;">
         <div class="card-header">
           <h3>三雕数据</h3>
@@ -926,7 +1085,7 @@
         </div>
       </div>
 
-      <!-- 历史沿革 -->
+      <!-- 历史沿革卡 — 内容完整展示 -->
       <div class="card" id="timeCard">
         <div class="card-header">
           <h3>历史沿革</h3>
@@ -966,7 +1125,7 @@
 
     </div><!-- /section-row-3b -->
 
-    <!-- ══ 区块三：三雕纹样图典（替换精品图录） ══ -->
+    <!-- ══ 区块三：三雕纹样图典 ══ -->
     <div class="ink-divider"><span>叁</span></div>
     <div class="sec-header">
       <span class="sec-num">03</span>
@@ -981,7 +1140,6 @@
       </div>
       <div class="pattern-layout">
 
-        <!-- 左：纹样导航 -->
         <div class="pattern-nav">
           <div class="pattern-nav-group">
             <div class="pattern-nav-title">🪵 木雕纹样</div>
@@ -1004,7 +1162,6 @@
           </div>
         </div>
 
-        <!-- 中：SVG 展示区 -->
         <div class="pattern-stage" id="patternStage">
           <div class="pattern-stage-bg"></div>
           <div class="pattern-anim-ring" id="animRing"></div>
@@ -1017,7 +1174,6 @@
           <div class="pattern-stage-label" id="patternStageLabel">回字纹</div>
         </div>
 
-        <!-- 右：详情 -->
         <div class="pattern-info" id="patternInfo">
           <div class="pattern-info-head" id="pInfoHead">回字纹</div>
           <div class="pattern-info-en" id="pInfoEn">Hui-character pattern</div>
@@ -1078,7 +1234,6 @@ const PIE_DATA_MAP = {
   '石雕': [{value:38,name:'几何纹样',itemStyle:{color:'#2e6b4f'}},{value:28,name:'祥禽瑞兽',itemStyle:{color:'#3e7f60'}},{value:22,name:'花卉植物',itemStyle:{color:'#5a9470'}},{value:12,name:'文字铭刻',itemStyle:{color:'#8aad80'}}]
 };
 
-// 图片云数据
 const IMG_CLOUD_DATA = [
   { src:'素材/三雕/木雕门窗花格.png', label:'木雕花格',  type:'木雕', color:'#5d4037', themes:['花卉植物','几何纹样'] },
   { src:'素材/三雕/砖雕门楼.png',     label:'砖雕门楼',  type:'砖雕', color:'#2c5f7a', themes:['山水楼阁'] },
@@ -1091,11 +1246,7 @@ const IMG_CLOUD_DATA = [
   { src:'素材/三雕/石雕门框.png',     label:'石雕门框',  type:'石雕', color:'#2e6b4f', themes:['文字铭刻','几何纹样'] },
 ];
 
-// ── 动态 Grid 布局模板 ──
-// 根据可见项数量生成最佳 grid 布局
-// 返回 { cols, rows, template } 供每个格子使用 gridColumn/gridRow
 function getGridLayout(count) {
-  // 预设布局模板（index=count-1，最多9项）
   const layouts = {
     1: { cols:'1fr', rows:'1fr', spans:[ [1,1,1,1] ] },
     2: { cols:'1fr 1fr', rows:'1fr', spans:[ [1,1,1,1],[2,2,1,1] ] },
@@ -1108,13 +1259,45 @@ function getGridLayout(count) {
     7: { cols:'1.5fr 1fr 1fr 1fr', rows:'1fr 1fr', spans:[
          [1,1,1,2],[2,2,1,1],[3,3,1,1],[4,4,1,1],[2,2,2,2],[3,3,2,2],[4,4,2,2] ] },
     8: { cols:'1.3fr 1fr 1fr 1fr', rows:'1fr 1fr', spans:[
-         [1,1,1,2],[2,2,1,1],[3,3,1,1],[4,4,1,1],[2,3,2,2],[4,4,2,2],[1,1,2,2] ].slice(0,8).concat([[3,3,2,2]]).slice(0,8) },
+         [1,1,1,2],[2,2,1,1],[3,3,1,1],[4,4,1,1],[1,1,2,2],[2,3,2,2],[4,4,2,2],[2,2,2,2] ] },
     9: { cols:'1.6fr 1fr 1fr 1fr 1fr', rows:'repeat(3,1fr)', spans:[
          [1,2,1,2],[3,3,1,1],[4,4,1,2],[5,5,1,1],
          [3,3,2,2],[5,5,2,2],
          [1,2,3,3],[3,4,3,3],[5,5,3,3] ] },
   };
   return layouts[Math.min(count, 9)] || layouts[9];
+}
+
+let cloudHighlightActive = false;
+
+function highlightCloudByTheme(theme) {
+  if (cloudHighlightActive) return;
+  const container = document.getElementById('imgCloud');
+  const activeType = document.querySelector('.type-tab.active').dataset.type;
+  const baseData = activeType === 'all' ? IMG_CLOUD_DATA : IMG_CLOUD_DATA.filter(d => d.type === activeType);
+  const matched = baseData.filter(d => d.themes.includes(theme));
+  if (matched.length === 0) return;
+  cloudHighlightActive = true;
+  container.style.transition = 'opacity .2s ease';
+  container.style.opacity = '0';
+  setTimeout(() => {
+    buildCloudItems(container, matched, true);
+    container.style.opacity = '1';
+  }, 200);
+}
+
+function clearCloudHighlight() {
+  if (!cloudHighlightActive) return;
+  cloudHighlightActive = false;
+  const container = document.getElementById('imgCloud');
+  const activeType = document.querySelector('.type-tab.active').dataset.type;
+  const baseData = activeType === 'all' ? IMG_CLOUD_DATA : IMG_CLOUD_DATA.filter(d => d.type === activeType);
+  container.style.transition = 'opacity .25s ease';
+  container.style.opacity = '0';
+  setTimeout(() => {
+    buildCloudItems(container, baseData, false);
+    container.style.opacity = '1';
+  }, 220);
 }
 
 const MODEL_INFO = [
@@ -1138,9 +1321,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initThreeJS();
   initModelSelector();
   initPatternExplorer();
+  initFlipCards();
 });
 
-// ── 滚动入场 ──
 function initScrollAnimation() {
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
@@ -1148,7 +1331,6 @@ function initScrollAnimation() {
   document.querySelectorAll('.card, .pattern-explorer').forEach(c => obs.observe(c));
 }
 
-// ── 类型标签切换 ──
 function initTypeTabs() {
   document.querySelectorAll('.type-tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -1169,15 +1351,8 @@ let pieChart;
 function initPieChart() {
   pieChart = echarts.init(document.getElementById('chartPie'));
   renderPie(PIE_DATA_ALL);
-
-  // 悬停 → 图片云高亮 + 重排
-  pieChart.on('mouseover', params => {
-    highlightCloudByTheme(params.name);
-  });
-  pieChart.on('mouseout', () => {
-    clearCloudHighlight();
-  });
-
+  pieChart.on('mouseover', params => { highlightCloudByTheme(params.name); });
+  pieChart.on('mouseout', () => { clearCloudHighlight(); });
   window.addEventListener('resize', () => pieChart.resize());
 }
 
@@ -1185,8 +1360,7 @@ function renderPie(data) {
   pieChart.setOption({
     backgroundColor: 'transparent',
     tooltip: {
-      trigger: 'item',
-      formatter: '{b}：{d}%',
+      trigger: 'item', formatter: '{b}：{d}%',
       backgroundColor: 'rgba(250,246,238,.95)',
       borderColor: 'rgba(184,134,11,.28)',
       textStyle: { color:'#4a3d2e', fontFamily:'Noto Serif SC', fontSize:11 }
@@ -1217,77 +1391,58 @@ function updatePieChart(type) {
 }
 
 // ══════════════════════════════════════════
-//  图片云 — 动态重排核心
+//  图片云
 // ══════════════════════════════════════════
 
-let currentType = 'all';
-let cloudItems = []; // DOM 节点引用
+let cloudItems = [];
 
-function initImgCloud(type) {
-  currentType = type;
-  const container = document.getElementById('imgCloud');
+function buildCloudItems(container, data, isHighlight) {
   container.innerHTML = '';
   cloudItems = [];
-
-  const filtered = type === 'all'
-    ? IMG_CLOUD_DATA
-    : IMG_CLOUD_DATA.filter(d => d.type === type);
-
-  const count = filtered.length;
+  const count = data.length;
+  if (count === 0) return;
   const layout = getGridLayout(count);
-
-  // 设置 grid 模板
   container.style.gridTemplateColumns = layout.cols;
   container.style.gridTemplateRows   = layout.rows;
-
-  filtered.forEach((item, i) => {
+  data.forEach((item, i) => {
     const span = layout.spans[i] || [1,1,1,1];
     const [colStart, colEnd, rowStart, rowEnd] = span;
-
     const el = document.createElement('div');
-    el.className = 'img-cloud-item';
+    el.className = 'img-cloud-item' + (isHighlight ? ' pie-highlight' : '');
     el.dataset.category = item.type;
     el.dataset.themes    = item.themes.join(',');
     el.dataset.label     = item.label;
-
     el.style.gridColumn = colStart === colEnd ? `${colStart}` : `${colStart} / ${colEnd + 1}`;
     el.style.gridRow    = rowStart === rowEnd ? `${rowStart}` : `${rowStart} / ${rowEnd + 1}`;
-
     const img = document.createElement('img');
-    img.src = item.src;
-    img.alt = item.label;
-
+    img.src = item.src; img.alt = item.label;
     const typeTag = document.createElement('span');
     typeTag.className = 'cloud-type-tag';
     typeTag.style.background = item.color;
     typeTag.textContent = item.type;
-
     const label = document.createElement('div');
     label.className = 'cloud-label';
     label.textContent = item.label;
-
-    el.appendChild(img);
-    el.appendChild(typeTag);
-    el.appendChild(label);
-
+    el.appendChild(img); el.appendChild(typeTag); el.appendChild(label);
     container.appendChild(el);
     cloudItems.push(el);
   });
 }
 
-// 切换 tab 后重建图片云
-function rebuildImgCloud(type) {
-  currentType = type;
+function initImgCloud(type) {
   const container = document.getElementById('imgCloud');
+  const filtered = type === 'all' ? IMG_CLOUD_DATA : IMG_CLOUD_DATA.filter(d => d.type === type);
+  buildCloudItems(container, filtered, false);
+}
 
-  // 淡出
+function rebuildImgCloud(type) {
+  cloudHighlightActive = false;
+  const container = document.getElementById('imgCloud');
   container.style.opacity = '0';
   container.style.transform = 'translateY(8px)';
   container.style.transition = 'opacity .25s ease, transform .25s ease';
-
   setTimeout(() => {
     initImgCloud(type);
-    // 淡入
     requestAnimationFrame(() => {
       container.style.transition = 'opacity .35s ease, transform .35s ease';
       container.style.opacity = '1';
@@ -1296,23 +1451,50 @@ function rebuildImgCloud(type) {
   }, 250);
 }
 
-// 饼图悬停：相关图片放大高亮，其余降暗并收缩
-function highlightCloudByTheme(theme) {
-  cloudItems.forEach(el => {
-    const themes = el.dataset.themes.split(',');
-    if (themes.includes(theme)) {
-      el.classList.add('pie-highlight');
-      el.classList.remove('pie-dimmed');
-    } else {
-      el.classList.add('pie-dimmed');
-      el.classList.remove('pie-highlight');
-    }
-  });
-}
+// ══════════════════════════════════════════
+//  翻转卡 — 悬停时自动展开覆盖整张卡片
+// ══════════════════════════════════════════
+function initFlipCards() {
+  const overlay   = document.getElementById('flipOverlay');
+  const closeBtn  = document.getElementById('flipOverlayClose');
+  const eoIcon    = document.getElementById('eoIcon');
+  const eoKeyword = document.getElementById('eoKeyword');
+  const eoText    = document.getElementById('eoText');
+  const eoSub     = document.getElementById('eoSub');
 
-function clearCloudHighlight() {
-  cloudItems.forEach(el => {
-    el.classList.remove('pie-highlight', 'pie-dimmed');
+  let hideTimer = null;
+
+  function showOverlay(card) {
+    clearTimeout(hideTimer);
+    eoIcon.textContent    = card.dataset.icon    || '';
+    eoKeyword.textContent = card.dataset.keyword || '';
+    eoText.textContent    = card.dataset.text    || '';
+    eoSub.textContent     = card.dataset.sub     || '';
+    overlay.classList.add('show');
+  }
+
+  function scheduleHide() {
+    // 短暂延迟，防止鼠标在卡片之间移动时闪烁
+    hideTimer = setTimeout(() => {
+      overlay.classList.remove('show');
+    }, 120);
+  }
+
+  // 每张翻转卡：mouseenter 展开，mouseleave 延迟收起
+  document.querySelectorAll('.flip-card').forEach(card => {
+    card.addEventListener('mouseenter', () => showOverlay(card));
+    card.addEventListener('mouseleave', scheduleHide);
+  });
+
+  // 鼠标移入覆盖层本身时取消收起，移出时收起
+  overlay.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+  overlay.addEventListener('mouseleave', scheduleHide);
+
+  // 关闭按钮
+  closeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    clearTimeout(hideTimer);
+    overlay.classList.remove('show');
   });
 }
 
@@ -1341,7 +1523,6 @@ window.vsTogglePlay = function() {
 //  纹样图典
 // ══════════════════════════════════════════
 
-// SVG 纹样生成器
 const PATTERNS = {
   huizi: {
     name:'回字纹', en:'Hui-character pattern', type:'木雕', era:'明清', attr:'几何类', mean:'生生不息',
@@ -1350,7 +1531,6 @@ const PATTERNS = {
     render(svg, palette) {
       const [c1,c2,c3] = palette;
       let s = `<rect width="200" height="200" fill="${c1}"/>`;
-      // 4x4 回字格
       for(let row=0;row<4;row++) for(let col=0;col<4;col++) {
         const x=10+col*46, y=10+row*46;
         s+=`<rect x="${x}" y="${y}" width="40" height="40" fill="none" stroke="${c2}" stroke-width="3"/>`;
@@ -1376,8 +1556,6 @@ const PATTERNS = {
         }
         s += `<circle cx="${cx}" cy="${cy}" r="8" fill="${c3}"/>`;
       });
-      s += `<line x1="0" y1="0" x2="200" y2="200" stroke="${c2}" stroke-width=".5" opacity=".2"/>`;
-      s += `<line x1="200" y1="0" x2="0" y2="200" stroke="${c2}" stroke-width=".5" opacity=".2"/>`;
       return s;
     }
   },
@@ -1407,7 +1585,6 @@ const PATTERNS = {
     render(svg, palette) {
       const [c1,c2,c3] = palette;
       let s = `<rect width="200" height="200" fill="${c1}"/>`;
-      // 横排云雷纹带
       for(let band=0; band<4; band++) {
         const y = 20 + band*48;
         for(let i=0;i<5;i++) {
@@ -1442,7 +1619,6 @@ const PATTERNS = {
     render(svg, palette) {
       const [c1,c2,c3] = palette;
       let s = `<rect width="200" height="200" fill="${c1}"/>`;
-      // 六边形花砖拼接
       for(let row=0; row<5; row++) for(let col=0; col<5; col++) {
         const cx = 22 + col*40 + (row%2)*20;
         const cy = 22 + row*35;
@@ -1470,7 +1646,6 @@ const PATTERNS = {
       for(let row=0; row<5; row++) for(let col=0; col<5; col++) {
         const x = 10+col*step, y = 10+row*step;
         const cx=x+step/2, cy=y+step/2;
-        // 万字
         s += `<g transform="translate(${cx},${cy})">`;
         s += `<path d="M-8,-14 v8 h8 v-8 h8 v22 h-22 v-8 h8 v-14" fill="none" stroke="${c2}" stroke-width="2.2" stroke-linecap="square"/>`;
         s += `</g>`;
@@ -1512,7 +1687,6 @@ const PATTERNS = {
     render(svg, palette) {
       const [c1,c2,c3] = palette;
       let s = `<rect width="200" height="200" fill="${c1}"/>`;
-      // 云头连续带
       for(let band=0; band<4; band++) {
         const y = 30 + band*50;
         for(let i=0; i<4; i++) {
@@ -1533,17 +1707,12 @@ const PATTERNS = {
       const [c1,c2,c3] = palette;
       let s = `<rect width="200" height="200" fill="${c1}"/>`;
       const cx=100, cy=100;
-      // 兽面
       s += `<rect x="${cx-50}" y="${cy-40}" width="100" height="80" rx="6" fill="none" stroke="${c2}" stroke-width="3"/>`;
-      // 眼
       s += `<ellipse cx="${cx-22}" cy="${cy-10}" rx="14" ry="12" fill="${c3}"/><circle cx="${cx-22}" cy="${cy-10}" r="6" fill="${c2}"/><circle cx="${cx-22}" cy="${cy-10}" r="2.5" fill="${c1}"/>`;
       s += `<ellipse cx="${cx+22}" cy="${cy-10}" rx="14" ry="12" fill="${c3}"/><circle cx="${cx+22}" cy="${cy-10}" r="6" fill="${c2}"/><circle cx="${cx+22}" cy="${cy-10}" r="2.5" fill="${c1}"/>`;
-      // 鼻
       s += `<path d="M${cx-8},${cy+5} C${cx-8},${cy+20} ${cx+8},${cy+20} ${cx+8},${cy+5}" fill="${c2}"/>`;
-      // 角
       s += `<path d="M${cx-50},${cy-40} C${cx-70},${cy-70} ${cx-40},${cy-80} ${cx-25},${cy-55}" fill="none" stroke="${c2}" stroke-width="3"/>`;
       s += `<path d="M${cx+50},${cy-40} C${cx+70},${cy-70} ${cx+40},${cy-80} ${cx+25},${cy-55}" fill="none" stroke="${c2}" stroke-width="3"/>`;
-      // 纹样边框
       s += `<rect x="5" y="5" width="190" height="190" fill="none" stroke="${c2}" stroke-width="1.5" opacity=".3"/>`;
       s += `<rect x="12" y="12" width="176" height="176" fill="none" stroke="${c3}" stroke-width=".8" opacity=".25"/>`;
       return s;
@@ -1551,12 +1720,11 @@ const PATTERNS = {
   },
 };
 
-// 配色方案
 const PALETTES = [
-  ['#1a1410','#b8860b','#d4a017'],  // 暗金
-  ['#f5f0e8','#c0392b','#8d2f26'],  // 朱砂
-  ['#0d1a14','#2e6b4f','#5a9470'],  // 翠玉
-  ['#1a1a2a','#2c5f7a','#4a8fa0'],  // 青石
+  ['#1a1410','#b8860b','#d4a017'],
+  ['#f5f0e8','#c0392b','#8d2f26'],
+  ['#0d1a14','#2e6b4f','#5a9470'],
+  ['#1a1a2a','#2c5f7a','#4a8fa0'],
 ];
 
 let currentPattern = 'huizi';
@@ -1567,7 +1735,6 @@ let rotateRAF = null;
 let isZoomed = false;
 
 function initPatternExplorer() {
-  // 导航项点击
   document.querySelectorAll('.pattern-nav-item').forEach(item => {
     item.addEventListener('click', () => {
       document.querySelectorAll('.pattern-nav-item').forEach(i => i.classList.remove('active'));
@@ -1576,13 +1743,9 @@ function initPatternExplorer() {
       renderPattern(currentPattern);
     });
   });
-
-  // 控制按钮
   document.getElementById('btnRotate').addEventListener('click', toggleRotate);
   document.getElementById('btnColor').addEventListener('click', cycleColor);
   document.getElementById('btnZoom').addEventListener('click', toggleZoom);
-
-  // 迷你缩略图
   buildMiniStrip();
   renderPattern('huizi');
 }
@@ -1593,7 +1756,6 @@ function renderPattern(key) {
   const svg = document.getElementById('patternSvg');
   const palette = PALETTES[currentPaletteIdx];
   svg.innerHTML = p.render(svg, palette);
-
   document.getElementById('patternStageLabel').textContent = p.name;
   document.getElementById('pInfoHead').textContent = p.name;
   document.getElementById('pInfoEn').textContent = p.en;
@@ -1602,7 +1764,6 @@ function renderPattern(key) {
   document.getElementById('pMetaEra').textContent = p.era;
   document.getElementById('pMetaAttr').textContent = p.attr;
   document.getElementById('pMetaMean').textContent = p.mean;
-
   const tagsEl = document.getElementById('pUsageTags');
   tagsEl.innerHTML = '';
   p.usage.forEach(u => {
@@ -1610,13 +1771,9 @@ function renderPattern(key) {
     tag.className = 'usage-tag'; tag.textContent = u;
     tagsEl.appendChild(tag);
   });
-
-  // 同步迷你图高亮
   document.querySelectorAll('.pattern-mini').forEach(m => {
     m.classList.toggle('active-mini', m.dataset.pattern === key);
   });
-
-  // 触发扩散动画
   const ring = document.getElementById('animRing');
   ring.style.animation = 'none';
   void ring.offsetWidth;
@@ -1631,16 +1788,13 @@ function buildMiniStrip() {
     mini.className = 'pattern-mini' + (key === 'huizi' ? ' active-mini' : '');
     mini.dataset.pattern = key;
     mini.title = p.name;
-
-    // 小尺寸 SVG 预览
     const svgEl = document.createElementNS('http://www.w3.org/2000/svg','svg');
     svgEl.setAttribute('viewBox','0 0 200 200');
     svgEl.innerHTML = p.render(svgEl, PALETTES[0]);
-
     mini.appendChild(svgEl);
     mini.addEventListener('click', () => {
       document.querySelectorAll('.pattern-nav-item').forEach(i => {
-        if(i.dataset.pattern === key) { i.classList.add('active'); }
+        if(i.dataset.pattern === key) i.classList.add('active');
         else i.classList.remove('active');
       });
       currentPattern = key;
@@ -1655,10 +1809,8 @@ function toggleRotate() {
   const btn = document.getElementById('btnRotate');
   btn.style.background = isRotating ? 'rgba(192,57,43,.6)' : '';
   btn.style.color = isRotating ? 'white' : '';
-  if (isRotating) startRotate();
-  else stopRotate();
+  if (isRotating) startRotate(); else stopRotate();
 }
-
 function startRotate() {
   const svg = document.getElementById('patternSvg');
   function frame() {
@@ -1668,23 +1820,19 @@ function startRotate() {
   }
   rotateRAF = requestAnimationFrame(frame);
 }
-
 function stopRotate() {
   if (rotateRAF) cancelAnimationFrame(rotateRAF);
-  // 平滑归位
   const svg = document.getElementById('patternSvg');
   svg.style.transition = 'transform .5s ease';
   svg.style.transform = 'rotate(0deg)';
   rotateAngle = 0;
   setTimeout(() => { svg.style.transition = ''; }, 500);
 }
-
 function cycleColor() {
   currentPaletteIdx = (currentPaletteIdx + 1) % PALETTES.length;
   renderPattern(currentPattern);
   buildMiniStrip();
 }
-
 function toggleZoom() {
   isZoomed = !isZoomed;
   const svg = document.getElementById('patternSvg');
@@ -1728,25 +1876,20 @@ let threeScene, threeCamera, threeRenderer, threeControls, threeGroup;
 function initThreeJS() {
   const container = document.getElementById('threeCanvas');
   const w = container.clientWidth, h = container.clientHeight;
-
   threeScene = new THREE.Scene();
   threeScene.background = new THREE.Color(0x1a1410);
-
   threeCamera = new THREE.PerspectiveCamera(45, w/h, 0.1, 1000);
   threeCamera.position.set(0, 1.5, 5);
-
   threeRenderer = new THREE.WebGLRenderer({ antialias:true });
   threeRenderer.setSize(w, h);
   threeRenderer.setPixelRatio(window.devicePixelRatio);
   threeRenderer.shadowMap.enabled = true;
   container.insertBefore(threeRenderer.domElement, container.firstChild);
-
   threeControls = new OrbitControls(threeCamera, threeRenderer.domElement);
   threeControls.enableDamping = true;
   threeControls.dampingFactor = 0.08;
   threeControls.minDistance = 2;
   threeControls.maxDistance = 12;
-
   threeScene.add(new THREE.AmbientLight(0xfdf0d0, 0.6));
   const dir = new THREE.DirectionalLight(0xfff5e0, 1.2);
   dir.position.set(5,8,5); dir.castShadow = true; threeScene.add(dir);
@@ -1754,21 +1897,18 @@ function initThreeJS() {
   fill.position.set(-4,2,-3); threeScene.add(fill);
   const rim = new THREE.PointLight(0xb8860b, 0.3, 15);
   rim.position.set(4,-1,-4); threeScene.add(rim);
-
   const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(12,12),
     new THREE.MeshStandardMaterial({color:0x110d08, roughness:0.9})
   );
   ground.rotation.x = -Math.PI/2; ground.position.y = -2;
   ground.receiveShadow = true; threeScene.add(ground);
-
   const pts = [];
   for(let i=0;i<300;i++) pts.push((Math.random()-.5)*20,(Math.random()-.5)*20,(Math.random()-.5)*20);
   const ptGeo = new THREE.BufferGeometry();
   ptGeo.setAttribute('position', new THREE.Float32BufferAttribute(pts,3));
   threeScene.add(new THREE.Points(ptGeo,
     new THREE.PointsMaterial({color:0xd4a017,size:.04,transparent:true,opacity:.35})));
-
   loadDemoModel(0);
   (function animate() {
     requestAnimationFrame(animate);
@@ -1776,7 +1916,6 @@ function initThreeJS() {
     if (threeGroup) threeGroup.rotation.y += .003;
     threeRenderer.render(threeScene, threeCamera);
   })();
-
   window.addEventListener('resize', () => {
     const nw = container.clientWidth, nh = container.clientHeight;
     threeCamera.aspect = nw/nh; threeCamera.updateProjectionMatrix();
@@ -1819,7 +1958,6 @@ function loadFallbackModel(idx) {
   const matWood  = new THREE.MeshStandardMaterial({color:0x8d6e63,roughness:0.75,metalness:0.05});
   const matBrick = new THREE.MeshStandardMaterial({color:0x4a6fa5,roughness:0.85,metalness:0.02});
   const matStone = new THREE.MeshStandardMaterial({color:0x4e7c60,roughness:0.90,metalness:0.00});
-
   switch(idx) {
     case 0: {
       const mat = matWood;
