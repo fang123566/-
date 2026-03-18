@@ -6,8 +6,6 @@
   <title>三雕艺术 | 解码徽派民居</title>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
-  <script src="https://d3js.org/d3.v7.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/d3-cloud@1.2.7/build/d3.layout.cloud.js"></script>
   <script type="importmap">
 {
   "imports": {
@@ -17,7 +15,6 @@
 }
 </script>
   <style>
-    /* ── 变量系统（与马头墙对齐）── */
     :root {
       --ink-black:  #1a1410;
       --ink-deep:   #2d2519;
@@ -47,10 +44,8 @@
       color: var(--ink-black);
       min-height: 100vh;
       overflow-x: hidden;
-      position: relative;
     }
 
-    /* ── 纸张纹理 ── */
     body::before {
       content: '';
       position: fixed; inset: 0;
@@ -58,19 +53,6 @@
       pointer-events: none; z-index: 0; opacity: .6;
     }
 
-    /* ── 四角暗角 ── */
-    body::after {
-      content: '';
-      position: fixed; top:0; left:0; width:100%; height:100%;
-      background:
-        radial-gradient(ellipse 300px 200px at 0%   0%,   rgba(26,20,16,.08) 0%, transparent 70%),
-        radial-gradient(ellipse 300px 200px at 100% 0%,   rgba(26,20,16,.06) 0%, transparent 70%),
-        radial-gradient(ellipse 300px 200px at 0%   100%, rgba(26,20,16,.06) 0%, transparent 70%),
-        radial-gradient(ellipse 300px 200px at 100% 100%, rgba(26,20,16,.08) 0%, transparent 70%);
-      pointer-events: none; z-index: 0;
-    }
-
-    /* ── 背景视频 ── */
     #bgVideo {
       position: fixed; top:0; left:0;
       width:100%; height:100%;
@@ -80,16 +62,13 @@
       pointer-events: none;
     }
 
-    /* ══════════════════════════════
-       导航（右上角水平，与马头墙一致）
-    ══════════════════════════════ */
+    /* ── 导航 ── */
     #circleNav {
       position: fixed;
       top: 1.5rem; right: 1.8rem;
       display: flex; flex-direction: row; gap: .6rem;
       z-index: 200;
     }
-
     .circle-btn {
       width: 52px; height: 52px;
       border-radius: 50%;
@@ -107,15 +86,9 @@
     .circle-btn svg {
       width: 18px; height: 18px;
       stroke: currentColor; stroke-width: 1.8;
-      fill: none;
-      transition: all .3s;
+      fill: none; transition: all .3s;
     }
-    .circle-btn span {
-      font-size: .52rem; font-weight: 500;
-      letter-spacing: .05em;
-      font-family: 'Noto Serif SC', serif;
-      white-space: nowrap;
-    }
+    .circle-btn span { font-size: .52rem; font-weight: 500; letter-spacing: .05em; white-space: nowrap; }
     .circle-btn:hover {
       background: rgba(245,240,232,.98);
       border-color: rgba(192,57,43,.45);
@@ -123,173 +96,108 @@
       transform: translateY(-3px);
       box-shadow: 0 8px 24px rgba(192,57,43,.15);
     }
-    .circle-btn.active {
-      background: var(--ink-deep);
-      border-color: var(--ink-deep);
-      color: rgba(245,240,232,.9);
-    }
+    .circle-btn.active { background: var(--ink-deep); border-color: var(--ink-deep); color: rgba(245,240,232,.9); }
 
-    /* ══════════════════════════════
-       主容器
-    ══════════════════════════════ */
+    /* ── 主容器 ── */
     .page-wrapper {
       position: relative; z-index: 5;
-      max-width: 1160px; margin: 0 auto;
-      padding: 2rem 2.5rem 5rem;
+      max-width: 1400px; margin: 0 auto;
+      padding: 1rem 2rem 3rem;
     }
 
-    /* ══════════════════════════════
-       页头
-    ══════════════════════════════ */
+    /* ── 页头 ── */
     .page-header {
-      text-align: center;
-      padding: 5rem 0 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      padding: 4.5rem 0 1.5rem;
       position: relative;
     }
-    .page-header::before {
-      content: '三雕';
-      position: absolute; top: 1.5rem; left: 50%;
-      transform: translateX(-50%);
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: 8rem;
-      color: rgba(192,57,43,.04);
-      pointer-events: none;
-      white-space: nowrap;
-    }
+    .header-left { flex-shrink: 0; }
+    .header-right { flex: 1; }
 
+    .page-title-zh {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 4rem; letter-spacing: .2em;
+      color: var(--ink-black);
+      line-height: 1;
+      text-shadow: 2px 3px 8px rgba(26,20,16,.1);
+      margin-bottom: 4px;
+    }
+    .page-title-en {
+      font-family: Georgia, serif; font-style: italic;
+      font-size: .78rem; letter-spacing: .22em;
+      color: var(--ink-light); font-weight: 300;
+      text-transform: uppercase; margin-bottom: 10px;
+    }
     .header-badge {
       display: inline-flex; align-items: center; gap: 8px;
       background: rgba(192,57,43,.08);
       border: 1px solid rgba(192,57,43,.25);
-      padding: 5px 16px; border-radius: 2px;
-      margin-bottom: 18px;
+      padding: 4px 14px; border-radius: 2px;
+      margin-bottom: 12px;
     }
-    .header-badge span {
-      font-size: .75rem; letter-spacing: .18em;
-      color: var(--cinnabar); font-weight: 500;
-    }
-    .header-badge::before, .header-badge::after {
-      content: '◆'; font-size: .5rem;
-      color: var(--cinnabar); opacity: .6;
-    }
-
-    .page-title-zh {
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: 3.5rem; letter-spacing: .2em;
-      color: var(--ink-black);
-      line-height: 1;
-      text-shadow: 2px 3px 8px rgba(26,20,16,.1);
-      margin-bottom: 8px;
-    }
-    .page-title-en {
-      font-family: Georgia, serif; font-style: italic;
-      font-size: .85rem; letter-spacing: .28em;
-      color: var(--ink-light); font-weight: 300;
-      text-transform: uppercase; margin-bottom: 16px;
-    }
+    .header-badge span { font-size: .72rem; letter-spacing: .18em; color: var(--cinnabar); font-weight: 500; }
+    .header-badge::before, .header-badge::after { content: '◆'; font-size: .5rem; color: var(--cinnabar); opacity: .6; }
     .page-subtitle {
-      font-size: .88rem; color: var(--ink-medium);
-      line-height: 1.9; font-weight: 300;
-      max-width: 520px; margin: 0 auto 1.4rem;
+      font-size: .84rem; color: var(--ink-medium);
+      line-height: 1.85; font-weight: 300;
       border-left: 2px solid var(--cinnabar);
-      padding-left: 14px; text-align: left;
-    }
-    .header-divider {
-      display: flex; align-items: center; gap: 12px;
-      max-width: 320px; margin: 0 auto;
-    }
-    .header-divider::before, .header-divider::after {
-      content: ''; flex: 1; height: 1px;
-      background: linear-gradient(to right, transparent, rgba(184,134,11,.45), transparent);
-    }
-    .header-divider span {
-      font-family: 'Ma Shan Zheng', cursive;
-      color: var(--gold); font-size: 1.1rem; opacity: .8;
+      padding-left: 12px;
     }
 
-    /* ══════════════════════════════
-       三雕类型选择
-    ══════════════════════════════ */
+    /* ── 类型标签 ── */
     .type-tabs {
       display: flex; gap: 0;
-      margin-bottom: 1.8rem;
       border: 1.5px solid rgba(184,134,11,.3);
       border-radius: 4px; overflow: hidden;
+      margin-bottom: 1.2rem;
     }
     .type-tab {
-      flex: 1; padding: .8rem;
+      flex: 1; padding: .65rem .8rem;
       text-align: center; cursor: pointer;
-      font-family: 'Noto Serif SC', serif; font-size: .88rem;
+      font-family: 'Noto Serif SC', serif; font-size: .84rem;
       background: var(--paper-warm); color: var(--ink-light);
       border-right: 1px solid rgba(184,134,11,.2);
       transition: all .3s; position: relative;
     }
     .type-tab:last-child { border-right: none; }
-    .type-tab .tab-cn {
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: 1.1rem; display: block;
-      color: var(--ink-medium);
-    }
-    .type-tab .tab-en { font-size: .62rem; letter-spacing: .08em; color: var(--ink-faint); }
-    .type-tab.active {
-      background: var(--ink-deep); color: rgba(245,240,232,.9);
-    }
+    .type-tab .tab-cn { font-family: 'Ma Shan Zheng', cursive; font-size: 1.05rem; display: block; color: var(--ink-medium); }
+    .type-tab .tab-en { font-size: .6rem; letter-spacing: .08em; color: var(--ink-faint); }
+    .type-tab.active { background: var(--ink-deep); color: rgba(245,240,232,.9); }
     .type-tab.active .tab-cn { color: rgba(245,240,232,.95); }
     .type-tab.active .tab-en { color: rgba(245,240,232,.45); }
-    .type-tab:hover:not(.active) {
-      background: var(--cream);
-      border-color: rgba(192,57,43,.25);
-      color: var(--cinnabar);
-    }
+    .type-tab:hover:not(.active) { background: var(--cream); color: var(--cinnabar); }
 
-    /* ══════════════════════════════
-       节标题（借用马头墙 sec-header）
-    ══════════════════════════════ */
+    /* ── 节标题 ── */
     .sec-header {
-      display: flex; align-items: center; gap: 12px;
-      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px;
     }
-    .sec-num {
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: 2rem; color: var(--cinnabar);
-      opacity: .22; line-height: 1; min-width: 28px;
-    }
-    .sec-title {
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: 1.3rem; color: var(--ink-black); letter-spacing: .07em;
-    }
-    .sec-line {
-      flex: 1; height: 1px;
-      background: linear-gradient(to right, rgba(184,134,11,.35), transparent);
-    }
+    .sec-num { font-family: 'Ma Shan Zheng', cursive; font-size: 1.8rem; color: var(--cinnabar); opacity: .22; line-height: 1; }
+    .sec-title { font-family: 'Ma Shan Zheng', cursive; font-size: 1.2rem; color: var(--ink-black); letter-spacing: .07em; }
+    .sec-line { flex: 1; height: 1px; background: linear-gradient(to right, rgba(184,134,11,.35), transparent); }
 
-    /* 墨线分隔 */
     .ink-divider {
       display: flex; align-items: center; gap: 12px;
-      margin: 2.5rem 0 1.8rem;
+      margin: 1.6rem 0 1.2rem;
     }
     .ink-divider::before, .ink-divider::after {
       content: ''; flex: 1; height: 1px;
       background: linear-gradient(to right, transparent, rgba(184,134,11,.4), transparent);
     }
-    .ink-divider span {
-      font-family: 'Ma Shan Zheng', cursive;
-      color: var(--gold); font-size: 1.1rem; opacity: .8;
-    }
+    .ink-divider span { font-family: 'Ma Shan Zheng', cursive; color: var(--gold); font-size: 1.1rem; opacity: .8; }
 
-    /* ══════════════════════════════
-       通用卡片
-    ══════════════════════════════ */
+    /* ── 通用卡片 ── */
     .card {
       background: rgba(250,246,238,.92);
       border: 1px solid rgba(184,134,11,.2);
       border-radius: 4px;
       box-shadow: 0 6px 24px rgba(26,20,16,.07);
-      padding: 1.4rem 1.6rem;
+      padding: 1.2rem 1.4rem;
       position: relative;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity .65s ease, transform .65s ease;
+      opacity: 0; transform: translateY(18px);
+      transition: opacity .6s ease, transform .6s ease;
     }
     .card::before {
       content: ''; position: absolute;
@@ -297,917 +205,651 @@
       pointer-events: none;
     }
     .card.visible { opacity:1; transform:translateY(0); }
-
     .card-header {
       display: flex; align-items: center; gap: 10px;
       border-bottom: 1px solid rgba(184,134,11,.18);
-      padding-bottom: .8rem; margin-bottom: 1.2rem;
+      padding-bottom: .7rem; margin-bottom: 1rem;
     }
-    .card-header h3 {
+    .card-header h3 { font-family: 'Ma Shan Zheng', cursive; font-size: 1.1rem; color: var(--ink-black); letter-spacing: .07em; }
+    .card-header .badge { font-family: 'Noto Serif SC', serif; color: var(--cinnabar); font-size: .7rem; padding: 2px 8px; border: 1px solid rgba(192,57,43,.3); border-radius: 2px; letter-spacing: .06em; }
+
+    /* ══════════════════════════════
+       区块一：三列布局
+    ══════════════════════════════ */
+    .section-row-3 {
+      display: grid;
+      grid-template-columns: 300px 1fr 240px;
+      gap: 1.2rem;
+      margin-bottom: 1.2rem;
+      align-items: start;
+    }
+
+    #chartPie { width:100%; height:260px; }
+
+    /* ══════════════════════════════
+       图片云 — 动态重排版本
+    ══════════════════════════════ */
+    .img-cloud {
+      display: grid;
+      gap: 5px;
+      width: 100%;
+      height: 262px; /* 固定高度，与饼图对齐 */
+      transition: none;
+    }
+
+    .img-cloud-item {
+      position: relative;
+      cursor: pointer;
+      border-radius: 3px;
+      overflow: hidden;
+      border: 2px solid rgba(245,240,232,.5);
+      box-shadow: 0 2px 8px rgba(26,20,16,.15);
+      transition:
+        transform .4s cubic-bezier(.165,.84,.44,1),
+        box-shadow .3s ease,
+        border-color .3s ease,
+        opacity .35s ease;
+      z-index: 1;
+      min-height: 0;
+      min-width: 0;
+    }
+    .img-cloud-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      filter: sepia(8%) contrast(.96);
+      transition: transform .4s ease, filter .4s ease;
+      display: block;
+    }
+    .img-cloud-item:hover {
+      transform: scale(1.04);
+      z-index: 20;
+      box-shadow: 0 6px 22px rgba(26,20,16,.3);
+      border-color: rgba(245,240,232,.9);
+    }
+    .img-cloud-item:hover img {
+      transform: scale(1.08);
+      filter: sepia(0%) contrast(1.05);
+    }
+    .cloud-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(26,20,16,.88), transparent);
+      color: rgba(245,240,232,.95);
+      font-size: .6rem; padding: 14px 5px 4px;
+      text-align: center;
       font-family: 'Ma Shan Zheng', cursive;
-      font-size: 1.15rem; color: var(--ink-black); letter-spacing: .07em;
+      letter-spacing: .06em;
+      opacity: 0; transition: opacity .3s;
     }
-    .card-header .badge {
+    .img-cloud-item:hover .cloud-label { opacity: 1; }
+    .cloud-type-tag {
+      position: absolute; top: 4px; left: 4px;
+      font-size: .52rem; padding: 1px 5px;
+      border-radius: 2px; font-weight: 700;
       font-family: 'Noto Serif SC', serif;
-      color: var(--cinnabar); font-size: .72rem;
-      padding: 2px 8px;
-      border: 1px solid rgba(192,57,43,.3);
-      border-radius: 2px; letter-spacing: .06em;
+      letter-spacing: .04em;
+      color: white;
+      z-index: 2;
     }
 
-    /* ══════════════════════════════
-       上方两列
-    ══════════════════════════════ */
-    .top-row {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 1.4rem; margin-bottom: 1.4rem;
+    /* 图片云：饼图高亮 */
+    .img-cloud-item.pie-highlight {
+      transform: scale(1.06) !important;
+      z-index: 15 !important;
+      border-color: var(--cinnabar) !important;
+      box-shadow: 0 0 0 2px var(--cinnabar), 0 8px 28px rgba(192,57,43,.55) !important;
+    }
+    .img-cloud-item.pie-highlight img {
+      filter: sepia(0%) contrast(1.08) brightness(1.05) !important;
+    }
+    .img-cloud-item.pie-dimmed {
+      opacity: 0.22 !important;
+      filter: grayscale(70%) !important;
     }
 
-    /* 饼图 */
-    #chartPie { width:100%; height:300px; }
-
-    /* 词云 */
-    #wordCloudCanvas { width:100%; height:300px; }
-    #wordCloudCanvas svg { display:block; }
-
-    /* ══════════════════════════════
-       知识翻转卡片
-    ══════════════════════════════ */
+    /* ── 翻转知识卡 ── */
     .knowledge-grid {
-  display: grid; 
-  grid-template-columns: repeat(3,1fr);
-  gap: 1rem;
-  /* 可选：防止卡片放大后超出网格容器 */
-  
-  /* 可选：给网格加一点内边距，避免放大的卡片贴边 */
-  padding: 0.5rem;
-}
-.flip-card {
-  height: 164px; 
-  perspective: 800px; 
-  cursor: pointer;
-  width: 100%;
-  box-sizing: border-box;
-  /* 关键1：添加缩放过渡，和翻转动画时长保持一致 */
-  transition: transform 0.6s cubic-bezier(.4,0,.2,1);
-  /* 初始状态：不缩放 */
-  transform: scale(1);
-  /* 关键：防止放大的卡片遮挡其他元素 */
-  position: relative;
-  z-index: 1;
-}
-/* 关键2：hover时卡片放大（可自定义缩放比例） */
-.flip-card:hover {
-  transform: scale(1.5); /* 放大1.08倍，1=原尺寸，越大放大越多 */
-  z-index: 10; /* 放大时提升层级，避免被相邻卡片遮挡 */
-}
-.flip-inner {
-  width: 100%; 
-  height: 100%;
-  transition: transform 0.6s cubic-bezier(.4,0,.2,1);
-  transform-style: preserve-3d; 
-  position: relative;
-  box-sizing: border-box;
-}
-.flip-card:hover .flip-inner,
-.flip-card.flipped .flip-inner { 
-  transform: rotateY(180deg); 
-}
-.flip-front, .flip-back {
-  position: absolute; 
-  inset: 0;
-  backface-visibility: hidden;
-  border-radius: 4px; 
-  overflow: hidden;
-  display: flex; 
-  align-items: center; 
-  justify-content: center;
-  flex-direction: column; 
-  gap: 7px;
-  height: 100%;
-  width: 100%;
-  box-sizing: border-box;
-}
-.flip-front {
-  background: transparent; 
-  border: 1.5px solid rgba(184,134,11,.22);
-  color: var(--ink-black);
-  position: relative; 
-  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-.flip-front .icon,
-.flip-front .label,
-.flip-front .sub {
-  position: relative;
-  z-index: 2;
-}
-.flip-front .icon { font-size: 1.9rem; }
-.flip-front .label {
-  font-family: 'Ma Shan Zheng', cursive;
-  font-size: .95rem; 
-  color: var(--ink-black); 
-  letter-spacing: .06em;
-}
-.flip-front .sub { 
-  font-size: .62rem; 
-  color: var(--ink-faint); 
-}
-.flip-back {
-  background: var(--ink-deep); 
-  color: white;
-  transform: rotateY(180deg);
-  padding: 1rem; 
-  text-align: center;
-}
-.flip-front-img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.5;
-  z-index: 1;
-  box-sizing: border-box;
-}
-.flip-back p { 
-  font-size: .74rem; 
-  line-height: 1.75; 
-  color: rgba(245,240,232,.85); 
-}
-.flip-back .keyword {
-  color: var(--gold-l); 
-  font-size: .8rem; 
-  font-weight: 700;
-  margin-bottom: .3rem; 
-  font-family: 'Ma Shan Zheng', cursive;
-  letter-spacing: .06em;
-}
-    /* ══════════════════════════════
-       3D 模型
-    ══════════════════════════════ */
-    .model-viewer-wrap {
-      display: grid; grid-template-columns: 1fr 290px;
-      gap: 1.4rem; align-items: start;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: repeat(3, 1fr);
+      gap: .6rem;
+      height: 100%;
     }
+    .flip-card {
+      height: 80px;
+      perspective: 800px;
+      cursor: pointer;
+    }
+    .flip-inner {
+      width: 100%; height: 100%;
+      transition: transform 0.55s cubic-bezier(.4,0,.2,1);
+      transform-style: preserve-3d;
+      position: relative;
+    }
+    .flip-card:hover .flip-inner { transform: rotateY(180deg); }
+    .flip-front, .flip-back {
+      position: absolute; inset: 0;
+      backface-visibility: hidden;
+      border-radius: 3px; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 4px;
+    }
+    .flip-front {
+      background: var(--cream);
+      border: 1.5px solid rgba(184,134,11,.22);
+    }
+    .flip-front .icon { font-size: 1.4rem; }
+    .flip-front .label { font-family: 'Ma Shan Zheng', cursive; font-size: .88rem; color: var(--ink-black); }
+    .flip-front .sub { font-size: .56rem; color: var(--ink-faint); }
+    .flip-front-img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; opacity: .45; z-index: 0;
+    }
+    .flip-front .icon, .flip-front .label, .flip-front .sub { position: relative; z-index: 1; }
+    .flip-back {
+      background: var(--ink-deep); color: white;
+      transform: rotateY(180deg);
+      padding: .6rem; text-align: center;
+    }
+    .flip-back p { font-size: .65rem; line-height: 1.6; color: rgba(245,240,232,.82); }
+    .flip-back .keyword { color: var(--gold-l); font-size: .72rem; font-weight: 700; margin-bottom: .2rem; font-family: 'Ma Shan Zheng', cursive; }
+
+    /* ══════════════════════════════
+       区块二：三列并排
+    ══════════════════════════════ */
+    .section-row-3b {
+      display: grid;
+      grid-template-columns: 1fr 300px 320px;
+      gap: 1.2rem;
+      margin-bottom: 1.2rem;
+      align-items: start;
+    }
+
+    /* 3D 模型 */
     #threeCanvas {
-      width:100%; height:420px;
+      width:100%; height:340px;
       border-radius: 4px; overflow: hidden;
       background: linear-gradient(135deg, #1a1410 0%, #2d2318 50%, #1a1410 100%);
       position: relative; cursor: grab;
       border: 1px solid rgba(184,134,11,.15);
     }
     #threeCanvas:active { cursor: grabbing; }
-    #threeCanvas canvas { width:100%!important; height:100%!important; }
     .model-controls-hint {
-      position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+      position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
       background: rgba(26,20,16,.55); color: rgba(245,240,232,.7);
-      font-size: .68rem; padding: 4px 14px; border-radius: 20px;
+      font-size: .65rem; padding: 3px 12px; border-radius: 20px;
       pointer-events: none; white-space: nowrap;
     }
-
-    .model-info-panel { display: flex; flex-direction: column; gap: 1rem; }
-
-    .model-selector { display: flex; flex-direction: column; gap: .45rem; }
+    .model-selector { display: flex; flex-direction: column; gap: .35rem; margin-top: .6rem; }
     .model-btn {
-      padding: .65rem 1rem;
+      padding: .5rem .8rem;
       background: var(--cream);
       border: 1.5px solid rgba(184,134,11,.22);
       border-radius: 3px; cursor: pointer;
-      font-family: 'Noto Serif SC', serif; font-size: .82rem;
+      font-family: 'Noto Serif SC', serif; font-size: .78rem;
       color: var(--ink-medium);
-      text-align: left; transition: all .25s;
-      display: flex; align-items: center; gap: 8px;
+      text-align: left; transition: all .22s;
+      display: flex; align-items: center; gap: 7px;
     }
-    .model-btn .dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: rgba(184,134,11,.3); flex-shrink: 0;
-    }
-    .model-btn.active, .model-btn:hover {
-      background: var(--ink-deep); color: rgba(245,240,232,.9);
-      border-color: var(--ink-deep);
-    }
+    .model-btn .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(184,134,11,.3); flex-shrink: 0; }
+    .model-btn.active, .model-btn:hover { background: var(--ink-deep); color: rgba(245,240,232,.9); border-color: var(--ink-deep); }
     .model-btn.active .dot, .model-btn:hover .dot { background: var(--cinnabar); }
-
     .model-desc {
       background: var(--paper-warm);
-      border-left: 3px solid var(--cinnabar);
       border: 1px solid rgba(184,134,11,.18);
       border-left: 3px solid var(--cinnabar);
-      padding: 1rem; border-radius: 0 4px 4px 0;
-      font-size: .8rem; line-height: 1.85; color: var(--ink-medium);
+      padding: .8rem; border-radius: 0 4px 4px 0;
+      font-size: .76rem; line-height: 1.8; color: var(--ink-medium);
+      margin-top: .6rem;
     }
-    .model-desc h4 {
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: 1rem; margin-bottom: .5rem;
-      color: var(--ink-black); letter-spacing: .06em;
-    }
+    .model-desc h4 { font-family: 'Ma Shan Zheng', cursive; font-size: .95rem; margin-bottom: .4rem; color: var(--ink-black); }
+    .model-stats { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; margin-top: .6rem; }
+    .stat-item { background: var(--cream); border: 1px solid rgba(184,134,11,.18); border-radius: 3px; padding: .5rem; text-align: center; }
+    .stat-label { font-size: .58rem; color: var(--ink-faint); display: block; margin-bottom: 2px; }
+    .stat-value { font-family: 'Ma Shan Zheng', cursive; font-size: 1rem; color: var(--cinnabar); }
 
-    .model-stats {
-      display: grid; grid-template-columns: 1fr 1fr; gap: .5rem;
-    }
-    .stat-item {
-      background: var(--cream);
-      border: 1px solid rgba(184,134,11,.18);
-      border-radius: 3px; padding: .6rem;
-      text-align: center;
-    }
-    .stat-label {
-      font-size: .62rem; color: var(--ink-faint);
-      display: block; margin-bottom: 2px;
-      font-family: 'Noto Serif SC', serif; letter-spacing: .06em;
-    }
-    .stat-value {
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: 1.1rem; color: var(--cinnabar);
-    }
-
-    /* ══════════════════════════════
-       竖向滚动数据可视化
-    ══════════════════════════════ */
-
-    /* 左列容器：固定高度，overflow hidden */
+    /* ── 竖向滚动数据面板 ── */
     .vs-outer {
       position: relative;
       overflow: hidden;
-      height: 700px;             /* 与时间轴卡片等高 */
+      height: 420px;
       border-top: 2px solid rgba(184,134,11,.35);
       border-bottom: 2px solid rgba(184,134,11,.35);
     }
-
-    /* 上下渐隐遮罩 */
-    .vs-outer::before,
-    .vs-outer::after {
-      content: '';
-      position: absolute; left: 0; right: 0;
-      height: 64px; z-index: 4; pointer-events: none;
+    .vs-outer::before, .vs-outer::after {
+      content: ''; position: absolute; left: 0; right: 0;
+      height: 50px; z-index: 4; pointer-events: none;
     }
-    .vs-outer::before { top: 0;    background: linear-gradient(to bottom, var(--paper-warm), transparent); }
-    .vs-outer::after  { bottom: 0; background: linear-gradient(to top,    var(--paper-warm), transparent); }
-
-    /* 纵向滚动轨道 */
-    .vs-belt {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      animation: vsScroll 40s linear infinite;
-    }
+    .vs-outer::before { top: 0; background: linear-gradient(to bottom, var(--paper-warm), transparent); }
+    .vs-outer::after  { bottom: 0; background: linear-gradient(to top, var(--paper-warm), transparent); }
+    .vs-belt { display: flex; flex-direction: column; width: 100%; animation: vsScroll 36s linear infinite; }
     .vs-belt:hover { animation-play-state: paused; }
     .vs-belt.paused { animation-play-state: paused; }
-
-    @keyframes vsScroll {
-      0%   { transform: translateY(0); }
-      100% { transform: translateY(-50%); }
-    }
-
-    /* 单面板 */
+    @keyframes vsScroll { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
     .vs-panel {
-      flex-shrink: 0;
-      width: 100%;
-      padding: 16px 18px 14px;
-      background: var(--paper-warm);
-      border-bottom: 1px solid rgba(184,134,11,.15);
-      position: relative;
-      overflow: hidden;
-      box-sizing: border-box;
-      cursor: default;
+      flex-shrink: 0; width: 100%; padding: 13px 14px 12px;
+      background: var(--paper-warm); border-bottom: 1px solid rgba(184,134,11,.15);
+      position: relative; overflow: hidden; box-sizing: border-box; cursor: default;
       transition: background .25s;
     }
     .vs-panel:hover { background: #fdf9f0; }
-
-    /* 大号水印字 */
-    .vs-panel-bg {
-      position: absolute; bottom: -6px; right: 4px;
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: 4.5rem; line-height: 1;
-      color: rgba(26,20,16,.03); pointer-events: none;
-    }
-
-    .vs-panel-num {
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: .58rem; letter-spacing: .22em;
-      color: var(--cinnabar); opacity: .6;
-      margin-bottom: 1px;
-    }
-    .vs-panel-title {
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: .98rem; color: var(--ink-black);
-      letter-spacing: .08em; margin-bottom: 1px; line-height: 1.3;
-    }
-    .vs-panel-en {
-      font-size: .54rem; letter-spacing: .18em;
-      color: var(--ink-faint); text-transform: uppercase;
-      display: block; margin-bottom: 9px;
-    }
-    .vs-divider {
-      width: 100%; height: 1px; margin-bottom: 9px;
-      background: linear-gradient(to right, var(--cinnabar), rgba(184,134,11,.2), transparent);
-      opacity: .5;
-    }
-
-    /* 图表容器 */
-    .vs-chart { width: 100%; height: 160px; }
-
-    /* 数据表格 */
-    .vs-table {
-      width: 100%; border-collapse: collapse;
-      font-family: 'Noto Serif SC', serif; font-size: .68rem;
-    }
-    .vs-table th {
-      font-size: .57rem; letter-spacing: .1em;
-      color: var(--cinnabar); font-weight: 600;
-      padding: 3px 6px;
-      border-bottom: 1px solid rgba(184,134,11,.2);
-      text-align: left; white-space: nowrap;
-    }
-    .vs-table td {
-      padding: 4px 6px; color: var(--ink-medium);
-      font-weight: 300; line-height: 1.5;
-      border-bottom: 1px solid rgba(184,134,11,.08);
-      vertical-align: top;
-    }
+    .vs-panel-bg { position: absolute; bottom: -4px; right: 3px; font-family: 'Ma Shan Zheng', cursive; font-size: 3.8rem; line-height: 1; color: rgba(26,20,16,.03); pointer-events: none; }
+    .vs-panel-num { font-family: 'Ma Shan Zheng', cursive; font-size: .55rem; letter-spacing: .2em; color: var(--cinnabar); opacity: .6; margin-bottom: 1px; }
+    .vs-panel-title { font-family: 'Ma Shan Zheng', cursive; font-size: .9rem; color: var(--ink-black); letter-spacing: .07em; margin-bottom: 1px; }
+    .vs-panel-en { font-size: .52rem; letter-spacing: .16em; color: var(--ink-faint); text-transform: uppercase; display: block; margin-bottom: 7px; }
+    .vs-divider { width: 100%; height: 1px; margin-bottom: 7px; background: linear-gradient(to right, var(--cinnabar), rgba(184,134,11,.2), transparent); opacity: .5; }
+    .vs-table { width: 100%; border-collapse: collapse; font-family: 'Noto Serif SC', serif; font-size: .64rem; }
+    .vs-table th { font-size: .54rem; letter-spacing: .08em; color: var(--cinnabar); font-weight: 600; padding: 2px 5px; border-bottom: 1px solid rgba(184,134,11,.2); text-align: left; white-space: nowrap; }
+    .vs-table td { padding: 3px 5px; color: var(--ink-medium); font-weight: 300; line-height: 1.45; border-bottom: 1px solid rgba(184,134,11,.08); vertical-align: top; }
     .vs-table tr:last-child td { border-bottom: none; }
     .vs-table tr:hover td { background: rgba(184,134,11,.04); }
     .vs-td-hl { color: var(--ink-black); font-weight: 500; }
-    .vs-td-tag {
-      display: inline-block; padding: 1px 5px;
-      border-radius: 2px; font-size: .55rem; letter-spacing: .05em;
-    }
+    .vs-td-tag { display: inline-block; padding: 1px 4px; border-radius: 2px; font-size: .52rem; letter-spacing: .04em; }
     .vs-td-tag.high    { background: rgba(26,20,16,.08);  color: var(--ink-deep); }
     .vs-td-tag.mid     { background: rgba(184,134,11,.1); color: var(--gold); }
-    .vs-td-tag.special { background: rgba(192,57,43,.08); color: var(--cinnabar); }
     .vs-td-tag.jade    { background: rgba(46,107,79,.1);  color: var(--jade); }
     .vs-td-tag.blue    { background: rgba(44,95,122,.1);  color: var(--stone-blue); }
-
-    /* 统计格子 */
-    .vs-stat-grid {
-      display: grid; grid-template-columns: 1fr 1fr 1fr;
-      gap: 7px; margin-top: 2px;
-    }
-    .vs-stat {
-      background: rgba(245,240,232,.8);
-      border: 1px solid rgba(184,134,11,.15);
-      border-radius: 3px; padding: 8px;
-      text-align: center;
-    }
-    .vs-stat-val {
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: 1.35rem; color: var(--ink-black);
-      line-height: 1; margin-bottom: 3px;
-    }
-    .vs-stat-val span { font-size: .7rem; color: var(--ink-light); }
-    .vs-stat-label {
-      font-size: .58rem; color: var(--ink-light);
-      letter-spacing: .04em; font-family: 'Noto Serif SC', serif;
-    }
-
-    /* 进度条 */
-    .vs-bar-row {
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 6px;
-    }
-    .vs-bar-label {
-      font-size: .68rem; color: var(--ink-medium);
-      font-family: 'Noto Serif SC', serif;
-      width: 52px; flex-shrink: 0; text-align: right;
-    }
-    .vs-bar-track {
-      flex: 1; height: 8px; border-radius: 4px;
-      background: rgba(184,134,11,.1); overflow: hidden;
-    }
-    .vs-bar-fill {
-      height: 100%; border-radius: 4px;
-      transition: width 1.2s cubic-bezier(.4,0,.2,1);
-    }
-    .vs-bar-num {
-      font-size: .65rem; color: var(--ink-faint);
-      font-family: 'Noto Serif SC', serif;
-      width: 28px; text-align: right;
-    }
-
-    /* 播放控制 */
-    .vs-controls {
-      display: flex; align-items: center; justify-content: center;
-      gap: 12px; padding: 8px 0 2px;
-    }
-    .vs-play-btn {
-      width: 30px; height: 30px; border-radius: 50%;
-      border: 1px solid rgba(192,57,43,.35);
-      background: rgba(192,57,43,.06); color: var(--cinnabar);
-      font-size: .75rem; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: all .2s;
-    }
+    .vs-stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-top: 2px; }
+    .vs-stat { background: rgba(245,240,232,.8); border: 1px solid rgba(184,134,11,.15); border-radius: 3px; padding: 6px; text-align: center; }
+    .vs-stat-val { font-family: 'Ma Shan Zheng', cursive; font-size: 1.1rem; color: var(--ink-black); line-height: 1; margin-bottom: 2px; }
+    .vs-stat-val span { font-size: .65rem; color: var(--ink-light); }
+    .vs-stat-label { font-size: .55rem; color: var(--ink-light); letter-spacing: .03em; }
+    .vs-bar-row { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; }
+    .vs-bar-label { font-size: .64rem; color: var(--ink-medium); width: 48px; flex-shrink: 0; text-align: right; }
+    .vs-bar-track { flex: 1; height: 7px; border-radius: 4px; background: rgba(184,134,11,.1); overflow: hidden; }
+    .vs-bar-fill { height: 100%; border-radius: 4px; }
+    .vs-bar-num { font-size: .62rem; color: var(--ink-faint); width: 24px; text-align: right; }
+    .vs-controls { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 6px 0 0; }
+    .vs-play-btn { width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(192,57,43,.35); background: rgba(192,57,43,.06); color: var(--cinnabar); font-size: .7rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; }
     .vs-play-btn:hover { background: var(--cinnabar); color: white; }
-    .vs-speed-label {
-      font-size: .6rem; color: var(--ink-faint);
-      letter-spacing: .1em; font-family: 'Noto Serif SC', serif;
-    }
+    .vs-speed-label { font-size: .58rem; color: var(--ink-faint); letter-spacing: .08em; }
 
-    /* ══════════════════════════════
-       时间轴
-    ══════════════════════════════ */
-    .timeline {
-      position: relative; padding: 1rem 0;
-    }
+    /* ── 时间轴 ── */
+    .timeline { position: relative; padding: .5rem 0; }
     .timeline::before {
       content: ''; position: absolute;
-      left: 50%; top: 0; bottom: 0; width: 2px;
+      left: 16px; top: 0; bottom: 0; width: 2px;
       background: linear-gradient(to bottom, transparent, var(--cinnabar), transparent);
-      transform: translateX(-50%);
     }
-    .timeline-item {
-      display: flex; align-items: flex-start; gap: 1.5rem;
-      margin-bottom: 1.5rem; position: relative;
-    }
-    .timeline-item:nth-child(odd)  { flex-direction: row; }
-    .timeline-item:nth-child(even) { flex-direction: row-reverse; }
-    .timeline-content {
-      flex: 1;
-      background: var(--paper-warm);
-      border: 1px solid rgba(184,134,11,.18);
-      border-radius: 3px; padding: .8rem 1rem;
-      font-size: .8rem; line-height: 1.85;
-      color: var(--ink-medium); position: relative;
-    }
-    .timeline-item:nth-child(odd) .timeline-content::after {
-      content: ''; position: absolute; right: -8px; top: 12px;
-      border: 8px solid transparent;
-      border-left-color: rgba(184,134,11,.2);
-    }
-    .timeline-item:nth-child(even) .timeline-content::after {
-      content: ''; position: absolute; left: -8px; top: 12px;
-      border: 8px solid transparent;
-      border-right-color: rgba(184,134,11,.2);
-    }
+    .timeline-item { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; padding-left: 4px; }
     .timeline-dot {
-      flex-shrink: 0; width: 36px; height: 36px;
+      flex-shrink: 0; width: 30px; height: 30px;
       background: var(--cinnabar); border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      color: white; font-size: .68rem; font-weight: 700;
-      font-family: 'Ma Shan Zheng', cursive;
-      box-shadow: 0 0 0 5px rgba(192,57,43,.15);
+      color: white; font-size: .65rem; font-family: 'Ma Shan Zheng', cursive;
+      box-shadow: 0 0 0 4px rgba(192,57,43,.15);
       position: relative; z-index: 2;
     }
-    .timeline-era {
+    .timeline-content {
+      flex: 1; background: var(--paper-warm);
+      border: 1px solid rgba(184,134,11,.18);
+      border-radius: 3px; padding: .65rem .85rem;
+      font-size: .76rem; line-height: 1.75; color: var(--ink-medium);
+    }
+    .timeline-era { font-family: 'Ma Shan Zheng', cursive; font-size: .72rem; color: var(--cinnabar); letter-spacing: .1em; margin-bottom: .25rem; }
+
+    /* ══════════════════════════════
+       区块三：三雕纹样图典（替换精品图录）
+    ══════════════════════════════ */
+    .pattern-explorer {
+      background: rgba(250,246,238,.92);
+      border: 1px solid rgba(184,134,11,.2);
+      border-radius: 4px;
+      box-shadow: 0 6px 24px rgba(26,20,16,.07);
+      padding: 1.2rem 1.4rem;
+      position: relative;
+      opacity: 0; transform: translateY(18px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .pattern-explorer::before {
+      content: ''; position: absolute;
+      inset: 5px; border: 1px solid rgba(184,134,11,.07);
+      pointer-events: none;
+    }
+    .pattern-explorer.visible { opacity: 1; transform: translateY(0); }
+
+    .pattern-layout {
+      display: grid;
+      grid-template-columns: 200px 1fr 260px;
+      gap: 1.2rem;
+      align-items: start;
+    }
+
+    /* 左：纹样导航树 */
+    .pattern-nav { display: flex; flex-direction: column; gap: 4px; }
+    .pattern-nav-group { margin-bottom: 6px; }
+    .pattern-nav-title {
       font-family: 'Ma Shan Zheng', cursive;
-      font-size: .75rem; color: var(--cinnabar);
-      letter-spacing: .1em; margin-bottom: .3rem;
+      font-size: .78rem; letter-spacing: .1em;
+      color: var(--cinnabar); padding: 4px 8px;
+      border-bottom: 1px solid rgba(192,57,43,.2);
+      margin-bottom: 4px;
     }
+    .pattern-nav-item {
+      padding: 5px 10px 5px 18px;
+      font-size: .76rem; color: var(--ink-medium);
+      cursor: pointer; border-radius: 2px;
+      border-left: 2px solid transparent;
+      transition: all .2s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .pattern-nav-item::before { content: '·'; color: var(--gold); font-size: .9rem; }
+    .pattern-nav-item:hover { background: var(--cream); color: var(--ink-black); border-left-color: var(--gold); }
+    .pattern-nav-item.active { background: rgba(192,57,43,.07); color: var(--cinnabar); border-left-color: var(--cinnabar); font-weight: 500; }
 
-    /* ══════════════════════════════
-       图片画廊
-    ══════════════════════════════ */
-    .gallery-outer {
-      border: 2px solid rgba(93,64,55,.35);
-      background: var(--paper-warm);
-      padding: 1rem; border-radius: 4px;
-    }
-    .gallery-scroll {
-      display: flex; gap: 1rem;
-      overflow-x: auto; padding: .5rem 0;
-      scrollbar-width: thin;
-      scrollbar-color: var(--wood) var(--cream);
-    }
-    .gallery-scroll::-webkit-scrollbar { height: 5px; }
-    .gallery-scroll::-webkit-scrollbar-track { background: var(--cream); }
-    .gallery-scroll::-webkit-scrollbar-thumb { background: var(--wood); border-radius: 3px; }
-
-    .gallery-item {
-      flex-shrink: 0; width: 256px; height: 185px;
-      border-radius: 3px; overflow: hidden;
-      position: relative; cursor: pointer;
-      box-shadow: 0 3px 12px rgba(26,20,16,.12);
-      transition: all .4s cubic-bezier(.165,.84,.44,1);
-      border: 2px solid transparent;
-    }
-    .gallery-item img {
-      width:100%; height:100%; object-fit:cover;
-      transition: transform .5s ease;
-      filter: sepia(5%) contrast(.97);
-    }
-    .gallery-item:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 28px rgba(26,20,16,.2);
-    }
-    .gallery-item:hover img { transform: scale(1.07); filter: sepia(0%); }
-    .item-caption {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      background: linear-gradient(to top, rgba(26,20,16,.9), transparent);
-      color: rgba(245,240,232,.95); padding: 22px 10px 8px;
-      transform: translateY(100%); transition: transform .3s;
-      font-size: .76rem; text-align: center;
-      font-family: 'Noto Serif SC', serif;
-    }
-    .gallery-item:hover .item-caption { transform: translateY(0); }
-    .item-type-tag {
-      position: absolute; top: 8px; left: 8px;
-      padding: 2px 8px; border-radius: 2px;
-      font-size: .62rem; font-weight: 700;
-      font-family: 'Noto Serif SC', serif;
-      letter-spacing: .06em;
-      background: var(--cinnabar); color: white;
-    }
-
-    .gallery-item.hl-from-cloud {
-      border-color: var(--cinnabar);
-      transform: scale(1.04) translateY(-5px);
-      box-shadow: 0 0 22px rgba(192,57,43,.5);
-      animation: hlPulse 1.5s infinite;
-    }
-    @keyframes hlPulse {
-      0%   { box-shadow: 0 0 14px rgba(192,57,43,.4); }
-      50%  { box-shadow: 0 0 28px rgba(192,57,43,.8); }
-      100% { box-shadow: 0 0 14px rgba(192,57,43,.4); }
-    }
-
-    /* ══════════════════════════════
-       Lightbox
-    ══════════════════════════════ */
-    #lightbox {
-      position: fixed; inset: 0; z-index: 9000;
-      background: rgba(26,20,16,.88);
-      display: none; align-items: center; justify-content: center;
-      backdrop-filter: blur(5px);
-    }
-    #lightbox.open { display: flex; }
-    #lightboxImg {
-      max-width: 85vw; max-height: 80vh;
-      border-radius: 3px; border: 2px solid rgba(245,240,232,.15);
-    }
-    #lightboxCaption {
-      position: absolute; bottom: 8%; left: 50%; transform: translateX(-50%);
-      color: rgba(245,240,232,.9); font-size: .88rem; letter-spacing: .06em;
-      background: rgba(26,20,16,.55); padding: 6px 20px; border-radius: 20px;
-      font-family: 'Noto Serif SC', serif;
-    }
-    #lightboxClose {
-      position: absolute; top: 1.5rem; right: 2rem;
-      color: rgba(245,240,232,.7); font-size: 2rem; cursor: pointer; line-height: 1;
-      transition: color .2s;
-    }
-    #lightboxClose:hover { color: var(--cinnabar); }
-
-    /* ══════════════════════════════
-       自定义提示
-    ══════════════════════════════ */
-    .custom-tooltip {
-      position: fixed; pointer-events: none;
-      background: rgba(26,20,16,.92); color: rgba(245,240,232,.9);
-      padding: 8px 14px; border-radius: 3px;
-      font-size: .78rem; line-height: 1.65;
-      border-left: 3px solid var(--cinnabar);
-      backdrop-filter: blur(4px);
-      z-index: 9999; display: none;
-      max-width: 200px;
-      font-family: 'Noto Serif SC', serif;
-    }
-
-    /* ══════════════════════════════
-       Footer
-    ══════════════════════════════ */
-    .site-footer {
+    /* 中：SVG 纹样展示区 */
+    .pattern-stage {
       background: var(--ink-deep);
-      padding: 24px 40px;
-      position: relative; z-index: 5;
+      border-radius: 4px;
+      min-height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(184,134,11,.2);
     }
-    .site-footer::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(to right, var(--cinnabar), var(--gold), var(--cinnabar));
+    .pattern-stage-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, rgba(184,134,11,.06) 0%, transparent 70%);
     }
-    .footer-inner {
-      display: flex; align-items: center; justify-content: space-between;
+    .pattern-stage svg {
+      width: 100%; max-width: 280px; height: 280px;
+      position: relative; z-index: 2;
+      transition: opacity .4s ease;
     }
-    .footer-location { font-size: .76rem; letter-spacing: .15em; color: var(--ink-faint); }
-    .footer-brand {
-      font-family: 'Ma Shan Zheng', cursive; font-size: 1.1rem;
-      color: rgba(245,240,232,.6); letter-spacing: .1em;
-    }
-    .footer-text { font-size: .7rem; letter-spacing: .1em; color: rgba(196,180,154,.45); }
-
-    /* 印章装饰 */
-    .seal {
-      position: fixed; bottom: 40px; right: 40px;
-      width: 58px; height: 58px; border-radius: 4px;
-      border: 2px solid var(--cinnabar);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 50; opacity: .45; transition: opacity .3s;
-    }
-    .seal:hover { opacity: .88; }
-    .seal-inner {
+    .pattern-stage-label {
+      position: absolute; bottom: 12px; left: 0; right: 0;
+      text-align: center;
       font-family: 'Ma Shan Zheng', cursive;
-      color: var(--cinnabar); font-size: .6rem;
-      text-align: center; line-height: 1.45; letter-spacing: .05em;
+      font-size: .9rem; letter-spacing: .12em;
+      color: rgba(184,134,11,.8);
+    }
+    .pattern-controls {
+      position: absolute; top: 10px; right: 10px;
+      display: flex; gap: 6px;
+    }
+    .pctrl {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1px solid rgba(184,134,11,.3);
+      background: rgba(26,20,16,.55);
+      color: rgba(245,240,232,.7);
+      font-size: .72rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s; backdrop-filter: blur(4px);
+    }
+    .pctrl:hover { background: rgba(192,57,43,.6); color: white; border-color: var(--cinnabar); }
+    .pattern-anim-ring {
+      position: absolute; border-radius: 50%;
+      border: 1px solid rgba(184,134,11,.12);
+      animation: ringExpand 3s ease-out infinite;
+      pointer-events: none;
+    }
+    @keyframes ringExpand {
+      0%   { width: 60px; height: 60px; opacity: .7; }
+      100% { width: 340px; height: 340px; opacity: 0; }
     }
 
-    /* ══════════════════════════════
-       入场动画延迟
-    ══════════════════════════════ */
-    .card:nth-child(1)  { transition-delay: .08s; }
-    .card:nth-child(2)  { transition-delay: .18s; }
-    .card:nth-child(3)  { transition-delay: .28s; }
+    /* 右：纹样详情卡 */
+    .pattern-info { display: flex; flex-direction: column; gap: .7rem; }
+    .pattern-info-head {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 1.4rem; letter-spacing: .1em; color: var(--ink-black);
+      border-bottom: 2px solid var(--cinnabar); padding-bottom: .4rem;
+    }
+    .pattern-info-en {
+      font-size: .62rem; font-style: italic; letter-spacing: .18em;
+      color: var(--ink-faint); font-family: Georgia, serif;
+    }
+    .pattern-info-desc {
+      font-size: .78rem; line-height: 1.85; color: var(--ink-medium);
+      background: var(--cream); border-radius: 3px; padding: .7rem;
+      border-left: 3px solid var(--gold);
+    }
+    .pattern-meta-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: .4rem;
+    }
+    .pattern-meta-item {
+      background: var(--paper-warm);
+      border: 1px solid rgba(184,134,11,.15);
+      border-radius: 3px; padding: .5rem .6rem;
+    }
+    .pattern-meta-label { font-size: .56rem; color: var(--ink-faint); letter-spacing: .06em; margin-bottom: 2px; }
+    .pattern-meta-val { font-family: 'Ma Shan Zheng', cursive; font-size: .92rem; color: var(--ink-black); }
+    .pattern-usage-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+    .usage-tag {
+      padding: 2px 8px; border-radius: 2px; font-size: .62rem;
+      border: 1px solid rgba(184,134,11,.3);
+      color: var(--ink-medium); background: var(--cream);
+      font-family: 'Noto Serif SC', serif;
+    }
+    .pattern-mini-strip {
+      display: flex; gap: 5px; overflow-x: auto;
+      padding-bottom: 3px;
+    }
+    .pattern-mini-strip::-webkit-scrollbar { height: 3px; }
+    .pattern-mini-strip::-webkit-scrollbar-track { background: var(--cream); }
+    .pattern-mini-strip::-webkit-scrollbar-thumb { background: var(--wood-l); border-radius: 2px; }
+    .pattern-mini {
+      width: 46px; height: 46px; flex-shrink: 0;
+      border-radius: 3px; cursor: pointer;
+      border: 2px solid transparent;
+      background: var(--cream);
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s; overflow: hidden;
+    }
+    .pattern-mini svg { width: 38px; height: 38px; }
+    .pattern-mini:hover { border-color: var(--gold); transform: scale(1.08); }
+    .pattern-mini.active-mini { border-color: var(--cinnabar); background: rgba(192,57,43,.06); }
+
+    /* ── 印章 ── */
+    .seal { position: fixed; bottom: 36px; right: 36px; width: 52px; height: 52px; border-radius: 4px; border: 2px solid var(--cinnabar); display: flex; align-items: center; justify-content: center; z-index: 50; opacity: .42; transition: opacity .3s; }
+    .seal:hover { opacity: .85; }
+    .seal-inner { font-family: 'Ma Shan Zheng', cursive; color: var(--cinnabar); font-size: .58rem; text-align: center; line-height: 1.4; }
+
+    /* ── Footer ── */
+    .site-footer { background: var(--ink-deep); padding: 20px 40px; position: relative; z-index: 5; }
+    .site-footer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(to right, var(--cinnabar), var(--gold), var(--cinnabar)); }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; }
+    .footer-location { font-size: .74rem; letter-spacing: .14em; color: var(--ink-faint); }
+    .footer-brand { font-family: 'Ma Shan Zheng', cursive; font-size: 1.05rem; color: rgba(245,240,232,.6); letter-spacing: .1em; }
+    .footer-text { font-size: .68rem; letter-spacing: .1em; color: rgba(196,180,154,.45); }
+
+    /* 入场延迟 */
+    .card:nth-child(1)  { transition-delay: .06s; }
+    .card:nth-child(2)  { transition-delay: .14s; }
+    .card:nth-child(3)  { transition-delay: .22s; }
     .card:nth-child(4)  { transition-delay: .08s; }
-    .card:nth-child(5)  { transition-delay: .18s; }
-    .card:nth-child(6)  { transition-delay: .28s; }
+    .card:nth-child(5)  { transition-delay: .16s; }
 
-    /* ══════════════════════════════
-       响应式
-    ══════════════════════════════ */
-    @media (max-width: 960px) {
-      .top-row { grid-template-columns: 1fr; }
-      .model-viewer-wrap { grid-template-columns: 1fr; }
-      .knowledge-grid { grid-template-columns: repeat(2,1fr); }
-      #circleNav { flex-wrap: wrap; max-width: 280px; }
+    @media (max-width: 1100px) {
+      .section-row-3  { grid-template-columns: 280px 1fr; }
+      .section-row-3  > :last-child { grid-column: 1 / -1; }
+      .section-row-3b { grid-template-columns: 1fr 280px; }
+      .section-row-3b > :last-child { grid-column: 1 / -1; }
+      .pattern-layout { grid-template-columns: 1fr 1fr; }
+      .pattern-layout > :first-child { display: none; }
     }
-    @media (max-width: 640px) {
-      .page-wrapper { padding: 1rem 1.2rem 4rem; }
-      .knowledge-grid { grid-template-columns: 1fr; }
-      .page-title-zh { font-size: 2.4rem; }
+    @media (max-width: 760px) {
+      .section-row-3, .section-row-3b { grid-template-columns: 1fr; }
+      .page-header { flex-direction: column; gap: 1rem; }
+      #circleNav { flex-wrap: wrap; max-width: 260px; }
+      .pattern-layout { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-  <video id="bgVideo" class="bg-video" autoplay loop muted playsinline>
+  <video id="bgVideo" autoplay loop muted playsinline>
     <source src="public/9ba0a2e6346f2a8446c8b10f630c6071.mp4" type="video/mp4" />
   </video>
 
-  <!-- ══ 导航（右上角，与马头墙一致）══ -->
   <nav id="circleNav">
     <a href="index.html" class="circle-btn">
-      <svg viewBox="0 0 32 32" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 16L16 5l11 11"/><path d="M8 14v13h16V14"/>
-      </svg>
+      <svg viewBox="0 0 32 32" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16L16 5l11 11"/><path d="M8 14v13h16V14"/></svg>
       <span>首页</span>
     </a>
     <a href="matouqiang.html" class="circle-btn">
-      <svg viewBox="0 0 32 32" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M7 28V21h5V15h4V9h4v6h4v6h5v7"/>
-      </svg>
+      <svg viewBox="0 0 32 32" stroke-linecap="round" stroke-linejoin="round"><path d="M7 28V21h5V15h4V9h4v6h4v6h5v7"/></svg>
       <span>马头墙</span>
     </a>
     <a href="tianjing.html" class="circle-btn">
-      <svg viewBox="0 0 32 32">
-        <rect x="6" y="6" width="20" height="20" rx="2"/>
-        <rect x="12" y="12" width="8" height="8" rx="1"/>
-      </svg>
+      <svg viewBox="0 0 32 32"><rect x="6" y="6" width="20" height="20" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/><rect x="12" y="12" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
       <span>天井</span>
     </a>
     <a href="sandiao.html" class="circle-btn active">
-      <svg viewBox="0 0 32 32" stroke-linecap="round">
-        <path d="M8 26Q14 18 16 16T24 6"/>
-        <path d="M6 22Q10 18 14 14"/>
-        <path d="M18 18Q22 14 26 10"/>
-        <circle cx="24" cy="6" r="2" fill="currentColor"/>
-        <circle cx="8" cy="26" r="2" fill="currentColor"/>
-      </svg>
+      <svg viewBox="0 0 32 32" stroke-linecap="round"><path d="M8 26Q14 18 16 16T24 6"/><path d="M6 22Q10 18 14 14"/><path d="M18 18Q22 14 26 10"/><circle cx="24" cy="6" r="2" fill="currentColor"/><circle cx="8" cy="26" r="2" fill="currentColor"/></svg>
       <span>三雕</span>
     </a>
     <a href="zongzu.html" class="circle-btn">
-      <svg viewBox="0 0 32 32" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 18L16 6l13 12"/><path d="M6 16v12h20V16"/><path d="M13 28v-8h6v8"/>
-      </svg>
+      <svg viewBox="0 0 32 32" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L16 6l13 12"/><path d="M6 16v12h20V16"/><path d="M13 28v-8h6v8"/></svg>
       <span>宗族</span>
     </a>
     <a href="baohu.html" class="circle-btn">
-      <svg viewBox="0 0 32 32" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M16 4L6 9v7c0 7 4 13 10 15 6-2 10-8 10-15V9L16 4z"/>
-        <path d="M12 16l3 3 5-6"/>
-      </svg>
+      <svg viewBox="0 0 32 32" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4L6 9v7c0 7 4 13 10 15 6-2 10-8 10-15V9L16 4z"/><path d="M12 16l3 3 5-6"/></svg>
       <span>保护</span>
     </a>
     <a href="kuawenhua.html" class="circle-btn">
-      <svg viewBox="0 0 32 32" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="16" cy="16" r="10"/>
-        <path d="M16 6 Q22 16 16 26 Q10 16 16 6"/>
-        <path d="M6 16h20"/>
-      </svg>
+      <svg viewBox="0 0 32 32" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="10"/><path d="M16 6 Q22 16 16 26 Q10 16 16 6"/><path d="M6 16h20"/></svg>
       <span>跨文化</span>
     </a>
   </nav>
 
-  <!-- ══ 主体 ══ -->
   <div class="page-wrapper">
 
-    <!-- 页头 -->
+    <!-- ══ 页头 ══ -->
     <div class="page-header">
-      <div class="header-badge"><span>徽州工艺 · 三雕艺术</span></div>
-      <h1 class="page-title-zh">三雕艺术</h1>
-      <p class="page-title-en">The Three Carvings of Huizhou Architecture</p>
-      <p class="page-subtitle">
-        木雕·砖雕·石雕 — 徽州工匠以刀为笔，将山川云物、诗礼廉耻镌刻于一砖一石之间，
-        凝固了一个时代的审美与信仰。
-      </p>
-      <div class="header-divider"><span>壹</span></div>
+      <div class="header-left">
+        <div class="header-badge"><span>徽州工艺 · 三雕艺术</span></div>
+        <h1 class="page-title-zh">三雕艺术</h1>
+        <p class="page-title-en">The Three Carvings of Huizhou</p>
+      </div>
+      <div class="header-right">
+        <p class="page-subtitle">
+          木雕·砖雕·石雕 — 徽州工匠以刀为笔，将山川云物、诗礼廉耻镌刻于一砖一石之间，
+          凝固了一个时代的审美与信仰。三雕于2006年列入国家级非物质文化遗产名录。
+        </p>
+      </div>
     </div>
 
-    <!-- 三雕类型切换 -->
+    <!-- 类型切换 -->
     <div class="type-tabs" id="typeTabs">
-      <div class="type-tab active" data-type="all">
-        <span class="tab-cn">总览</span>
-        <span class="tab-en">Overview</span>
-      </div>
-      <div class="type-tab" data-type="木雕">
-        <span class="tab-cn">木雕</span>
-        <span class="tab-en">Wood Carving</span>
-      </div>
-      <div class="type-tab" data-type="砖雕">
-        <span class="tab-cn">砖雕</span>
-        <span class="tab-en">Brick Carving</span>
-      </div>
-      <div class="type-tab" data-type="石雕">
-        <span class="tab-cn">石雕</span>
-        <span class="tab-en">Stone Carving</span>
-      </div>
+      <div class="type-tab active" data-type="all"><span class="tab-cn">总览</span><span class="tab-en">Overview</span></div>
+      <div class="type-tab" data-type="木雕"><span class="tab-cn">木雕</span><span class="tab-en">Wood Carving</span></div>
+      <div class="type-tab" data-type="砖雕"><span class="tab-cn">砖雕</span><span class="tab-en">Brick Carving</span></div>
+      <div class="type-tab" data-type="石雕"><span class="tab-cn">石雕</span><span class="tab-en">Stone Carving</span></div>
     </div>
 
-    <!-- 分区一：题材分布 + 意象词云 -->
+    <!-- ══ 区块一 ══ -->
     <div class="sec-header">
       <span class="sec-num">01</span>
-      <h2 class="sec-title">题材分布 · 三雕意象</h2>
+      <h2 class="sec-title">题材分布 · 意象图云 · 工艺知识</h2>
       <div class="sec-line"></div>
     </div>
 
-    <div class="top-row">
+    <div class="section-row-3">
+
+      <!-- 饼图 -->
       <div class="card" id="pieCard">
         <div class="card-header">
           <h3>题材分布</h3>
-          <span class="badge">点击筛选图库</span>
+          <span class="badge">悬停高亮图云</span>
         </div>
         <div id="chartPie"></div>
       </div>
 
+      <!-- 图片云（动态重排） -->
       <div class="card" id="cloudCard">
         <div class="card-header">
-          <h3>三雕意象</h3>
-          <span class="badge">悬停高亮图库</span>
+          <h3>三雕意象图云</h3>
+          <span class="badge">切换类别重排 · 点击详情</span>
         </div>
-        <div id="wordCloudCanvas"></div>
+        <div class="img-cloud" id="imgCloud"></div>
       </div>
-    </div>
 
-    <!-- 分区二：工艺知识 -->
+      <!-- 翻转知识卡 -->
+      <div class="card" id="knowCard">
+        <div class="card-header">
+          <h3>工艺知识</h3>
+          <span class="badge">悬停翻转</span>
+        </div>
+        <div class="knowledge-grid">
+          <div class="flip-card"><div class="flip-inner">
+            <div class="flip-front"><div class="icon">🪵</div><div class="label">木雕</div><div class="sub">Wood Carving</div></div>
+            <div class="flip-back"><div class="keyword">以楠、杉、银杏为材</div><p>梁架门窗隔扇，题材取戏文故事，透雕可达七层。</p></div>
+          </div></div>
+          <div class="flip-card"><div class="flip-inner">
+            <div class="flip-front"><div class="icon">🧱</div><div class="label">砖雕</div><div class="sub">Brick Carving</div></div>
+            <div class="flip-back"><div class="keyword">以青砖为纸</div><p>专用门楼照壁，选砖打坯细雕磨光四道工序。</p></div>
+          </div></div>
+          <div class="flip-card"><div class="flip-inner">
+            <div class="flip-front"><div class="icon">🪨</div><div class="label">石雕</div><div class="sub">Stone Carving</div></div>
+            <div class="flip-back"><div class="keyword">以黟县青石为主</div><p>柱础门框抱鼓石，线条硬朗，浮雕圆雕为主。</p></div>
+          </div></div>
+          <div class="flip-card"><div class="flip-inner">
+            <div class="flip-front"><div class="icon">🏮</div><div class="label">祥瑞寓意</div><div class="sub">Auspicious</div></div>
+            <div class="flip-back"><div class="keyword">福禄寿喜财</div><p>蝙蝠鹿鹤喜鹊铜钱，体现徽商对美好生活的祈愿。</p></div>
+          </div></div>
+          <div class="flip-card"><div class="flip-inner">
+            <div class="flip-front"><img src="素材/承志堂.png" alt="" class="flip-front-img"><div class="label">程朱礼教</div><div class="sub">Confucian Ethics</div></div>
+            <div class="flip-back"><div class="keyword">忠孝节义廉</div><p>程朱理学发源地，三雕以二十四孝故事教化后人。</p></div>
+          </div></div>
+          <div class="flip-card"><div class="flip-inner">
+            <div class="flip-front"><div class="icon">🌿</div><div class="label">自然山水</div><div class="sub">Nature</div></div>
+            <div class="flip-back"><div class="keyword">松竹梅兰</div><p>岁寒三友四君子，表达文人雅志，宛若天开之境。</p></div>
+          </div></div>
+        </div>
+      </div>
+
+    </div><!-- /section-row-3 -->
+
+    <!-- ══ 区块二 ══ -->
     <div class="ink-divider"><span>贰</span></div>
     <div class="sec-header">
       <span class="sec-num">02</span>
-      <h2 class="sec-title">工艺知识 · 文化内涵</h2>
+      <h2 class="sec-title">三维展示 · 数据分析 · 历史沿革</h2>
       <div class="sec-line"></div>
     </div>
 
-    <div class="card" id="knowCard" style="margin-bottom:1.5rem;">
-      <div class="card-header">
-        <h3>工艺知识</h3>
-        <span class="badge">悬停翻转</span>
-      </div>
-      <div class="knowledge-grid">
+    <div class="section-row-3b">
 
-        <div class="flip-card">
-          <div class="flip-inner">
-            <div class="flip-front">
-              <div class="icon">🪵</div>
-              <div class="label">木雕</div>
-              <div class="sub">Wood Carving</div>
-            </div>
-            <div class="flip-back">
-              <div class="keyword">以楠、杉、银杏为材</div>
-              <p>多施于梁架、门窗、隔扇等构件，题材多取吉祥故事、戏文人物，刀法圆润流畅，层次可达七层透雕。</p>
-            </div>
-          </div>
+      <!-- 3D 模型 -->
+      <div class="card" id="modelCard">
+        <div class="card-header">
+          <h3>三维模型展示</h3>
+          <span class="badge">拖拽旋转 · 滚轮缩放</span>
         </div>
-
-        <div class="flip-card">
-          <div class="flip-inner">
-            <div class="flip-front">
-              <div class="icon">🧱</div>
-              <div class="label">砖雕</div>
-              <div class="sub">Brick Carving</div>
-            </div>
-            <div class="flip-back">
-              <div class="keyword">以青砖为纸</div>
-              <p>专用于门楼、照壁及脊饰，将烧制好的青砖雕凿出山水楼阁，需"选砖、打坯、细雕、磨光"四道工序。</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="flip-card">
-          <div class="flip-inner">
-            <div class="flip-front">
-              <div class="icon">🪨</div>
-              <div class="label">石雕</div>
-              <div class="sub">Stone Carving</div>
-            </div>
-            <div class="flip-back">
-              <div class="keyword">以黟县青石为主</div>
-              <p>用于柱础、门框、抱鼓石、石栏板等处。线条硬朗简洁，以浮雕和圆雕为主要手法。</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="flip-card">
-          <div class="flip-inner">
-            <div class="flip-front">
-              <div class="icon">🏮</div>
-              <div class="label">祥瑞寓意</div>
-              <div class="sub">Auspicious Symbols</div>
-            </div>
-            <div class="flip-back">
-              <div class="keyword">福禄寿喜财</div>
-              <p>大量使用蝙蝠（福）、鹿（禄）、仙鹤（寿）、喜鹊（喜）、铜钱（财）等元素，体现徽商对美好生活的祈愿。</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="flip-card">
-          <div class="flip-inner">
-            <div class="flip-front">
-              <img src="素材/承志堂.png" alt="程朱礼教卡片封面" class="flip-front-img">
-              <div class="label">程朱礼教</div>
-              <div class="sub">Confucian Ethics</div>
-            </div>
-            <div class="flip-back">
-              <div class="keyword">忠孝节义廉</div>
-              <p>徽州为程朱理学发源地，三雕中大量表现二十四孝、桃园三结义等忠孝故事，以空间教化后人。</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="flip-card">
-          <div class="flip-inner">
-            <div class="flip-front">
-              <div class="icon">🌿</div>
-              <div class="label">自然山水</div>
-              <div class="sub">Nature &amp; Landscape</div>
-            </div>
-            <div class="flip-back">
-              <div class="keyword">松竹梅兰</div>
-              <p>山水、松竹梅岁寒三友、四君子为常见题材，表达文人雅志。呈现"虽由人作，宛若天开"的意境。</p>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- 分区三：3D 模型 -->
-    <div class="ink-divider"><span>叁</span></div>
-    <div class="sec-header">
-      <span class="sec-num">03</span>
-      <h2 class="sec-title">三维模型展示</h2>
-      <div class="sec-line"></div>
-    </div>
-
-    <div class="card" id="modelCard" style="margin-bottom:1.5rem;">
-      <div class="card-header">
-        <h3>三维模型展示</h3>
-        <span class="badge">拖拽旋转 · 滚轮缩放</span>
-      </div>
-      <div class="model-viewer-wrap">
         <div id="threeCanvas" style="position:relative;">
           <div class="model-controls-hint">🖱️ 拖拽旋转 · 滚轮缩放 · 右键平移</div>
         </div>
-        <div class="model-info-panel">
-          <div class="model-selector" id="modelSelector">
-            <button class="model-btn active" data-model="0"><span class="dot"></span>木雕门窗花格</button>
-            <button class="model-btn" data-model="1"><span class="dot"></span>砖雕门楼门罩</button>
-            <button class="model-btn" data-model="2"><span class="dot"></span>石雕抱鼓石</button>
-            <button class="model-btn" data-model="3"><span class="dot"></span>木雕斗拱构件</button>
-            <button class="model-btn" data-model="4"><span class="dot"></span>石雕柱础底座</button>
-          </div>
-          <div class="model-desc" id="modelDesc">
-            <h4>木雕门窗花格</h4>
-            <p>徽州民居门窗花格是木雕艺术的集中体现。以回字纹为底，上叠梅花及蝙蝠纹，层次分明，镂空透雕工艺炉火纯青。</p>
-          </div>
-          <div class="model-stats">
-            <div class="stat-item"><span class="stat-label">雕刻层次</span><span class="stat-value" id="statLayers">7层</span></div>
-            <div class="stat-item"><span class="stat-label">主要材质</span><span class="stat-value" id="statMat">楠木</span></div>
-            <div class="stat-item"><span class="stat-label">所在位置</span><span class="stat-value" id="statPos">门窗</span></div>
-            <div class="stat-item"><span class="stat-label">年代</span><span class="stat-value" id="statEra">明末</span></div>
-          </div>
+        <div class="model-selector" id="modelSelector">
+          <button class="model-btn active" data-model="0"><span class="dot"></span>木雕门窗花格</button>
+          <button class="model-btn" data-model="1"><span class="dot"></span>砖雕门楼门罩</button>
+          <button class="model-btn" data-model="2"><span class="dot"></span>石雕抱鼓石</button>
+          <button class="model-btn" data-model="3"><span class="dot"></span>木雕斗拱构件</button>
+          <button class="model-btn" data-model="4"><span class="dot"></span>石雕柱础底座</button>
+        </div>
+        <div class="model-desc" id="modelDesc">
+          <h4>木雕门窗花格</h4>
+          <p>以回字纹为底，上叠梅花及蝙蝠纹，层次分明，镂空透雕工艺炉火纯青。</p>
+        </div>
+        <div class="model-stats">
+          <div class="stat-item"><span class="stat-label">雕刻层次</span><span class="stat-value" id="statLayers">7层</span></div>
+          <div class="stat-item"><span class="stat-label">主要材质</span><span class="stat-value" id="statMat">楠木</span></div>
+          <div class="stat-item"><span class="stat-label">所在位置</span><span class="stat-value" id="statPos">门窗</span></div>
+          <div class="stat-item"><span class="stat-label">年代</span><span class="stat-value" id="statEra">明末</span></div>
         </div>
       </div>
-    </div>
 
-    <!-- 分区四：数据可视化 + 历史沿革 -->
-    <div class="ink-divider"><span>肆</span></div>
-    <div class="sec-header">
-      <span class="sec-num">04</span>
-      <h2 class="sec-title">数据可视化 · 历史沿革</h2>
-      <div class="sec-line"></div>
-    </div>
-
-    <div class="top-row">
-
-      <!-- 左：竖向滚动数据面板 -->
-      <div class="card" id="vsCard" style="padding:1.4rem 1.6rem 1rem;">
+      <!-- 竖向滚动数据 -->
+      <div class="card" id="vsCard" style="padding:1.2rem 1.4rem .8rem;">
         <div class="card-header">
-          <h3>三雕数据分析</h3>
-          <span class="badge">悬停暂停 · 自动滚动</span>
+          <h3>三雕数据</h3>
+          <span class="badge">悬停暂停</span>
         </div>
-
         <div class="vs-outer" id="vsOuter">
           <div class="vs-belt" id="vsBelt">
 
-            <!-- Panel 1：工艺复杂度评分 -->
             <div class="vs-panel">
               <div class="vs-panel-bg">艺</div>
               <div class="vs-panel-num">壹 · 工艺评分</div>
@@ -1217,28 +859,22 @@
               <div class="vs-bar-row"><span class="vs-bar-label">木雕</span><div class="vs-bar-track"><div class="vs-bar-fill" style="width:92%;background:linear-gradient(to right,#5d4037,#8d6e63)"></div></div><span class="vs-bar-num">92</span></div>
               <div class="vs-bar-row"><span class="vs-bar-label">砖雕</span><div class="vs-bar-track"><div class="vs-bar-fill" style="width:78%;background:linear-gradient(to right,#2c5f7a,#4a8fa0)"></div></div><span class="vs-bar-num">78</span></div>
               <div class="vs-bar-row"><span class="vs-bar-label">石雕</span><div class="vs-bar-track"><div class="vs-bar-fill" style="width:65%;background:linear-gradient(to right,#2e6b4f,#5a9470)"></div></div><span class="vs-bar-num">65</span></div>
-              <div style="height:6px"></div>
-              <div class="vs-bar-row"><span class="vs-bar-label">题材丰富</span><div class="vs-bar-track"><div class="vs-bar-fill" style="width:90%;background:linear-gradient(to right,#5d4037,#8d6e63)"></div></div><span class="vs-bar-num">90</span></div>
-              <div class="vs-bar-row"><span class="vs-bar-label" style="width:52px">·砖</span><div class="vs-bar-track"><div class="vs-bar-fill" style="width:82%;background:linear-gradient(to right,#2c5f7a,#4a8fa0)"></div></div><span class="vs-bar-num">82</span></div>
-              <div class="vs-bar-row"><span class="vs-bar-label" style="width:52px">·石</span><div class="vs-bar-track"><div class="vs-bar-fill" style="width:72%;background:linear-gradient(to right,#2e6b4f,#5a9470)"></div></div><span class="vs-bar-num">72</span></div>
             </div>
 
-            <!-- Panel 2：三雕分布位置 -->
             <div class="vs-panel">
               <div class="vs-panel-bg">位</div>
               <div class="vs-panel-num">贰 · 分布位置</div>
-              <div class="vs-panel-title">雕刻位置对照表</div>
+              <div class="vs-panel-title">雕刻位置对照</div>
               <span class="vs-panel-en">Location Distribution</span>
               <div class="vs-divider"></div>
               <table class="vs-table">
                 <tr><th>类型</th><th>常见位置</th><th>等级</th></tr>
-                <tr><td class="vs-td-hl">木雕</td><td>梁架、门窗、隔扇、牛腿、雀替</td><td><span class="vs-td-tag high">室内为主</span></td></tr>
-                <tr><td class="vs-td-hl">砖雕</td><td>门楼、照壁、门罩、脊饰、墀头</td><td><span class="vs-td-tag blue">门面外观</span></td></tr>
-                <tr><td class="vs-td-hl">石雕</td><td>柱础、门框、抱鼓石、栏板、井圈</td><td><span class="vs-td-tag jade">结构节点</span></td></tr>
+                <tr><td class="vs-td-hl">木雕</td><td>梁架、门窗、隔扇、牛腿</td><td><span class="vs-td-tag high">室内</span></td></tr>
+                <tr><td class="vs-td-hl">砖雕</td><td>门楼、照壁、门罩、脊饰</td><td><span class="vs-td-tag blue">门面</span></td></tr>
+                <tr><td class="vs-td-hl">石雕</td><td>柱础、门框、抱鼓石、井圈</td><td><span class="vs-td-tag jade">结构</span></td></tr>
               </table>
             </div>
 
-            <!-- Panel 3：艺术价值统计 -->
             <div class="vs-panel">
               <div class="vs-panel-bg">值</div>
               <div class="vs-panel-num">叁 · 综合评价</div>
@@ -1246,71 +882,51 @@
               <span class="vs-panel-en">Six-Dimension Score</span>
               <div class="vs-divider"></div>
               <div class="vs-stat-grid">
-                <div class="vs-stat"><div class="vs-stat-val">95<span>/100</span></div><div class="vs-stat-label">木雕艺术价值</div></div>
-                <div class="vs-stat"><div class="vs-stat-val">85<span>/100</span></div><div class="vs-stat-label">砖雕艺术价值</div></div>
-                <div class="vs-stat"><div class="vs-stat-val">78<span>/100</span></div><div class="vs-stat-label">石雕艺术价值</div></div>
-                <div class="vs-stat"><div class="vs-stat-val">88<span>/100</span></div><div class="vs-stat-label">木雕文化内涵</div></div>
-                <div class="vs-stat"><div class="vs-stat-val">80<span>/100</span></div><div class="vs-stat-label">砖雕文化内涵</div></div>
-                <div class="vs-stat"><div class="vs-stat-val">75<span>/100</span></div><div class="vs-stat-label">石雕文化内涵</div></div>
+                <div class="vs-stat"><div class="vs-stat-val">95<span>/100</span></div><div class="vs-stat-label">木雕艺术</div></div>
+                <div class="vs-stat"><div class="vs-stat-val">85<span>/100</span></div><div class="vs-stat-label">砖雕艺术</div></div>
+                <div class="vs-stat"><div class="vs-stat-val">78<span>/100</span></div><div class="vs-stat-label">石雕艺术</div></div>
+                <div class="vs-stat"><div class="vs-stat-val">88<span>/100</span></div><div class="vs-stat-label">木雕文化</div></div>
+                <div class="vs-stat"><div class="vs-stat-val">80<span>/100</span></div><div class="vs-stat-label">砖雕文化</div></div>
+                <div class="vs-stat"><div class="vs-stat-val">75<span>/100</span></div><div class="vs-stat-label">石雕文化</div></div>
               </div>
             </div>
 
-            <!-- Panel 4：保存现状 -->
             <div class="vs-panel">
               <div class="vs-panel-bg">存</div>
               <div class="vs-panel-num">肆 · 保存现状</div>
-              <div class="vs-panel-title">现存数量与保存难度</div>
+              <div class="vs-panel-title">现存与保存难度</div>
               <span class="vs-panel-en">Preservation Status</span>
               <div class="vs-divider"></div>
               <table class="vs-table">
-                <tr><th>类型</th><th>现存数量</th><th>保存难度</th><th>主要威胁</th></tr>
-                <tr><td class="vs-td-hl">木雕</td><td>较多</td><td><span class="vs-td-tag mid">中等</span></td><td>虫蛀、潮湿、火灾</td></tr>
-                <tr><td class="vs-td-hl">砖雕</td><td>中等</td><td><span class="vs-td-tag high">较难</span></td><td>风化、渗水、酸雨</td></tr>
-                <tr><td class="vs-td-hl">石雕</td><td>最多</td><td><span class="vs-td-tag jade">最低</span></td><td>苔藓、机械损伤</td></tr>
+                <tr><th>类型</th><th>保存难度</th><th>主要威胁</th></tr>
+                <tr><td class="vs-td-hl">木雕</td><td><span class="vs-td-tag mid">中等</span></td><td>虫蛀、潮湿、火灾</td></tr>
+                <tr><td class="vs-td-hl">砖雕</td><td><span class="vs-td-tag high">较难</span></td><td>风化、渗水、酸雨</td></tr>
+                <tr><td class="vs-td-hl">石雕</td><td><span class="vs-td-tag jade">最低</span></td><td>苔藓、机械损伤</td></tr>
               </table>
             </div>
 
-            <!-- Panel 5：材质与工具 -->
-            <div class="vs-panel">
-              <div class="vs-panel-bg">材</div>
-              <div class="vs-panel-num">伍 · 材质工具</div>
-              <div class="vs-panel-title">主要材质与雕刻工具</div>
-              <span class="vs-panel-en">Materials &amp; Tools</span>
-              <div class="vs-divider"></div>
-              <table class="vs-table">
-                <tr><th>类型</th><th>主材</th><th>常用工具</th><th>代表技法</th></tr>
-                <tr><td class="vs-td-hl">木雕</td><td>楠木、杉木、银杏</td><td>圆凿、斜凿、平凿</td><td>透雕、圆雕</td></tr>
-                <tr><td class="vs-td-hl">砖雕</td><td>青砖（专窑烧制）</td><td>金刚石凿、竹签</td><td>高浮雕、浅浮雕</td></tr>
-                <tr><td class="vs-td-hl">石雕</td><td>黟县青石、白麻石</td><td>钢錾、锤、磨石</td><td>线刻、浮雕</td></tr>
-              </table>
-            </div>
-
-            <!-- Panel 6：非遗数据 -->
             <div class="vs-panel">
               <div class="vs-panel-bg">遗</div>
-              <div class="vs-panel-num">陆 · 非遗保护</div>
-              <div class="vs-panel-title">非物质文化遗产数据</div>
-              <span class="vs-panel-en">Intangible Heritage Data</span>
+              <div class="vs-panel-num">伍 · 非遗保护</div>
+              <div class="vs-panel-title">非遗数据概览</div>
+              <span class="vs-panel-en">Intangible Heritage</span>
               <div class="vs-divider"></div>
               <div class="vs-stat-grid">
                 <div class="vs-stat"><div class="vs-stat-val">2006<span>年</span></div><div class="vs-stat-label">列入国家非遗</div></div>
                 <div class="vs-stat"><div class="vs-stat-val">12<span>处</span></div><div class="vs-stat-label">传习基地</div></div>
                 <div class="vs-stat"><div class="vs-stat-val">80+<span>人</span></div><div class="vs-stat-label">省级传承人</div></div>
-                <div class="vs-stat"><div class="vs-stat-val">3D<span>扫描</span></div><div class="vs-stat-label">数字化采集</div></div>
-                <div class="vs-stat"><div class="vs-stat-val">黄山<span>市</span></div><div class="vs-stat-label">核心保护区</div></div>
-                <div class="vs-stat"><div class="vs-stat-val">皖·浙<span>赣</span></div><div class="vs-stat-label">三省分布</div></div>
               </div>
             </div>
 
           </div><!-- /vs-belt -->
         </div><!-- /vs-outer -->
-
         <div class="vs-controls">
-          <button class="vs-play-btn" id="vsPlayBtn" onclick="vsTogglePlay()" title="暂停/播放">&#9646;&#9646;</button>
-          <span class="vs-speed-label" id="vsSpeedLabel">缓速自动滚动 · 悬停暂停</span>
+          <button class="vs-play-btn" id="vsPlayBtn" onclick="vsTogglePlay()">&#9646;&#9646;</button>
+          <span class="vs-speed-label" id="vsSpeedLabel">自动滚动 · 悬停暂停</span>
         </div>
       </div>
 
+      <!-- 历史沿革 -->
       <div class="card" id="timeCard">
         <div class="card-header">
           <h3>历史沿革</h3>
@@ -1318,115 +934,117 @@
         </div>
         <div class="timeline">
           <div class="timeline-item">
+            <div class="timeline-dot">唐</div>
             <div class="timeline-content">
               <div class="timeline-era">唐宋 · 萌芽期</div>
-              随徽州建筑初步形成，砖雕、石雕率先出现于寺庙祠堂，以几何纹样为主，风格古朴稚拙。
+              随徽州建筑初步形成，砖雕石雕率先出现于寺庙祠堂，以几何纹样为主，风格古朴稚拙。
             </div>
-            <div class="timeline-dot">唐</div>
-            <div style="flex:1"></div>
           </div>
           <div class="timeline-item">
-            <div style="flex:1"></div>
             <div class="timeline-dot">明</div>
             <div class="timeline-content">
               <div class="timeline-era">明代 · 成熟期</div>
-              徽商崛起带来资金支持，三雕技艺迅速成熟。木雕开始出现透雕、圆雕，题材拓展至戏文故事。宏村、西递大量实例源于此期。
+              徽商崛起带来资金支持，三雕技艺迅速成熟。木雕出现透雕圆雕，题材拓展至戏文故事。宏村西递大量实例源于此期。
             </div>
           </div>
           <div class="timeline-item">
+            <div class="timeline-dot">清</div>
             <div class="timeline-content">
               <div class="timeline-era">清代 · 鼎盛期</div>
-              三雕进入鼎盛，雕刻层次最多达七层，内容涵盖历史、神话、山水、花鸟，大型门楼砖雕出现多组画卷式叙事构图。
+              三雕进入鼎盛，雕刻层次最多达七层，内容涵盖历史神话山水花鸟，大型门楼砖雕出现多组画卷式叙事构图。
             </div>
-            <div class="timeline-dot">清</div>
-            <div style="flex:1"></div>
           </div>
           <div class="timeline-item">
-            <div style="flex:1"></div>
             <div class="timeline-dot">今</div>
             <div class="timeline-content">
               <div class="timeline-era">当代 · 传承期</div>
-              列入国家级非物质文化遗产，多地设立传习所。数字化三维采集与3D打印辅助修复技术逐步应用于遗址保护工作中。
+              列入国家级非物质文化遗产，多地设立传习所。数字化三维采集与3D打印辅助修复技术逐步应用于保护工作。
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 分区五：精品图录 -->
-    <div class="ink-divider"><span>伍</span></div>
+    </div><!-- /section-row-3b -->
+
+    <!-- ══ 区块三：三雕纹样图典（替换精品图录） ══ -->
+    <div class="ink-divider"><span>叁</span></div>
     <div class="sec-header">
-      <span class="sec-num">05</span>
-      <h2 class="sec-title">三雕精品图录</h2>
+      <span class="sec-num">03</span>
+      <h2 class="sec-title">三雕纹样图典 · 互动图解</h2>
       <div class="sec-line"></div>
     </div>
 
-    <div class="card gallery-outer" id="galleryCard">
+    <div class="pattern-explorer card" id="patternCard">
       <div class="card-header">
-        <h3>三雕精品图录</h3>
-        <span class="badge">点击放大 · 横向滚动</span>
+        <h3>纹样图典</h3>
+        <span class="badge">点击纹样 · 旋转动画 · 互动图解</span>
       </div>
-      <div class="gallery-scroll" id="galleryWrapper">
+      <div class="pattern-layout">
 
-        <div class="gallery-item" id="gal-wood-1" data-category="木雕" data-tags="花格,透雕,梅花">
-          <img src="素材/三雕/木雕门窗花格.png" alt="木雕花格">
-          <span class="item-type-tag">木雕</span>
-          <div class="item-caption">木雕门窗花格</div>
+        <!-- 左：纹样导航 -->
+        <div class="pattern-nav">
+          <div class="pattern-nav-group">
+            <div class="pattern-nav-title">🪵 木雕纹样</div>
+            <div class="pattern-nav-item active" data-pattern="huizi">回字纹</div>
+            <div class="pattern-nav-item" data-pattern="meihua">梅花纹</div>
+            <div class="pattern-nav-item" data-pattern="bianfu">蝙蝠纹</div>
+            <div class="pattern-nav-item" data-pattern="yunlei">云雷纹</div>
+          </div>
+          <div class="pattern-nav-group">
+            <div class="pattern-nav-title">🧱 砖雕纹样</div>
+            <div class="pattern-nav-item" data-pattern="rumen">如意纹</div>
+            <div class="pattern-nav-item" data-pattern="huajie">花街铺地</div>
+            <div class="pattern-nav-item" data-pattern="wanjie">万字锦</div>
+          </div>
+          <div class="pattern-nav-group">
+            <div class="pattern-nav-title">🪨 石雕纹样</div>
+            <div class="pattern-nav-item" data-pattern="lianhua">莲花纹</div>
+            <div class="pattern-nav-item" data-pattern="ruyi">如意云头</div>
+            <div class="pattern-nav-item" data-pattern="taotie">饕餮纹</div>
+          </div>
         </div>
-        <div class="gallery-item" id="gal-wood-2" data-category="木雕" data-tags="戏文,人物,故事">
-          <img src="素材\三雕\木雕梁架.png" alt="木雕人物">
-          <span class="item-type-tag">木雕</span>
-          <div class="item-caption">木雕梁架</div>
+
+        <!-- 中：SVG 展示区 -->
+        <div class="pattern-stage" id="patternStage">
+          <div class="pattern-stage-bg"></div>
+          <div class="pattern-anim-ring" id="animRing"></div>
+          <svg id="patternSvg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"></svg>
+          <div class="pattern-controls">
+            <button class="pctrl" id="btnRotate" title="旋转动画">↻</button>
+            <button class="pctrl" id="btnColor" title="切换配色">◑</button>
+            <button class="pctrl" id="btnZoom"  title="放大">⊕</button>
+          </div>
+          <div class="pattern-stage-label" id="patternStageLabel">回字纹</div>
         </div>
-        <div class="gallery-item" id="gal-wood-3" data-category="木雕" data-tags="斗拱,建筑,结构">
-          <img src="素材\三雕\木雕斗拱.png" alt="木雕斗拱">
-          <span class="item-type-tag">木雕</span>
-          <div class="item-caption">木雕斗拱</div>
+
+        <!-- 右：详情 -->
+        <div class="pattern-info" id="patternInfo">
+          <div class="pattern-info-head" id="pInfoHead">回字纹</div>
+          <div class="pattern-info-en" id="pInfoEn">Hui-character pattern</div>
+          <div class="pattern-info-desc" id="pInfoDesc">
+            回字纹是徽州木雕中最基础的几何底纹，以回旋方块连续排列而成。形如古文"回"字，寓意生生不息、往复循环，常见于门窗格心及梁架装饰带，是三雕中出现频率最高的抽象纹样之一。
+          </div>
+          <div class="pattern-meta-grid">
+            <div class="pattern-meta-item"><div class="pattern-meta-label">主要类型</div><div class="pattern-meta-val" id="pMetaType">木雕</div></div>
+            <div class="pattern-meta-item"><div class="pattern-meta-label">流行年代</div><div class="pattern-meta-val" id="pMetaEra">明清</div></div>
+            <div class="pattern-meta-item"><div class="pattern-meta-label">纹样属性</div><div class="pattern-meta-val" id="pMetaAttr">几何类</div></div>
+            <div class="pattern-meta-item"><div class="pattern-meta-label">寓意</div><div class="pattern-meta-val" id="pMetaMean">生生不息</div></div>
+          </div>
+          <div style="font-size:.64rem;color:var(--ink-faint);margin:.2rem 0 .3rem;">常见装饰部位</div>
+          <div class="pattern-usage-tags" id="pUsageTags">
+            <span class="usage-tag">门窗格心</span>
+            <span class="usage-tag">梁架装饰带</span>
+            <span class="usage-tag">隔扇裙板</span>
+          </div>
+          <div style="font-size:.64rem;color:var(--ink-faint);margin:.4rem 0 .3rem;">同类纹样速览</div>
+          <div class="pattern-mini-strip" id="patternMiniStrip"></div>
         </div>
-        <div class="gallery-item" id="gal-brick-1" data-category="砖雕" data-tags="门楼,山水,楼阁">
-          <img src="素材\三雕\砖雕门楼.png" alt="砖雕门楼">
-          <span class="item-type-tag" style="background:var(--stone-blue)">砖雕</span>
-          <div class="item-caption">砖雕门楼</div>
-        </div>
-        <div class="gallery-item" id="gal-brick-2" data-category="砖雕" data-tags="门罩,花卉,祥瑞">
-          <img src="素材\三雕\砖雕门罩.png" alt="砖雕门罩">
-          <span class="item-type-tag" style="background:var(--stone-blue)">砖雕</span>
-          <div class="item-caption">砖雕门罩</div>
-        </div>
-        <div class="gallery-item" id="gal-brick-3" data-category="砖雕" data-tags="照壁,龙凤,祥瑞">
-          <img src="素材\三雕\砖雕照壁.png" alt="砖雕照壁">
-          <span class="item-type-tag" style="background:var(--stone-blue)">砖雕</span>
-          <div class="item-caption">砖雕照壁</div>
-        </div>
-        <div class="gallery-item" id="gal-stone-1" data-category="石雕" data-tags="抱鼓石,圆雕,入口">
-          <img src="素材\三雕\石雕抱鼓石.png" alt="石雕抱鼓石">
-          <span class="item-type-tag" style="background:var(--jade)">石雕</span>
-          <div class="item-caption">石雕抱鼓石</div>
-        </div>
-        <div class="gallery-item" id="gal-stone-2" data-category="石雕" data-tags="柱础,莲花,底座">
-          <img src="素材\三雕\石雕柱础.png" alt="石雕柱础">
-          <span class="item-type-tag" style="background:var(--jade)">石雕</span>
-          <div class="item-caption">石雕柱础</div>
-        </div>
-        <div class="gallery-item" id="gal-stone-3" data-category="石雕" data-tags="门框,线刻,文字">
-          <img src="素材\三雕\石雕门框.png" alt="石雕门框">
-          <span class="item-type-tag" style="background:var(--jade)">石雕</span>
-          <div class="item-caption">石雕门框</div>
-        </div>
+
+      </div>
+    </div>
 
   </div><!-- /page-wrapper -->
 
-  <!-- Lightbox -->
-  <div id="lightbox">
-    <span id="lightboxClose">&times;</span>
-    <img id="lightboxImg" src="" alt="">
-    <div id="lightboxCaption"></div>
-  </div>
-
-  <!-- 自定义工具提示 -->
-  <div class="custom-tooltip" id="customTooltip"></div>
-
-  <!-- 印章 -->
   <div class="seal"><div class="seal-inner">三<br>雕<br>印</div></div>
 
   <footer class="site-footer">
@@ -1442,557 +1060,825 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-  // ============================================================
-  // 全局数据
-  // ============================================================
-  const PIE_DATA_ALL = [
-    { value: 28, name: '花卉植物', itemStyle: { color: '#5d4037' } },
-    { value: 22, name: '人物故事', itemStyle: { color: '#8d6e63' } },
-    { value: 18, name: '山水楼阁', itemStyle: { color: '#4a3d2e' } },
-    { value: 16, name: '祥禽瑞兽', itemStyle: { color: '#a1887f' } },
-    { value: 10, name: '几何纹样', itemStyle: { color: '#c4b49a' } },
-    { value:  6, name: '文字铭刻', itemStyle: { color: '#e0d8cc' } }
-  ];
-  const PIE_DATA_MAP = {
-    '木雕': [
-      { value: 35, name: '人物故事', itemStyle: { color: '#2d2519' } },
-      { value: 30, name: '花卉植物', itemStyle: { color: '#5d4037' } },
-      { value: 20, name: '祥禽瑞兽', itemStyle: { color: '#8d6e63' } },
-      { value: 15, name: '几何纹样', itemStyle: { color: '#c4b49a' } },
-    ],
-    '砖雕': [
-      { value: 40, name: '山水楼阁', itemStyle: { color: '#2c5f7a' } },
-      { value: 25, name: '花卉植物', itemStyle: { color: '#37748a' } },
-      { value: 20, name: '祥禽瑞兽', itemStyle: { color: '#4a8fa0' } },
-      { value: 15, name: '人物故事', itemStyle: { color: '#6eb0c0' } },
-    ],
-    '石雕': [
-      { value: 38, name: '几何纹样', itemStyle: { color: '#2e6b4f' } },
-      { value: 28, name: '祥禽瑞兽', itemStyle: { color: '#3e7f60' } },
-      { value: 22, name: '花卉植物', itemStyle: { color: '#5a9470' } },
-      { value: 12, name: '文字铭刻', itemStyle: { color: '#8aad80' } },
-    ]
+// ══════════════════════════════════════════
+//  数据定义
+// ══════════════════════════════════════════
+
+const PIE_DATA_ALL = [
+  { value:28, name:'花卉植物', itemStyle:{color:'#5d4037'} },
+  { value:22, name:'人物故事', itemStyle:{color:'#8d6e63'} },
+  { value:18, name:'山水楼阁', itemStyle:{color:'#4a3d2e'} },
+  { value:16, name:'祥禽瑞兽', itemStyle:{color:'#a1887f'} },
+  { value:10, name:'几何纹样', itemStyle:{color:'#c4b49a'} },
+  { value:6,  name:'文字铭刻', itemStyle:{color:'#e0d8cc'} }
+];
+const PIE_DATA_MAP = {
+  '木雕': [{value:35,name:'人物故事',itemStyle:{color:'#2d2519'}},{value:30,name:'花卉植物',itemStyle:{color:'#5d4037'}},{value:20,name:'祥禽瑞兽',itemStyle:{color:'#8d6e63'}},{value:15,name:'几何纹样',itemStyle:{color:'#c4b49a'}}],
+  '砖雕': [{value:40,name:'山水楼阁',itemStyle:{color:'#2c5f7a'}},{value:25,name:'花卉植物',itemStyle:{color:'#37748a'}},{value:20,name:'祥禽瑞兽',itemStyle:{color:'#4a8fa0'}},{value:15,name:'人物故事',itemStyle:{color:'#6eb0c0'}}],
+  '石雕': [{value:38,name:'几何纹样',itemStyle:{color:'#2e6b4f'}},{value:28,name:'祥禽瑞兽',itemStyle:{color:'#3e7f60'}},{value:22,name:'花卉植物',itemStyle:{color:'#5a9470'}},{value:12,name:'文字铭刻',itemStyle:{color:'#8aad80'}}]
+};
+
+// 图片云数据
+const IMG_CLOUD_DATA = [
+  { src:'素材/三雕/木雕门窗花格.png', label:'木雕花格',  type:'木雕', color:'#5d4037', themes:['花卉植物','几何纹样'] },
+  { src:'素材/三雕/砖雕门楼.png',     label:'砖雕门楼',  type:'砖雕', color:'#2c5f7a', themes:['山水楼阁'] },
+  { src:'素材/三雕/石雕抱鼓石.png',   label:'石雕抱鼓',  type:'石雕', color:'#2e6b4f', themes:['祥禽瑞兽'] },
+  { src:'素材/三雕/木雕斗拱.png',     label:'木雕斗拱',  type:'木雕', color:'#5d4037', themes:['人物故事','几何纹样'] },
+  { src:'素材/三雕/砖雕门罩.png',     label:'砖雕门罩',  type:'砖雕', color:'#2c5f7a', themes:['花卉植物','祥禽瑞兽'] },
+  { src:'素材/三雕/石雕柱础.png',     label:'石雕柱础',  type:'石雕', color:'#2e6b4f', themes:['几何纹样','花卉植物'] },
+  { src:'素材/三雕/木雕梁架.png',     label:'木雕梁架',  type:'木雕', color:'#5d4037', themes:['人物故事','花卉植物'] },
+  { src:'素材/三雕/砖雕照壁.png',     label:'砖雕照壁',  type:'砖雕', color:'#2c5f7a', themes:['山水楼阁','祥禽瑞兽'] },
+  { src:'素材/三雕/石雕门框.png',     label:'石雕门框',  type:'石雕', color:'#2e6b4f', themes:['文字铭刻','几何纹样'] },
+];
+
+// ── 动态 Grid 布局模板 ──
+// 根据可见项数量生成最佳 grid 布局
+// 返回 { cols, rows, template } 供每个格子使用 gridColumn/gridRow
+function getGridLayout(count) {
+  // 预设布局模板（index=count-1，最多9项）
+  const layouts = {
+    1: { cols:'1fr', rows:'1fr', spans:[ [1,1,1,1] ] },
+    2: { cols:'1fr 1fr', rows:'1fr', spans:[ [1,1,1,1],[2,2,1,1] ] },
+    3: { cols:'1.4fr 1fr 1fr', rows:'1fr', spans:[ [1,1,1,1],[2,2,1,1],[3,3,1,1] ] },
+    4: { cols:'1fr 1fr', rows:'1fr 1fr', spans:[ [1,1,1,1],[2,2,1,1],[1,1,2,2],[2,2,2,2] ] },
+    5: { cols:'1.6fr 1fr 1fr', rows:'1fr 1fr',
+         spans:[ [1,1,1,2],[2,2,1,1],[3,3,1,1],[2,2,2,2],[3,3,2,2] ] },
+    6: { cols:'1fr 1fr 1fr', rows:'1fr 1fr', spans:[
+         [1,1,1,1],[2,2,1,1],[3,3,1,1],[1,1,2,2],[2,2,2,2],[3,3,2,2] ] },
+    7: { cols:'1.5fr 1fr 1fr 1fr', rows:'1fr 1fr', spans:[
+         [1,1,1,2],[2,2,1,1],[3,3,1,1],[4,4,1,1],[2,2,2,2],[3,3,2,2],[4,4,2,2] ] },
+    8: { cols:'1.3fr 1fr 1fr 1fr', rows:'1fr 1fr', spans:[
+         [1,1,1,2],[2,2,1,1],[3,3,1,1],[4,4,1,1],[2,3,2,2],[4,4,2,2],[1,1,2,2] ].slice(0,8).concat([[3,3,2,2]]).slice(0,8) },
+    9: { cols:'1.6fr 1fr 1fr 1fr 1fr', rows:'repeat(3,1fr)', spans:[
+         [1,2,1,2],[3,3,1,1],[4,4,1,2],[5,5,1,1],
+         [3,3,2,2],[5,5,2,2],
+         [1,2,3,3],[3,4,3,3],[5,5,3,3] ] },
   };
+  return layouts[Math.min(count, 9)] || layouts[9];
+}
 
-  const WORD_DATA = [
-    { text: "透雕",   size: 52, color: "#1a1410" },
-    { text: "门楼",   size: 44, color: "#c0392b" },
-    { text: "祥瑞",   size: 40, color: "#2c5f7a" },
-    { text: "蝙蝠",   size: 36, color: "#5d4037" },
-    { text: "牡丹",   size: 34, color: "#b8860b" },
-    { text: "戏文",   size: 30, color: "#2e6b4f" },
-    { text: "斗拱",   size: 28, color: "#1a1410" },
-    { text: "柱础",   size: 26, color: "#c0392b" },
-    { text: "云纹",   size: 24, color: "#2c5f7a" },
-    { text: "回字纹", size: 22, color: "#5d4037" },
-    { text: "松竹梅", size: 22, color: "#2e6b4f" },
-    { text: "狮子",   size: 20, color: "#b8860b" },
-    { text: "福禄寿", size: 20, color: "#c0392b" },
-    { text: "龙凤",   size: 18, color: "#1a1410" },
-    { text: "程朱",   size: 16, color: "#8c7a60" },
-  ];
+const MODEL_INFO = [
+  {title:'木雕门窗花格',desc:'以回字纹为底，上叠梅花及蝙蝠纹，层次分明，镂空透雕工艺炉火纯青。',layers:'7层',mat:'楠木',pos:'门窗',era:'明末'},
+  {title:'砖雕门楼门罩',desc:'青砖为纸，山水楼阁层层镌刻，高浮雕与浅浮雕并用，远观如画卷展开。',layers:'5层',mat:'青砖',pos:'门楼',era:'清初'},
+  {title:'石雕抱鼓石',  desc:'位于大门两侧，用黟县青石雕成，狮头圆雕威武庄严，是身份与礼仪的双重象征。',layers:'3层',mat:'青石',pos:'大门',era:'清中'},
+  {title:'木雕斗拱构件',desc:'徽州木雕斗拱在结构功能之外附加大量装饰雕刻，常见云头、卷草等纹样。',layers:'4层',mat:'杉木',pos:'梁架',era:'明代'},
+  {title:'石雕柱础底座',desc:'覆莲须弥座式样为徽州最常见形制，莲瓣丰腴，雕工稳健，寓意清廉高洁。',layers:'2层',mat:'青石',pos:'柱底',era:'清代'}
+];
 
-  const GALLERY_CAT_ANCHORS = {
-    '花卉植物': 'gal-wood-1', '人物故事': 'gal-wood-2',
-    '山水楼阁': 'gal-brick-1', '祥禽瑞兽': 'gal-stone-1',
-    '几何纹样': 'gal-stone-2', '文字铭刻': 'gal-stone-3',
-  };
+// ══════════════════════════════════════════
+//  初始化
+// ══════════════════════════════════════════
 
-  const MODEL_INFO = [
-    { title:'木雕门窗花格', desc:'徽州民居门窗花格是木雕艺术的集中体现。以回字纹为底，上叠梅花及蝙蝠纹，层次分明，镂空透雕工艺炉火纯青。', layers:'7层', mat:'楠木', pos:'门窗', era:'明末' },
-    { title:'砖雕门楼门罩', desc:'砖雕门楼以青砖为纸，将山水楼阁层层镌刻，高浮雕与浅浮雕并用，远观如画卷展开，近看方知刀法之精妙。', layers:'5层', mat:'青砖', pos:'门楼', era:'清初' },
-    { title:'石雕抱鼓石',   desc:'抱鼓石位于大门两侧，用黟县青石雕成，狮头圆雕威武庄严，腰鼓形底座线刻精细，是身份与礼仪的双重象征。', layers:'3层', mat:'青石', pos:'大门', era:'清中' },
-    { title:'木雕斗拱构件', desc:'斗拱是中国建筑的标志性构件，徽州木雕斗拱在结构功能之外附加大量装饰雕刻，常见云头、卷草等纹样。', layers:'4层', mat:'杉木', pos:'梁架', era:'明代' },
-    { title:'石雕柱础底座', desc:'柱础承托木柱且隔绝地面湿气，覆莲须弥座式样为徽州最常见形制，莲瓣丰腴，雕工稳健，寓意清廉高洁。', layers:'2层', mat:'青石', pos:'柱底', era:'清代' }
-  ];
+document.addEventListener('DOMContentLoaded', () => {
+  initScrollAnimation();
+  initTypeTabs();
+  initPieChart();
+  initImgCloud('all');
+  initVsPanel();
+  initThreeJS();
+  initModelSelector();
+  initPatternExplorer();
+});
 
-  // ============================================================
-  // ECharts 颜色主题（匹配暖纸色系）
-  // ============================================================
-  const P = {
-    bg:   'rgba(250,246,238,.95)',
-    border: 'rgba(184,134,11,.28)',
-    txt:  { color:'#4a3d2e', fontFamily:'Noto Serif SC', fontSize:11 },
-    txts: { color:'#8c7a60', fontFamily:'Noto Serif SC', fontSize:10 },
-    split: 'rgba(184,134,11,.1)',
-    axis:  'rgba(184,134,11,.2)',
-    red:  '#c0392b', gold:'#b8860b', deep:'#2d2519'
-  };
+// ── 滚动入场 ──
+function initScrollAnimation() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.06 });
+  document.querySelectorAll('.card, .pattern-explorer').forEach(c => obs.observe(c));
+}
 
-  // ============================================================
-  let currentType = 'all';
-  let pieChart;
-
-  document.addEventListener('DOMContentLoaded', () => {
-    initScrollAnimation();
-    initTypeTabs();
-    initPieChart();
-    initWordCloud();
-    initVsPanel();
-    initGallery();
-    initThreeJS();
-    initModelSelector();
-  });
-
-  // ── 滚动入场 ──
-  function initScrollAnimation() {
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.08 });
-    document.querySelectorAll('.card').forEach(c => observer.observe(c));
-  }
-
-  // ── 类型切换 ──
-  function initTypeTabs() {
-    document.querySelectorAll('.type-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        currentType = tab.dataset.type;
-        updatePieChart(currentType);
-        filterGallery(currentType);
-      });
+// ── 类型标签切换 ──
+function initTypeTabs() {
+  document.querySelectorAll('.type-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const type = tab.dataset.type;
+      updatePieChart(type);
+      rebuildImgCloud(type);
     });
-  }
-
-  // ── 饼图 ──
-  function initPieChart() {
-    pieChart = echarts.init(document.getElementById('chartPie'));
-    renderPie(PIE_DATA_ALL);
-    pieChart.on('click', params => {
-      const id = GALLERY_CAT_ANCHORS[params.name];
-      if (id) {
-        const el = document.getElementById(id);
-        const wrapper = document.getElementById('galleryWrapper');
-        if (el && wrapper) {
-          wrapper.scrollTo({ left: el.offsetLeft - 20, behavior: 'smooth' });
-          el.classList.remove('hl-from-cloud');
-          void el.offsetWidth;
-          el.classList.add('hl-from-cloud');
-          setTimeout(() => el.classList.remove('hl-from-cloud'), 2200);
-        }
-      }
-    });
-    window.addEventListener('resize', () => pieChart.resize());
-  }
-
-  function renderPie(data) {
-    pieChart.setOption({
-      backgroundColor: 'transparent',
-      tooltip: {
-        trigger: 'item', formatter: '{b}：{d}%',
-        backgroundColor: P.bg, borderColor: P.border,
-        textStyle: P.txt
-      },
-      legend: {
-        bottom: 0, itemWidth: 11, itemHeight: 11,
-        textStyle: { fontFamily:'Noto Serif SC', fontSize:11, color:'#4a3d2e' }
-      },
-      series: [{
-        name: '题材分布', type: 'pie',
-        radius: ['38%','65%'], center: ['50%','44%'],
-        avoidLabelOverlap: true,
-        itemStyle: { borderRadius:5, borderColor:'#faf6ee', borderWidth:2 },
-        label: { show:true, formatter:'{b}\n{d}%', fontSize:11, fontFamily:'Noto Serif SC', color:'#4a3d2e' },
-        labelLine: { length:8, length2:10, lineStyle:{ color:'rgba(184,134,11,.4)' } },
-        data, animationDuration:850, animationType:'expansion'
-      }]
-    }, true);
-  }
-
-  function updatePieChart(type) {
-    renderPie(type === 'all' ? PIE_DATA_ALL : (PIE_DATA_MAP[type] || PIE_DATA_ALL));
-  }
-
-  // ── 词云 ──
-  function initWordCloud() {
-  const c = document.getElementById('wordCloudCanvas');
-  // 等一帧确保容器已渲染出实际尺寸
-  requestAnimationFrame(() => {
-    const w = c.offsetWidth || 420;
-    const h = c.offsetHeight || 300;
-    drawCloud(w, h);
   });
 }
 
-  function drawCloud(w, h) {
-    d3.select('#wordCloudCanvas').selectAll('*').remove();
-    const layout = d3.layout.cloud()
-      .size([w || 400, h || 300])
-      .words(WORD_DATA.map(d => ({ ...d })))
-      .padding(6)
-      .rotate(() => [-30,0,30][Math.floor(Math.random()*3)])
-      .font('Ma Shan Zheng')
-      .fontSize(d => d.size)
-      .on('end', words => {
-        const svg = d3.select('#wordCloudCanvas').append('svg')
-          .attr('width', layout.size()[0]).attr('height', layout.size()[1])
-          .append('g')
-          .attr('transform', `translate(${layout.size()[0]/2},${layout.size()[1]/2})`);
+// ══════════════════════════════════════════
+//  饼图
+// ══════════════════════════════════════════
+let pieChart;
 
-        svg.selectAll('text').data(words).enter().append('text')
-          .style('font-size', d => d.size+'px')
-          .style('font-family','Ma Shan Zheng')
-          .style('fill', d => d.color)
-          .style('cursor','pointer')
-          .attr('text-anchor','middle')
-          .attr('transform', d => `translate(${d.x},${d.y})rotate(${d.rotate})`)
-          .text(d => d.text)
-          .on('mouseover', function(event, d) {
-  document.querySelectorAll('.gallery-item').forEach(item => {
-    const tags = item.getAttribute('data-tags') || '';
-    if (tags.split(',').some(t => t.includes(d.text) || d.text.includes(t))) {
-      item.classList.add('hl-from-cloud');
-      item.style.opacity = '1';
+function initPieChart() {
+  pieChart = echarts.init(document.getElementById('chartPie'));
+  renderPie(PIE_DATA_ALL);
+
+  // 悬停 → 图片云高亮 + 重排
+  pieChart.on('mouseover', params => {
+    highlightCloudByTheme(params.name);
+  });
+  pieChart.on('mouseout', () => {
+    clearCloudHighlight();
+  });
+
+  window.addEventListener('resize', () => pieChart.resize());
+}
+
+function renderPie(data) {
+  pieChart.setOption({
+    backgroundColor: 'transparent',
+    tooltip: {
+      trigger: 'item',
+      formatter: '{b}：{d}%',
+      backgroundColor: 'rgba(250,246,238,.95)',
+      borderColor: 'rgba(184,134,11,.28)',
+      textStyle: { color:'#4a3d2e', fontFamily:'Noto Serif SC', fontSize:11 }
+    },
+    legend: {
+      bottom: 0, itemWidth: 10, itemHeight: 10,
+      textStyle: { fontFamily:'Noto Serif SC', fontSize:10, color:'#4a3d2e' }
+    },
+    series: [{
+      name: '题材分布', type: 'pie',
+      radius: ['36%','62%'], center: ['50%','42%'],
+      avoidLabelOverlap: true,
+      itemStyle: { borderRadius:4, borderColor:'#faf6ee', borderWidth:2 },
+      label: { show:true, formatter:'{b}\n{d}%', fontSize:10, fontFamily:'Noto Serif SC', color:'#4a3d2e' },
+      labelLine: { length:7, length2:8, lineStyle:{ color:'rgba(184,134,11,.4)' } },
+      data,
+      animationDuration: 800, animationType: 'expansion',
+      emphasis: {
+        itemStyle: { shadowBlur: 14, shadowOffsetX: 0, shadowColor: 'rgba(192,57,43,.35)' },
+        scaleSize: 8
+      }
+    }]
+  }, true);
+}
+
+function updatePieChart(type) {
+  renderPie(type === 'all' ? PIE_DATA_ALL : (PIE_DATA_MAP[type] || PIE_DATA_ALL));
+}
+
+// ══════════════════════════════════════════
+//  图片云 — 动态重排核心
+// ══════════════════════════════════════════
+
+let currentType = 'all';
+let cloudItems = []; // DOM 节点引用
+
+function initImgCloud(type) {
+  currentType = type;
+  const container = document.getElementById('imgCloud');
+  container.innerHTML = '';
+  cloudItems = [];
+
+  const filtered = type === 'all'
+    ? IMG_CLOUD_DATA
+    : IMG_CLOUD_DATA.filter(d => d.type === type);
+
+  const count = filtered.length;
+  const layout = getGridLayout(count);
+
+  // 设置 grid 模板
+  container.style.gridTemplateColumns = layout.cols;
+  container.style.gridTemplateRows   = layout.rows;
+
+  filtered.forEach((item, i) => {
+    const span = layout.spans[i] || [1,1,1,1];
+    const [colStart, colEnd, rowStart, rowEnd] = span;
+
+    const el = document.createElement('div');
+    el.className = 'img-cloud-item';
+    el.dataset.category = item.type;
+    el.dataset.themes    = item.themes.join(',');
+    el.dataset.label     = item.label;
+
+    el.style.gridColumn = colStart === colEnd ? `${colStart}` : `${colStart} / ${colEnd + 1}`;
+    el.style.gridRow    = rowStart === rowEnd ? `${rowStart}` : `${rowStart} / ${rowEnd + 1}`;
+
+    const img = document.createElement('img');
+    img.src = item.src;
+    img.alt = item.label;
+
+    const typeTag = document.createElement('span');
+    typeTag.className = 'cloud-type-tag';
+    typeTag.style.background = item.color;
+    typeTag.textContent = item.type;
+
+    const label = document.createElement('div');
+    label.className = 'cloud-label';
+    label.textContent = item.label;
+
+    el.appendChild(img);
+    el.appendChild(typeTag);
+    el.appendChild(label);
+
+    container.appendChild(el);
+    cloudItems.push(el);
+  });
+}
+
+// 切换 tab 后重建图片云
+function rebuildImgCloud(type) {
+  currentType = type;
+  const container = document.getElementById('imgCloud');
+
+  // 淡出
+  container.style.opacity = '0';
+  container.style.transform = 'translateY(8px)';
+  container.style.transition = 'opacity .25s ease, transform .25s ease';
+
+  setTimeout(() => {
+    initImgCloud(type);
+    // 淡入
+    requestAnimationFrame(() => {
+      container.style.transition = 'opacity .35s ease, transform .35s ease';
+      container.style.opacity = '1';
+      container.style.transform = 'translateY(0)';
+    });
+  }, 250);
+}
+
+// 饼图悬停：相关图片放大高亮，其余降暗并收缩
+function highlightCloudByTheme(theme) {
+  cloudItems.forEach(el => {
+    const themes = el.dataset.themes.split(',');
+    if (themes.includes(theme)) {
+      el.classList.add('pie-highlight');
+      el.classList.remove('pie-dimmed');
     } else {
-      item.style.opacity = '.3';
+      el.classList.add('pie-dimmed');
+      el.classList.remove('pie-highlight');
     }
   });
-  d3.select(this).transition().duration(150).style('font-size', (d.size * 1.25) + 'px');
-})
-.on('mouseout', function(event, d) {
-  document.querySelectorAll('.gallery-item').forEach(item => {
-    item.classList.remove('hl-from-cloud');
-    item.style.opacity = '1';
+}
+
+function clearCloudHighlight() {
+  cloudItems.forEach(el => {
+    el.classList.remove('pie-highlight', 'pie-dimmed');
   });
-  d3.select(this).transition().duration(150).style('font-size', d.size + 'px');
-})
-.style('opacity', 0)
-.transition().duration(800).style('opacity', 1);
+}
+
+// ══════════════════════════════════════════
+//  竖向滚动数据
+// ══════════════════════════════════════════
+function initVsPanel() {
+  const belt = document.getElementById('vsBelt');
+  if (!belt) return;
+  Array.from(belt.querySelectorAll('.vs-panel')).forEach(p => {
+    belt.appendChild(p.cloneNode(true));
+  });
+}
+
+let vsIsPlaying = true;
+window.vsTogglePlay = function() {
+  vsIsPlaying = !vsIsPlaying;
+  const btn = document.getElementById('vsPlayBtn');
+  const lbl = document.getElementById('vsSpeedLabel');
+  document.getElementById('vsBelt').classList.toggle('paused', !vsIsPlaying);
+  btn.innerHTML = vsIsPlaying ? '&#9646;&#9646;' : '&#9654;';
+  lbl.textContent = vsIsPlaying ? '自动滚动 · 悬停暂停' : '已暂停 · 点击继续';
+};
+
+// ══════════════════════════════════════════
+//  纹样图典
+// ══════════════════════════════════════════
+
+// SVG 纹样生成器
+const PATTERNS = {
+  huizi: {
+    name:'回字纹', en:'Hui-character pattern', type:'木雕', era:'明清', attr:'几何类', mean:'生生不息',
+    usage:['门窗格心','梁架装饰带','隔扇裙板'],
+    desc:'回字纹是徽州木雕中最基础的几何底纹，以回旋方块连续排列而成。形如古文"回"字，寓意生生不息、往复循环，常见于门窗格心及梁架装饰带，是三雕中出现频率最高的抽象纹样之一。',
+    render(svg, palette) {
+      const [c1,c2,c3] = palette;
+      let s = `<rect width="200" height="200" fill="${c1}"/>`;
+      // 4x4 回字格
+      for(let row=0;row<4;row++) for(let col=0;col<4;col++) {
+        const x=10+col*46, y=10+row*46;
+        s+=`<rect x="${x}" y="${y}" width="40" height="40" fill="none" stroke="${c2}" stroke-width="3"/>`;
+        s+=`<rect x="${x+8}" y="${y+8}" width="24" height="24" fill="none" stroke="${c2}" stroke-width="2"/>`;
+        s+=`<rect x="${x+14}" y="${y+14}" width="12" height="12" fill="${c3}" opacity=".6"/>`;
+      }
+      return s;
+    }
+  },
+  meihua: {
+    name:'梅花纹', en:'Plum blossom pattern', type:'木雕', era:'明清', attr:'花卉类', mean:'傲雪凌霜',
+    usage:['格心透雕','牛腿装饰','隔扇绦环'],
+    desc:'梅花纹是徽州木雕花卉题材中的代表性纹样，常以五瓣圆形梅花为母题，重复布局。梅花象征高洁坚韧，与松竹并称"岁寒三友"，广泛见于徽州民居的门窗格心及牛腿装饰。',
+    render(svg, palette) {
+      const [c1,c2,c3] = palette;
+      let s = `<rect width="200" height="200" fill="${c1}"/>`;
+      const pts = [[50,50],[150,50],[100,100],[50,150],[150,150]];
+      pts.forEach(([cx,cy]) => {
+        for(let i=0;i<5;i++) {
+          const a = i/5*Math.PI*2 - Math.PI/2;
+          const px = cx + Math.cos(a)*22, py = cy + Math.sin(a)*22;
+          s += `<circle cx="${px}" cy="${py}" r="12" fill="${c2}" opacity=".85"/>`;
+        }
+        s += `<circle cx="${cx}" cy="${cy}" r="8" fill="${c3}"/>`;
       });
-    layout.start();
-  }
-
-  // ── 竖向滚动面板 ──
-  function initVsPanel() {
-    const belt = document.getElementById('vsBelt');
-    if (!belt) return;
-    // 复制一份面板实现无缝循环
-    const originals = Array.from(belt.querySelectorAll('.vs-panel'));
-    originals.forEach(p => {
-      const clone = p.cloneNode(true);
-      belt.appendChild(clone);
-    });
-  }
-
-  let vsIsPlaying = true;
-  window.vsTogglePlay = function() {
-    vsIsPlaying = !vsIsPlaying;
-    const btn = document.getElementById('vsPlayBtn');
-    const lbl = document.getElementById('vsSpeedLabel');
-    document.getElementById('vsBelt').classList.toggle('paused', !vsIsPlaying);
-    btn.innerHTML = vsIsPlaying ? '&#9646;&#9646;' : '&#9654;';
-    lbl.textContent = vsIsPlaying ? '缓速自动滚动 · 悬停暂停' : '已暂停 · 点击继续';
-  };
-
-  // ── 图片画廊 ──
-  function initGallery() {
-    document.querySelectorAll('.gallery-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const img = item.querySelector('img');
-        const cap = item.querySelector('.item-caption');
-        document.getElementById('lightboxImg').src = img.src;
-        document.getElementById('lightboxCaption').textContent = cap.textContent.trim();
-        document.getElementById('lightbox').classList.add('open');
+      s += `<line x1="0" y1="0" x2="200" y2="200" stroke="${c2}" stroke-width=".5" opacity=".2"/>`;
+      s += `<line x1="200" y1="0" x2="0" y2="200" stroke="${c2}" stroke-width=".5" opacity=".2"/>`;
+      return s;
+    }
+  },
+  bianfu: {
+    name:'蝙蝠纹', en:'Bat pattern (Fu symbol)', type:'木雕', era:'清代', attr:'祥瑞类', mean:'福到吉祥',
+    usage:['雀替装饰','牛腿挂件','梁枋端头'],
+    desc:'蝙蝠因"蝠"与"福"谐音，成为徽州木雕中最重要的吉祥纹样。常以张翼展飞的蝙蝠造型出现，或五只蝙蝠环绕"寿"字，构成"五福捧寿"图案，象征福寿绵延、阖家安康。',
+    render(svg, palette) {
+      const [c1,c2,c3] = palette;
+      let s = `<rect width="200" height="200" fill="${c1}"/>`;
+      const bats = [[100,100,1],[45,45,.75],[155,45,.75],[45,155,.75],[155,155,.75]];
+      bats.forEach(([cx,cy,sc]) => {
+        s += `<g transform="translate(${cx},${cy}) scale(${sc})">`;
+        s += `<ellipse cx="-20" cy="0" rx="22" ry="12" fill="${c2}" opacity=".9" transform="rotate(-20)"/>`;
+        s += `<ellipse cx="20"  cy="0" rx="22" ry="12" fill="${c2}" opacity=".9" transform="rotate(20)"/>`;
+        s += `<ellipse cx="0"  cy="2" rx="7" ry="10" fill="${c3}"/>`;
+        s += `<circle cx="-3" cy="-5" r="2" fill="${c1}"/><circle cx="3" cy="-5" r="2" fill="${c1}"/>`;
+        s += `</g>`;
       });
-    });
-    document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
-    document.getElementById('lightbox').addEventListener('click', e => {
-      if (e.target === document.getElementById('lightbox')) closeLightbox();
-    });
-  }
-
-  function filterGallery(type) {
-    document.querySelectorAll('.gallery-item').forEach(item => {
-      item.style.opacity = (type === 'all' || item.dataset.category === type) ? '1' : '.25';
-    });
-  }
-
-  function closeLightbox() {
-    document.getElementById('lightbox').classList.remove('open');
-  }
-
-  // ── 模型选择器 ──
-  function initModelSelector() {
-    document.querySelectorAll('.model-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const idx = parseInt(btn.dataset.model);
-        updateModelInfo(idx);
-        loadDemoModel(idx);
+      return s;
+    }
+  },
+  yunlei: {
+    name:'云雷纹', en:'Cloud-thunder pattern', type:'木雕', era:'唐宋', attr:'几何类', mean:'天地通达',
+    usage:['梁架边饰','门楣线脚','博风装饰'],
+    desc:'云雷纹源自商周青铜器，由方折线条回旋构成，呈雷纹或云状卷曲。传入徽州建筑装饰后，常作为梁架及门楣的辅助边饰纹样，线条有力，风格古朴，展现了徽州工匠对上古礼器美学的传承与转化。',
+    render(svg, palette) {
+      const [c1,c2,c3] = palette;
+      let s = `<rect width="200" height="200" fill="${c1}"/>`;
+      // 横排云雷纹带
+      for(let band=0; band<4; band++) {
+        const y = 20 + band*48;
+        for(let i=0;i<5;i++) {
+          const x = 5+i*40;
+          s += `<path d="M${x},${y+6} h10 v10 h-6 v-6 h12 v18 h-18 v-22 h24" fill="none" stroke="${c2}" stroke-width="2.5" stroke-linecap="square"/>`;
+        }
+        s += `<line x1="0" y1="${y+26}" x2="200" y2="${y+26}" stroke="${c3}" stroke-width=".8" opacity=".4"/>`;
+      }
+      return s;
+    }
+  },
+  rumen: {
+    name:'如意纹', en:'Ruyi (wish-granting) pattern', type:'砖雕', era:'明清', attr:'祥瑞类', mean:'称心如意',
+    usage:['门楼脊饰','照壁边框','门罩压顶'],
+    desc:'如意纹取自如意器物的头部造型，呈灵芝状三弯曲线，在砖雕中常以四方连续形式出现于门楼及照壁边框。其曲线柔美流转，与徽州建筑整体的方正端严形成动静对比，寓意吉祥如意、万事顺遂。',
+    render(svg, palette) {
+      const [c1,c2,c3] = palette;
+      let s = `<rect width="200" height="200" fill="${c1}"/>`;
+      const centers = [[50,50],[150,50],[100,100],[50,150],[150,150],[100,25],[100,175],[25,100],[175,100]];
+      centers.forEach(([cx,cy]) => {
+        s += `<path d="M${cx},${cy-18} C${cx-14},${cy-18} ${cx-20},${cy-8} ${cx},${cy+2} C${cx+20},${cy-8} ${cx+14},${cy-18} ${cx},${cy-18}" fill="${c2}" opacity=".7"/>`;
+        s += `<circle cx="${cx}" cy="${cy+6}" r="7" fill="${c3}" opacity=".8"/>`;
+        s += `<circle cx="${cx}" cy="${cy+6}" r="4" fill="${c1}" opacity=".6"/>`;
       });
-    });
-  }
+      return s;
+    }
+  },
+  huajie: {
+    name:'花街铺地', en:'Flower-street paving', type:'砖雕', era:'明清', attr:'几何类', mean:'富贵绵长',
+    usage:['天井地面','廊道铺地','院落中心'],
+    desc:'花街铺地是徽州民居中独特的地面装饰工艺，以小块青石、鹅卵石、瓷片等拼砌出几何或动植物图案，常见于天井及廊道。因图案繁复如花锦，故名。其既有实用的排水功能，又构成精美的视觉图案。',
+    render(svg, palette) {
+      const [c1,c2,c3] = palette;
+      let s = `<rect width="200" height="200" fill="${c1}"/>`;
+      // 六边形花砖拼接
+      for(let row=0; row<5; row++) for(let col=0; col<5; col++) {
+        const cx = 22 + col*40 + (row%2)*20;
+        const cy = 22 + row*35;
+        const R = 18;
+        let pts = '';
+        for(let i=0;i<6;i++) {
+          const a = i/6*Math.PI*2 - Math.PI/6;
+          pts += `${cx+Math.cos(a)*R},${cy+Math.sin(a)*R} `;
+        }
+        const fill = (row+col)%3===0 ? c3 : (row+col)%3===1 ? c2 : c1;
+        s += `<polygon points="${pts}" fill="${fill}" stroke="${c1}" stroke-width="1.5"/>`;
+        s += `<circle cx="${cx}" cy="${cy}" r="4" fill="${c1}" opacity=".5"/>`;
+      }
+      return s;
+    }
+  },
+  wanjie: {
+    name:'万字锦', en:'Wan-character brocade', type:'砖雕', era:'清代', attr:'几何类', mean:'万福万寿',
+    usage:['门楼横带','照壁腰线','墙裙砖饰'],
+    desc:'万字锦以佛教吉祥符号"卍"为基本单元，四方连续排列，构成绵延不断的锦地纹样。在砖雕中常以阴刻线条呈现于门楼横带及照壁腰线，细密工整，寓意万福连绵、生生不已。',
+    render(svg, palette) {
+      const [c1,c2,c3] = palette;
+      let s = `<rect width="200" height="200" fill="${c1}"/>`;
+      const step = 40;
+      for(let row=0; row<5; row++) for(let col=0; col<5; col++) {
+        const x = 10+col*step, y = 10+row*step;
+        const cx=x+step/2, cy=y+step/2;
+        // 万字
+        s += `<g transform="translate(${cx},${cy})">`;
+        s += `<path d="M-8,-14 v8 h8 v-8 h8 v22 h-22 v-8 h8 v-14" fill="none" stroke="${c2}" stroke-width="2.2" stroke-linecap="square"/>`;
+        s += `</g>`;
+        s += `<circle cx="${cx}" cy="${cy}" r="2.5" fill="${c3}" opacity=".5"/>`;
+      }
+      return s;
+    }
+  },
+  lianhua: {
+    name:'莲花纹', en:'Lotus pattern', type:'石雕', era:'唐宋至清', attr:'花卉类', mean:'出淤泥而不染',
+    usage:['覆莲柱础','须弥座腰饰','井圈雕饰'],
+    desc:'莲花纹在石雕中尤为常见，以覆莲、仰莲两种形式装饰柱础及须弥座。莲花象征洁净、吉祥与佛法庇护，其层层叠叠的莲瓣以阴刻浮雕手法呈现，简洁有力，是石雕中最具代表性的传统题材之一。',
+    render(svg, palette) {
+      const [c1,c2,c3] = palette;
+      let s = `<rect width="200" height="200" fill="${c1}"/>`;
+      const flower = (cx, cy, r, color) => {
+        let out = '';
+        for(let i=0;i<8;i++) {
+          const a = i/8*Math.PI*2;
+          const px=cx+Math.cos(a)*r, py=cy+Math.sin(a)*r;
+          out += `<ellipse cx="${px}" cy="${py}" rx="${r*.45}" ry="${r*.28}" fill="${color}" opacity=".8" transform="rotate(${i/8*360} ${px} ${py})"/>`;
+        }
+        out += `<circle cx="${cx}" cy="${cy}" r="${r*.35}" fill="${c3}"/>`;
+        out += `<circle cx="${cx}" cy="${cy}" r="${r*.18}" fill="${c1}" opacity=".7"/>`;
+        return out;
+      };
+      s += flower(100,100,46,c2);
+      s += flower(35,35,24,c3);
+      s += flower(165,35,24,c3);
+      s += flower(35,165,24,c3);
+      s += flower(165,165,24,c3);
+      return s;
+    }
+  },
+  ruyi: {
+    name:'如意云头', en:'Ruyi cloud-head motif', type:'石雕', era:'明清', attr:'祥瑞类', mean:'祥云庇护',
+    usage:['门框线脚','牌坊额枋','抱鼓石腰带'],
+    desc:'如意云头是石雕中常见的辅助装饰纹样，在门框线脚及牌坊额枋处以连续带状形式出现。其造型融合如意头与卷云形，曲线流畅而充满张力，体现了徽州石匠对线条控制力的高超把握。',
+    render(svg, palette) {
+      const [c1,c2,c3] = palette;
+      let s = `<rect width="200" height="200" fill="${c1}"/>`;
+      // 云头连续带
+      for(let band=0; band<4; band++) {
+        const y = 30 + band*50;
+        for(let i=0; i<4; i++) {
+          const x = 10+i*50;
+          s += `<path d="M${x},${y+20} C${x+5},${y} ${x+20},${y-5} ${x+25},${y+8} C${x+30},${y-5} ${x+45},${y} ${x+50},${y+20}" fill="none" stroke="${c2}" stroke-width="3"/>`;
+          s += `<circle cx="${x+25}" cy="${y+5}" r="5" fill="${c3}" opacity=".7"/>`;
+        }
+        s += `<line x1="0" y1="${y+22}" x2="200" y2="${y+22}" stroke="${c2}" stroke-width=".6" opacity=".3"/>`;
+      }
+      return s;
+    }
+  },
+  taotie: {
+    name:'饕餮纹', en:'Taotie (gluttonous ogre) pattern', type:'石雕', era:'唐宋', attr:'神兽类', mean:'驱邪辟凶',
+    usage:['门楣中心','柱础四面','牌坊底座'],
+    desc:'饕餮纹源自商周礼器，在徽州石雕中以简化的兽面正视造型出现，常置于门楣中心及牌坊底座，威慑辟邪。粗犷有力的线条与细腻的花卉纹样形成对比，体现了徽州石雕在气势与精致之间的双重追求。',
+    render(svg, palette) {
+      const [c1,c2,c3] = palette;
+      let s = `<rect width="200" height="200" fill="${c1}"/>`;
+      const cx=100, cy=100;
+      // 兽面
+      s += `<rect x="${cx-50}" y="${cy-40}" width="100" height="80" rx="6" fill="none" stroke="${c2}" stroke-width="3"/>`;
+      // 眼
+      s += `<ellipse cx="${cx-22}" cy="${cy-10}" rx="14" ry="12" fill="${c3}"/><circle cx="${cx-22}" cy="${cy-10}" r="6" fill="${c2}"/><circle cx="${cx-22}" cy="${cy-10}" r="2.5" fill="${c1}"/>`;
+      s += `<ellipse cx="${cx+22}" cy="${cy-10}" rx="14" ry="12" fill="${c3}"/><circle cx="${cx+22}" cy="${cy-10}" r="6" fill="${c2}"/><circle cx="${cx+22}" cy="${cy-10}" r="2.5" fill="${c1}"/>`;
+      // 鼻
+      s += `<path d="M${cx-8},${cy+5} C${cx-8},${cy+20} ${cx+8},${cy+20} ${cx+8},${cy+5}" fill="${c2}"/>`;
+      // 角
+      s += `<path d="M${cx-50},${cy-40} C${cx-70},${cy-70} ${cx-40},${cy-80} ${cx-25},${cy-55}" fill="none" stroke="${c2}" stroke-width="3"/>`;
+      s += `<path d="M${cx+50},${cy-40} C${cx+70},${cy-70} ${cx+40},${cy-80} ${cx+25},${cy-55}" fill="none" stroke="${c2}" stroke-width="3"/>`;
+      // 纹样边框
+      s += `<rect x="5" y="5" width="190" height="190" fill="none" stroke="${c2}" stroke-width="1.5" opacity=".3"/>`;
+      s += `<rect x="12" y="12" width="176" height="176" fill="none" stroke="${c3}" stroke-width=".8" opacity=".25"/>`;
+      return s;
+    }
+  },
+};
 
-  function updateModelInfo(idx) {
-    const info = MODEL_INFO[idx];
-    document.getElementById('modelDesc').innerHTML = `<h4>${info.title}</h4><p>${info.desc}</p>`;
-    document.getElementById('statLayers').textContent = info.layers;
-    document.getElementById('statMat').textContent    = info.mat;
-    document.getElementById('statPos').textContent    = info.pos;
-    document.getElementById('statEra').textContent    = info.era;
-  }
-
-  // ── Three.js ──
-  let threeScene, threeCamera, threeRenderer, threeControls, threeGroup;
-
-  function initThreeJS() {
-    const container = document.getElementById('threeCanvas');
-    const w = container.clientWidth, h = container.clientHeight;
-
-    threeScene = new THREE.Scene();
-    threeScene.background = new THREE.Color(0x1a1410);
-
-    threeCamera = new THREE.PerspectiveCamera(45, w/h, 0.1, 1000);
-    threeCamera.position.set(0, 1.5, 5);
-
-    threeRenderer = new THREE.WebGLRenderer({ antialias:true });
-    threeRenderer.setSize(w, h);
-    threeRenderer.setPixelRatio(window.devicePixelRatio);
-    threeRenderer.shadowMap.enabled = true;
-    threeRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    container.insertBefore(threeRenderer.domElement, container.firstChild);
-
-    threeControls = new OrbitControls(threeCamera, threeRenderer.domElement);
-    threeControls.enableDamping = true;
-    threeControls.dampingFactor = 0.08;
-    threeControls.minDistance = 2;
-    threeControls.maxDistance = 12;
-
-    const ambient = new THREE.AmbientLight(0xfdf0d0, 0.6);
-    threeScene.add(ambient);
-    const dirLight = new THREE.DirectionalLight(0xfff5e0, 1.2);
-    dirLight.position.set(5, 8, 5); dirLight.castShadow = true;
-    threeScene.add(dirLight);
-    const fill = new THREE.PointLight(0xc0392b, 0.4, 20);
-    fill.position.set(-4, 2, -3); threeScene.add(fill);
-    const rim = new THREE.PointLight(0xb8860b, 0.3, 15);
-    rim.position.set(4, -1, -4); threeScene.add(rim);
-
-    const groundGeo = new THREE.PlaneGeometry(12, 12);
-    const ground = new THREE.Mesh(groundGeo,
-      new THREE.MeshStandardMaterial({ color:0x110d08, roughness:0.9 }));
-    ground.rotation.x = -Math.PI/2; ground.position.y = -2;
-    ground.receiveShadow = true; threeScene.add(ground);
-
-    const pts = [];
-    for (let i=0;i<300;i++) pts.push((Math.random()-.5)*20,(Math.random()-.5)*20,(Math.random()-.5)*20);
-    const ptGeo = new THREE.BufferGeometry();
-    ptGeo.setAttribute('position', new THREE.Float32BufferAttribute(pts,3));
-    threeScene.add(new THREE.Points(ptGeo,
-      new THREE.PointsMaterial({ color:0xd4a017, size:.04, transparent:true, opacity:.35 })));
-
-    loadDemoModel(0);
-
-    (function animate() {
-      requestAnimationFrame(animate);
-      if (threeControls) threeControls.update();
-      if (threeGroup) threeGroup.rotation.y += .003;
-      threeRenderer.render(threeScene, threeCamera);
-    })();
-
-    window.addEventListener('resize', () => {
-      const nw = container.clientWidth, nh = container.clientHeight;
-      threeCamera.aspect = nw/nh;
-      threeCamera.updateProjectionMatrix();
-      threeRenderer.setSize(nw, nh);
-    });
-  }
-  const MODEL_PATHS = [
-  'public/models/model_0.glb',  // 木雕门窗花格
-  'public/models/model_1.glb',  // 砖雕门楼
-  'public/models/model_2.glb',  // 石雕抱鼓石
-  'public/models/model_3.glb',  // 木雕斗拱
-  'public/models/model_4.glb',  // 石雕柱础
+// 配色方案
+const PALETTES = [
+  ['#1a1410','#b8860b','#d4a017'],  // 暗金
+  ['#f5f0e8','#c0392b','#8d2f26'],  // 朱砂
+  ['#0d1a14','#2e6b4f','#5a9470'],  // 翠玉
+  ['#1a1a2a','#2c5f7a','#4a8fa0'],  // 青石
 ];
-  function loadDemoModel(idx) {
-  // 清除旧模型
-  if (threeGroup) {
-    threeScene.remove(threeGroup);
-    threeGroup = null;
-  }
 
-  // 显示加载提示
+let currentPattern = 'huizi';
+let currentPaletteIdx = 0;
+let isRotating = false;
+let rotateAngle = 0;
+let rotateRAF = null;
+let isZoomed = false;
+
+function initPatternExplorer() {
+  // 导航项点击
+  document.querySelectorAll('.pattern-nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.pattern-nav-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      currentPattern = item.dataset.pattern;
+      renderPattern(currentPattern);
+    });
+  });
+
+  // 控制按钮
+  document.getElementById('btnRotate').addEventListener('click', toggleRotate);
+  document.getElementById('btnColor').addEventListener('click', cycleColor);
+  document.getElementById('btnZoom').addEventListener('click', toggleZoom);
+
+  // 迷你缩略图
+  buildMiniStrip();
+  renderPattern('huizi');
+}
+
+function renderPattern(key) {
+  const p = PATTERNS[key];
+  if (!p) return;
+  const svg = document.getElementById('patternSvg');
+  const palette = PALETTES[currentPaletteIdx];
+  svg.innerHTML = p.render(svg, palette);
+
+  document.getElementById('patternStageLabel').textContent = p.name;
+  document.getElementById('pInfoHead').textContent = p.name;
+  document.getElementById('pInfoEn').textContent = p.en;
+  document.getElementById('pInfoDesc').textContent = p.desc;
+  document.getElementById('pMetaType').textContent = p.type;
+  document.getElementById('pMetaEra').textContent = p.era;
+  document.getElementById('pMetaAttr').textContent = p.attr;
+  document.getElementById('pMetaMean').textContent = p.mean;
+
+  const tagsEl = document.getElementById('pUsageTags');
+  tagsEl.innerHTML = '';
+  p.usage.forEach(u => {
+    const tag = document.createElement('span');
+    tag.className = 'usage-tag'; tag.textContent = u;
+    tagsEl.appendChild(tag);
+  });
+
+  // 同步迷你图高亮
+  document.querySelectorAll('.pattern-mini').forEach(m => {
+    m.classList.toggle('active-mini', m.dataset.pattern === key);
+  });
+
+  // 触发扩散动画
+  const ring = document.getElementById('animRing');
+  ring.style.animation = 'none';
+  void ring.offsetWidth;
+  ring.style.animation = 'ringExpand 1.2s ease-out 1';
+}
+
+function buildMiniStrip() {
+  const strip = document.getElementById('patternMiniStrip');
+  strip.innerHTML = '';
+  Object.entries(PATTERNS).forEach(([key, p]) => {
+    const mini = document.createElement('div');
+    mini.className = 'pattern-mini' + (key === 'huizi' ? ' active-mini' : '');
+    mini.dataset.pattern = key;
+    mini.title = p.name;
+
+    // 小尺寸 SVG 预览
+    const svgEl = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svgEl.setAttribute('viewBox','0 0 200 200');
+    svgEl.innerHTML = p.render(svgEl, PALETTES[0]);
+
+    mini.appendChild(svgEl);
+    mini.addEventListener('click', () => {
+      document.querySelectorAll('.pattern-nav-item').forEach(i => {
+        if(i.dataset.pattern === key) { i.classList.add('active'); }
+        else i.classList.remove('active');
+      });
+      currentPattern = key;
+      renderPattern(key);
+    });
+    strip.appendChild(mini);
+  });
+}
+
+function toggleRotate() {
+  isRotating = !isRotating;
+  const btn = document.getElementById('btnRotate');
+  btn.style.background = isRotating ? 'rgba(192,57,43,.6)' : '';
+  btn.style.color = isRotating ? 'white' : '';
+  if (isRotating) startRotate();
+  else stopRotate();
+}
+
+function startRotate() {
+  const svg = document.getElementById('patternSvg');
+  function frame() {
+    rotateAngle += .8;
+    svg.style.transform = `rotate(${rotateAngle}deg)`;
+    if (isRotating) rotateRAF = requestAnimationFrame(frame);
+  }
+  rotateRAF = requestAnimationFrame(frame);
+}
+
+function stopRotate() {
+  if (rotateRAF) cancelAnimationFrame(rotateRAF);
+  // 平滑归位
+  const svg = document.getElementById('patternSvg');
+  svg.style.transition = 'transform .5s ease';
+  svg.style.transform = 'rotate(0deg)';
+  rotateAngle = 0;
+  setTimeout(() => { svg.style.transition = ''; }, 500);
+}
+
+function cycleColor() {
+  currentPaletteIdx = (currentPaletteIdx + 1) % PALETTES.length;
+  renderPattern(currentPattern);
+  buildMiniStrip();
+}
+
+function toggleZoom() {
+  isZoomed = !isZoomed;
+  const svg = document.getElementById('patternSvg');
+  const btn = document.getElementById('btnZoom');
+  svg.style.transition = 'transform .4s cubic-bezier(.165,.84,.44,1)';
+  svg.style.transform = isZoomed ? 'scale(1.45)' : 'scale(1)';
+  btn.textContent = isZoomed ? '⊖' : '⊕';
+  btn.style.background = isZoomed ? 'rgba(184,134,11,.5)' : '';
+  btn.style.color = isZoomed ? 'white' : '';
+}
+
+// ══════════════════════════════════════════
+//  模型选择器
+// ══════════════════════════════════════════
+function initModelSelector() {
+  document.querySelectorAll('.model-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const idx = parseInt(btn.dataset.model);
+      updateModelInfo(idx);
+      loadDemoModel(idx);
+    });
+  });
+}
+
+function updateModelInfo(idx) {
+  const info = MODEL_INFO[idx];
+  document.getElementById('modelDesc').innerHTML = `<h4>${info.title}</h4><p>${info.desc}</p>`;
+  document.getElementById('statLayers').textContent = info.layers;
+  document.getElementById('statMat').textContent    = info.mat;
+  document.getElementById('statPos').textContent    = info.pos;
+  document.getElementById('statEra').textContent    = info.era;
+}
+
+// ══════════════════════════════════════════
+//  Three.js
+// ══════════════════════════════════════════
+let threeScene, threeCamera, threeRenderer, threeControls, threeGroup;
+
+function initThreeJS() {
+  const container = document.getElementById('threeCanvas');
+  const w = container.clientWidth, h = container.clientHeight;
+
+  threeScene = new THREE.Scene();
+  threeScene.background = new THREE.Color(0x1a1410);
+
+  threeCamera = new THREE.PerspectiveCamera(45, w/h, 0.1, 1000);
+  threeCamera.position.set(0, 1.5, 5);
+
+  threeRenderer = new THREE.WebGLRenderer({ antialias:true });
+  threeRenderer.setSize(w, h);
+  threeRenderer.setPixelRatio(window.devicePixelRatio);
+  threeRenderer.shadowMap.enabled = true;
+  container.insertBefore(threeRenderer.domElement, container.firstChild);
+
+  threeControls = new OrbitControls(threeCamera, threeRenderer.domElement);
+  threeControls.enableDamping = true;
+  threeControls.dampingFactor = 0.08;
+  threeControls.minDistance = 2;
+  threeControls.maxDistance = 12;
+
+  threeScene.add(new THREE.AmbientLight(0xfdf0d0, 0.6));
+  const dir = new THREE.DirectionalLight(0xfff5e0, 1.2);
+  dir.position.set(5,8,5); dir.castShadow = true; threeScene.add(dir);
+  const fill = new THREE.PointLight(0xc0392b, 0.4, 20);
+  fill.position.set(-4,2,-3); threeScene.add(fill);
+  const rim = new THREE.PointLight(0xb8860b, 0.3, 15);
+  rim.position.set(4,-1,-4); threeScene.add(rim);
+
+  const ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(12,12),
+    new THREE.MeshStandardMaterial({color:0x110d08, roughness:0.9})
+  );
+  ground.rotation.x = -Math.PI/2; ground.position.y = -2;
+  ground.receiveShadow = true; threeScene.add(ground);
+
+  const pts = [];
+  for(let i=0;i<300;i++) pts.push((Math.random()-.5)*20,(Math.random()-.5)*20,(Math.random()-.5)*20);
+  const ptGeo = new THREE.BufferGeometry();
+  ptGeo.setAttribute('position', new THREE.Float32BufferAttribute(pts,3));
+  threeScene.add(new THREE.Points(ptGeo,
+    new THREE.PointsMaterial({color:0xd4a017,size:.04,transparent:true,opacity:.35})));
+
+  loadDemoModel(0);
+  (function animate() {
+    requestAnimationFrame(animate);
+    if (threeControls) threeControls.update();
+    if (threeGroup) threeGroup.rotation.y += .003;
+    threeRenderer.render(threeScene, threeCamera);
+  })();
+
+  window.addEventListener('resize', () => {
+    const nw = container.clientWidth, nh = container.clientHeight;
+    threeCamera.aspect = nw/nh; threeCamera.updateProjectionMatrix();
+    threeRenderer.setSize(nw, nh);
+  });
+}
+
+const MODEL_PATHS = [
+  'public/models/model_0.glb','public/models/model_1.glb',
+  'public/models/model_2.glb','public/models/model_3.glb','public/models/model_4.glb'
+];
+
+function loadDemoModel(idx) {
+  if (threeGroup) { threeScene.remove(threeGroup); threeGroup = null; }
   const hint = document.querySelector('.model-controls-hint');
   hint.textContent = '模型加载中...';
-
   const loader = new GLTFLoader();
-
-  loader.load(
-    MODEL_PATHS[idx],
-
-    // ✅ 加载成功
-    function(gltf) {
-      threeGroup = gltf.scene;
-
-      // 自动居中缩放，适配画面
-      const box = new THREE.Box3().setFromObject(threeGroup);
-      const center = box.getCenter(new THREE.Vector3());
-      const size = box.getSize(new THREE.Vector3());
-      const maxDim = Math.max(size.x, size.y, size.z);
-      const scale = 3 / maxDim;  // 统一缩放到3个单位大小
-
-      threeGroup.scale.setScalar(scale);
-      threeGroup.position.sub(center.multiplyScalar(scale));
-
-      threeScene.add(threeGroup);
-      hint.textContent = '🖱️ 拖拽旋转 · 滚轮缩放 · 右键平移';
-    },
-
-    // 加载进度
-    function(xhr) {
-      const percent = Math.round(xhr.loaded / xhr.total * 100);
-      hint.textContent = `加载中 ${percent}%`;
-    },
-
-    // ❌ 加载失败，回退原始几何体
-    function(error) {
-  console.warn('GLB加载失败，使用备用模型', error);
-  hint.textContent = '🖱️ 拖拽旋转 · 滚轮缩放';
-  loadFallbackModel(idx);
+  loader.load(MODEL_PATHS[idx], gltf => {
+    threeGroup = gltf.scene;
+    const box = new THREE.Box3().setFromObject(threeGroup);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    const scale = 3 / Math.max(size.x, size.y, size.z);
+    threeGroup.scale.setScalar(scale);
+    threeGroup.position.sub(center.multiplyScalar(scale));
+    threeScene.add(threeGroup);
+    hint.textContent = '🖱️ 拖拽旋转 · 滚轮缩放 · 右键平移';
+  }, xhr => {
+    hint.textContent = `加载中 ${Math.round(xhr.loaded/xhr.total*100)}%`;
+  }, err => {
+    console.warn('GLB加载失败，使用备用模型', err);
+    hint.textContent = '🖱️ 拖拽旋转 · 滚轮缩放';
+    loadFallbackModel(idx);
+  });
 }
-  );
-}
-// ── 备用程序化模型（GLB 不存在时的 fallback）──
+
 function loadFallbackModel(idx) {
-  if (threeGroup) {
-    threeScene.remove(threeGroup);
-    threeGroup = null;
-  }
-
+  if (threeGroup) { threeScene.remove(threeGroup); threeGroup = null; }
   threeGroup = new THREE.Group();
-  const matWood  = new THREE.MeshStandardMaterial({ color:0x8d6e63, roughness:0.75, metalness:0.05 });
-  const matBrick = new THREE.MeshStandardMaterial({ color:0x4a6fa5, roughness:0.85, metalness:0.02 });
-  const matStone = new THREE.MeshStandardMaterial({ color:0x4e7c60, roughness:0.90, metalness:0.00 });
+  const matWood  = new THREE.MeshStandardMaterial({color:0x8d6e63,roughness:0.75,metalness:0.05});
+  const matBrick = new THREE.MeshStandardMaterial({color:0x4a6fa5,roughness:0.85,metalness:0.02});
+  const matStone = new THREE.MeshStandardMaterial({color:0x4e7c60,roughness:0.90,metalness:0.00});
 
-  switch (idx) {
-    case 0: { // 木雕门窗花格 — 镂空方格网
+  switch(idx) {
+    case 0: {
       const mat = matWood;
-      // 外框
-      [[0,0,3.2,0.18],[0,0,0.18,3.2],[-1.5+0.09,0,0.18,3.2],[1.5-0.09,0,0.18,3.2],
-       [0,-1.5+0.09,3.2,0.18],[0,1.5-0.09,3.2,0.18]].forEach(([x,y,w,h])=>{
-         const g=new THREE.BoxGeometry(w,h,0.14);
-         const m=new THREE.Mesh(g,mat); m.position.set(x,y,0); threeGroup.add(m);
+      [[0,0,3.2,.18],[0,0,.18,3.2],[-1.5+.09,0,.18,3.2],[1.5-.09,0,.18,3.2],
+       [0,-1.5+.09,3.2,.18],[0,1.5-.09,3.2,.18]].forEach(([x,y,w,h])=>{
+        const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,.14),mat); m.position.set(x,y,0); threeGroup.add(m);
       });
-      // 横竖格条
       for(let i=-1;i<=1;i++){
-        const gH=new THREE.BoxGeometry(3.2,0.10,0.10);
-        const mH=new THREE.Mesh(gH,mat); mH.position.set(0,i*0.75,0); threeGroup.add(mH);
-        const gV=new THREE.BoxGeometry(0.10,3.2,0.10);
-        const mV=new THREE.Mesh(gV,mat); mV.position.set(i*0.75,0,0); threeGroup.add(mV);
+        const mH=new THREE.Mesh(new THREE.BoxGeometry(3.2,.10,.10),mat); mH.position.set(0,i*.75,0); threeGroup.add(mH);
+        const mV=new THREE.Mesh(new THREE.BoxGeometry(.10,3.2,.10),mat); mV.position.set(i*.75,0,0); threeGroup.add(mV);
       }
-      // 装饰梅花（4个小球）
       [[-0.75,0.75],[0.75,0.75],[-0.75,-0.75],[0.75,-0.75]].forEach(([x,y])=>{
-        const g=new THREE.SphereGeometry(0.12,10,10);
-        const m=new THREE.Mesh(g,mat); m.position.set(x,y,0.12); threeGroup.add(m);
-      });
-      break;
+        const m=new THREE.Mesh(new THREE.SphereGeometry(.12,10,10),mat); m.position.set(x,y,.12); threeGroup.add(m);
+      }); break;
     }
-    case 1: { // 砖雕门楼 — 拱门形状
+    case 1: {
       const mat = matBrick;
-      // 左右立柱
-      [-1.1,1.1].forEach(x=>{
-        const g=new THREE.BoxGeometry(0.4,2.4,0.35);
-        const m=new THREE.Mesh(g,mat); m.position.set(x,-0.3,0); threeGroup.add(m);
-      });
-      // 上横梁
-      const beam=new THREE.Mesh(new THREE.BoxGeometry(2.6,0.38,0.35),mat);
-      beam.position.set(0,0.91,0); threeGroup.add(beam);
-      // 拱洞（用半圆柱模拟）
-      const archGeo=new THREE.CylinderGeometry(0.7,0.7,0.36,16,1,false,0,Math.PI);
-      const arch=new THREE.Mesh(archGeo,mat);
-      arch.rotation.z=Math.PI; arch.position.set(0,0.55,0); threeGroup.add(arch);
-      // 屋檐板
-      const eave=new THREE.Mesh(new THREE.BoxGeometry(3.2,0.22,0.6),mat);
-      eave.position.set(0,1.26,0.1); threeGroup.add(eave);
-      // 山花装饰（小三角）
-      const tri=new THREE.ConeGeometry(0.30,0.55,4);
-      const top=new THREE.Mesh(tri,mat); top.position.set(0,1.72,0); threeGroup.add(top);
-      break;
+      [-1.1,1.1].forEach(x=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.4,2.4,.35),mat); m.position.set(x,-.3,0); threeGroup.add(m);});
+      const beam=new THREE.Mesh(new THREE.BoxGeometry(2.6,.38,.35),mat); beam.position.set(0,.91,0); threeGroup.add(beam);
+      const archGeo=new THREE.CylinderGeometry(.7,.7,.36,16,1,false,0,Math.PI);
+      const arch=new THREE.Mesh(archGeo,mat); arch.rotation.z=Math.PI; arch.position.set(0,.55,0); threeGroup.add(arch);
+      const eave=new THREE.Mesh(new THREE.BoxGeometry(3.2,.22,.6),mat); eave.position.set(0,1.26,.1); threeGroup.add(eave);
+      const top=new THREE.Mesh(new THREE.ConeGeometry(.30,.55,4),mat); top.position.set(0,1.72,0); threeGroup.add(top); break;
     }
-    case 2: { // 石雕抱鼓石 — 腰鼓 + 狮头
+    case 2: {
       const mat = matStone;
-      // 底台
-      const base=new THREE.Mesh(new THREE.BoxGeometry(1.8,0.28,1.4),mat);
-      base.position.set(0,-1.3,0); threeGroup.add(base);
-      // 腰鼓体（上下两段圆柱）
-      const drum1=new THREE.Mesh(new THREE.CylinderGeometry(0.62,0.80,0.9,20),mat);
-      drum1.position.set(0,-0.7,0); threeGroup.add(drum1);
-      const drum2=new THREE.Mesh(new THREE.CylinderGeometry(0.80,0.62,0.9,20),mat);
-      drum2.position.set(0,0.15,0); threeGroup.add(drum2);
-      // 腰节
-      const waist=new THREE.Mesh(new THREE.CylinderGeometry(0.54,0.54,0.28,20),mat);
-      waist.position.set(0,-0.25,0); threeGroup.add(waist);
-      // 狮头（简化球+凸起）
-      const head=new THREE.Mesh(new THREE.SphereGeometry(0.48,14,12),mat);
-      head.position.set(0,0.95,0.14); threeGroup.add(head);
-      const snout=new THREE.Mesh(new THREE.SphereGeometry(0.24,10,8),mat);
-      snout.position.set(0,0.88,0.55); threeGroup.add(snout);
-      [-.2,.2].forEach(x=>{
-        const ear=new THREE.Mesh(new THREE.SphereGeometry(0.14,8,8),mat);
-        ear.position.set(x,1.32,0.14); threeGroup.add(ear);
-      });
-      break;
+      const base=new THREE.Mesh(new THREE.BoxGeometry(1.8,.28,1.4),mat); base.position.set(0,-1.3,0); threeGroup.add(base);
+      const drum1=new THREE.Mesh(new THREE.CylinderGeometry(.62,.80,.9,20),mat); drum1.position.set(0,-.7,0); threeGroup.add(drum1);
+      const drum2=new THREE.Mesh(new THREE.CylinderGeometry(.80,.62,.9,20),mat); drum2.position.set(0,.15,0); threeGroup.add(drum2);
+      const waist=new THREE.Mesh(new THREE.CylinderGeometry(.54,.54,.28,20),mat); waist.position.set(0,-.25,0); threeGroup.add(waist);
+      const head=new THREE.Mesh(new THREE.SphereGeometry(.48,14,12),mat); head.position.set(0,.95,.14); threeGroup.add(head);
+      const snout=new THREE.Mesh(new THREE.SphereGeometry(.24,10,8),mat); snout.position.set(0,.88,.55); threeGroup.add(snout);
+      [-.2,.2].forEach(x=>{const ear=new THREE.Mesh(new THREE.SphereGeometry(.14,8,8),mat); ear.position.set(x,1.32,.14); threeGroup.add(ear);}); break;
     }
-    case 3: { // 木雕斗拱 — 层叠出挑
+    case 3: {
       const mat = matWood;
-      const layers=[
-        {y:-0.9,w:1.0,d:0.50,h:0.24},
-        {y:-0.56,w:1.4,d:0.42,h:0.22},
-        {y:-0.22,w:1.9,d:0.35,h:0.20},
-        {y:0.10,w:2.4,d:0.30,h:0.20},
-        {y:0.40,w:2.8,d:0.26,h:0.18},
-      ];
-      layers.forEach(l=>{
-        const g=new THREE.BoxGeometry(l.w,l.h,l.d);
-        const m=new THREE.Mesh(g,mat); m.position.set(0,l.y,0); threeGroup.add(m);
+      [{y:-.9,w:1.0,d:.50,h:.24},{y:-.56,w:1.4,d:.42,h:.22},{y:-.22,w:1.9,d:.35,h:.20},{y:.10,w:2.4,d:.30,h:.20},{y:.40,w:2.8,d:.26,h:.18}].forEach(l=>{
+        const m=new THREE.Mesh(new THREE.BoxGeometry(l.w,l.h,l.d),mat); m.position.set(0,l.y,0); threeGroup.add(m);
       });
-      // 弓形斜撑
-      [-1.1,1.1].forEach(x=>{
-        const g=new THREE.BoxGeometry(0.18,1.4,0.22);
-        const m=new THREE.Mesh(g,mat); m.position.set(x,-0.3,0);
-        m.rotation.z=x>0?-0.3:0.3; threeGroup.add(m);
-      });
-      // 上部大梁
-      const top=new THREE.Mesh(new THREE.BoxGeometry(3.2,0.28,0.52),mat);
-      top.position.set(0,0.66,0); threeGroup.add(top);
-      break;
+      [-1.1,1.1].forEach(x=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.18,1.4,.22),mat); m.position.set(x,-.3,0); m.rotation.z=x>0?-.3:.3; threeGroup.add(m);});
+      const top=new THREE.Mesh(new THREE.BoxGeometry(3.2,.28,.52),mat); top.position.set(0,.66,0); threeGroup.add(top); break;
     }
-    case 4: { // 石雕柱础 — 须弥座
+    case 4: {
       const mat = matStone;
-      const tiers=[
-        {y:-1.4, rx:0.78,ry:0.78,h:0.28, seg:24},  // 底板
-        {y:-1.1, rx:0.62,ry:0.62,h:0.20, seg:24},  // 下枭
-        {y:-0.84,rx:0.70,ry:0.70,h:0.40, seg:24},  // 束腰
-        {y:-0.38,rx:0.62,ry:0.62,h:0.22, seg:24},  // 上枭
-        {y:-0.08,rx:0.68,ry:0.68,h:0.18, seg:20},  // 盖板
-      ];
-      tiers.forEach(t=>{
-        const g=new THREE.CylinderGeometry(t.rx,t.ry,t.h,t.seg);
-        const m=new THREE.Mesh(g,mat); m.position.set(0,t.y,0); threeGroup.add(m);
+      [{y:-1.4,rx:.78,ry:.78,h:.28,seg:24},{y:-1.1,rx:.62,ry:.62,h:.20,seg:24},{y:-.84,rx:.70,ry:.70,h:.40,seg:24},{y:-.38,rx:.62,ry:.62,h:.22,seg:24},{y:-.08,rx:.68,ry:.68,h:.18,seg:20}].forEach(t=>{
+        const m=new THREE.Mesh(new THREE.CylinderGeometry(t.rx,t.ry,t.h,t.seg),mat); m.position.set(0,t.y,0); threeGroup.add(m);
       });
-      // 覆莲瓣（8片）
       for(let i=0;i<8;i++){
         const angle=i/8*Math.PI*2;
-        const petal=new THREE.Mesh(
-          new THREE.SphereGeometry(0.24,8,6,0,Math.PI,0,Math.PI/2),mat);
-        petal.position.set(Math.cos(angle)*0.50,0.10,Math.sin(angle)*0.50);
+        const petal=new THREE.Mesh(new THREE.SphereGeometry(.24,8,6,0,Math.PI,0,Math.PI/2),mat);
+        petal.position.set(Math.cos(angle)*.50,.10,Math.sin(angle)*.50);
         petal.rotation.y=-angle+Math.PI/2; threeGroup.add(petal);
       }
-      // 圆柱主体
-      const shaft=new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.58,0.70,24),mat);
-      shaft.position.set(0,0.55,0); threeGroup.add(shaft);
-      break;
+      const shaft=new THREE.Mesh(new THREE.CylinderGeometry(.55,.58,.70,24),mat); shaft.position.set(0,.55,0); threeGroup.add(shaft); break;
     }
   }
-
-  threeGroup.traverse(child=>{
-    if(child.isMesh) child.castShadow=child.receiveShadow=true;
-  });
+  threeGroup.traverse(c=>{if(c.isMesh) c.castShadow=c.receiveShadow=true;});
   threeScene.add(threeGroup);
 }
-
   </script>
 </body>
 </html>
