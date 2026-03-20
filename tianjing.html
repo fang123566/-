@@ -573,6 +573,164 @@ body{
   flex-shrink:0;margin-top:.28rem;
 }
 
+/* ═══════════════════════════════
+   ENHANCED ANTIQUE STYLES
+   数据卡片、时间轴、引用、指标等
+═══════════════════════════════ */
+
+/* 数据卡片增强版 */
+.data-card{
+  background:linear-gradient(160deg,rgba(254,251,240,.95) 0%,rgba(248,244,230,.9) 100%);
+  border:1px solid rgba(184,134,11,.25);
+  border-radius:4px;
+  padding:.75rem .9rem;
+  margin:.5rem 0;
+  box-shadow:0 2px 8px rgba(60,35,10,.08);
+  position:relative;z-index:2;
+}
+.data-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold) 20%,var(--cinnabar) 50%,var(--gold) 80%,transparent);
+  opacity:.6;
+}
+.data-card-title{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:.75rem;color:var(--cinnabar);
+  letter-spacing:.12em;margin-bottom:.4rem;
+  display:flex;align-items:center;gap:.35rem;
+}
+.data-card-title::before{
+  content:'◆';font-size:.45rem;color:var(--gold);
+}
+.data-card-content{
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.62rem;color:var(--ink-medium);
+  line-height:1.7;letter-spacing:.03em;
+}
+
+/* 古风引用块增强 */
+.ancient-quote{
+  background:linear-gradient(135deg,rgba(184,48,32,.06) 0%,transparent 60%);
+  border-left:3px solid var(--cinnabar);
+  padding:.6rem .8rem;margin:.55rem 0;
+  position:relative;z-index:2;
+}
+.ancient-quote::before{
+  content:'「';position:absolute;top:-.2rem;left:.3rem;
+  font-family:'Ma Shan Zheng',cursive;font-size:1.8rem;
+  color:var(--cinnabar);opacity:.25;
+}
+.ancient-quote p{
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.68rem;color:var(--ink-deep);
+  line-height:1.9;letter-spacing:.06em;
+  text-indent:1.2em;
+}
+.ancient-quote cite{
+  display:block;text-align:right;
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.58rem;color:var(--gold);
+  letter-spacing:.08em;margin-top:.3rem;
+}
+
+/* 指标网格 */
+.metrics-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:.4rem .6rem;
+  margin:.5rem 0;
+}
+.metric-item{
+  background:rgba(184,134,11,.08);
+  border:1px solid rgba(184,134,11,.15);
+  border-radius:3px;
+  padding:.45rem .55rem;
+  text-align:center;
+}
+.metric-value{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:1.1rem;color:var(--cinnabar);
+  letter-spacing:.05em;
+}
+.metric-label{
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.52rem;color:var(--ink-light);
+  letter-spacing:.06em;margin-top:.15rem;
+}
+
+/* 时间轴样式 */
+.timeline{
+  position:relative;padding-left:1.2rem;margin:.5rem 0;
+}
+.timeline::before{
+  content:'';position:absolute;left:.4rem;top:.3rem;bottom:.3rem;
+  width:1px;background:linear-gradient(180deg,var(--gold) 0%,var(--cinnabar) 50%,var(--gold) 100%);
+  opacity:.4;
+}
+.timeline-item{
+  position:relative;margin-bottom:.55rem;
+}
+.timeline-item::before{
+  content:'';position:absolute;left:-.95rem;top:.35rem;
+  width:6px;height:6px;border-radius:50%;
+  background:var(--cinnabar);border:2px solid var(--paper);
+  box-shadow:0 0 0 1px var(--gold);
+}
+.timeline-era{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:.68rem;color:var(--cinnabar);
+  letter-spacing:.1em;
+}
+.timeline-desc{
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.6rem;color:var(--ink-medium);
+  line-height:1.6;margin-top:.15rem;
+}
+
+/* 锦囊/标签组 */
+.tag-group{
+  display:flex;flex-wrap:wrap;gap:.25rem;
+  margin:.45rem 0;
+}
+.tag{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.58rem;
+  color:var(--ink-warm);
+  background:rgba(184,134,11,.1);
+  border:1px solid rgba(184,134,11,.2);
+  border-radius:2px;
+  padding:.15rem .4rem;
+  letter-spacing:.04em;
+}
+.tag.important{
+  background:rgba(192,57,43,.1);
+  border-color:rgba(192,57,43,.25);
+  color:var(--cinnabar);
+}
+
+/* 书法题跋样式 */
+.calligraphy-note{
+  font-family:'Liu Jian Mao Cao',cursive;
+  font-size:1.2rem;
+  color:rgba(184,48,32,.18);
+  text-align:right;
+  margin-top:auto;
+  line-height:1.4;
+  letter-spacing:.08em;
+}
+
+/* 装饰分隔线 */
+.decor-divider{
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(184,134,11,.4) 30%,var(--cinnabar) 50%,rgba(184,134,11,.4) 70%,transparent);
+  margin:.6rem 0;position:relative;
+}
+.decor-divider::after{
+  content:'◆';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  font-size:.4rem;color:var(--cinnabar);
+  background:var(--paper);padding:0 .3rem;
+}
+
 /* 图片 */
 .book-img{position:relative;border-radius:3px;overflow:hidden;box-shadow:0 3px 14px rgba(40,24,8,.12);border:1px solid rgba(168,112,16,.14);height: 380px;width:100%;background:linear-gradient(152deg,#fefbf0 0%,#f8f0d8 50%,#f0e6c0 100%);margin:8px 0;}
 .book-img img{width:100%;height:100%;object-fit:cover;transition:transform 3s ease;display:block;filter:sepia(10%) brightness(.98) contrast(1.02);}
@@ -766,11 +924,11 @@ body{
       </div>
       <!-- 章节快速导航 -->
       <div class="sidebar-chapters" id="chapterNav">
-        <div class="ch-nav-item active-ch" onclick="goTo(0)"><span class="ch-nav-num">序</span><span class="ch-nav-title">一方天井·四水归堂</span><span class="ch-nav-dot"></span></div>
-        <div class="ch-nav-item" onclick="goTo(1)"><span class="ch-nav-num">壹</span><span class="ch-nav-title">内敛的堡垒</span><span class="ch-nav-dot"></span></div>
-        <div class="ch-nav-item" onclick="goTo(2)"><span class="ch-nav-num">贰</span><span class="ch-nav-title">阴阳交汇</span><span class="ch-nav-dot"></span></div>
-        <div class="ch-nav-item" onclick="goTo(3)"><span class="ch-nav-num">叁</span><span class="ch-nav-title">四水归堂</span><span class="ch-nav-dot"></span></div>
-        <div class="ch-nav-item" onclick="goTo(4)"><span class="ch-nav-num">肆</span><span class="ch-nav-title">天然呼吸</span><span class="ch-nav-dot"></span></div>
+        <div class="ch-nav-item active-ch" onclick="goTo(0)"><span class="ch-nav-num">序</span><span class="ch-nav-title">天井记·四水归堂</span><span class="ch-nav-dot"></span></div>
+        <div class="ch-nav-item" onclick="goTo(1)"><span class="ch-nav-num">壹</span><span class="ch-nav-title">防御与宗法交织</span><span class="ch-nav-dot"></span></div>
+        <div class="ch-nav-item" onclick="goTo(2)"><span class="ch-nav-num">贰</span><span class="ch-nav-title">光学调光器</span><span class="ch-nav-dot"></span></div>
+        <div class="ch-nav-item" onclick="goTo(3)"><span class="ch-nav-num">叁</span><span class="ch-nav-title">理水与财富观</span><span class="ch-nav-dot"></span></div>
+        <div class="ch-nav-item" onclick="goTo(4)"><span class="ch-nav-num">肆</span><span class="ch-nav-title">烟囱效应</span><span class="ch-nav-dot"></span></div>
       </div>
       <div class="data-scroll-outer">
         <div class="dsm-top"></div><div class="dsm-bot"></div>
