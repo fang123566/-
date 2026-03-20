@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const infoContent = document.getElementById('infoContent');
   const firstPersonBtn = document.getElementById('firstPersonBtn');
   const firstPersonModal = document.getElementById('firstPersonModal');
-  const closeModal = document.querySelector('.close-modal');
+  const closeModal = document.querySelector('#firstPersonModal .close-modal');
   const viewImage = document.getElementById('viewImage');
   const viewInfo = document.getElementById('viewInfo');
   const prevView = document.getElementById('prevView');
