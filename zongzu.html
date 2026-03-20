@@ -23,6 +23,13 @@
       --jade: #2e6b4f;
       --scroll-bg: #fdfaf0;
       --scroll-border: #8c6b48;
+      --primary-redwood: #8b4513;
+      --secondary-yellow: #b8860b;
+      --secondary-blue: #4a6f8c;
+      --border-ink: #d2b48c;
+      --font-title: 'Ma Shan Zheng', cursive;
+      --font-note: 'ZCOOL XiaoWei', serif;
+      --radius-sm: 4px;
     }
 
     /* 宗族页面专属样式 */
@@ -118,50 +125,45 @@
     .shrine-map {
       position: relative;
       width: 100%;
-      height: 350px;
+      height: 400px;
       background: linear-gradient(160deg, #fefaf0 0%, #f8f0dc 55%, #f2e8cc 100%);
-      border: 1px solid rgba(184, 134, 11, 0.2);
-      border-radius: 4px;
-      margin-top: 10px;
+      border: 1px solid var(--border-ink);
+      border-radius: var(--radius-sm);
       overflow: hidden;
+      transition: all 0.6s ease;
     }
 
-    .shrine-map::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-image: repeating-linear-gradient(0deg, transparent, transparent 29px, rgba(184, 134, 11, 0.05) 29px, rgba(184, 134, 11, 0.05) 30px);
-      pointer-events: none;
+    .shrine-map:hover {
+      transform: scale(1.02);
+      box-shadow: 0 10px 30px rgba(139, 69, 19, 0.3);
     }
 
-    .map-spot {
+    /* 祠堂热点 */
+    .shrine-hotspot {
       position: absolute;
-      width: 18px;
-      height: 18px;
-      background: var(--cinnabar);
+      width: 24px;
+      height: 24px;
+      background: var(--primary-redwood);
       border: 3px solid rgba(255, 255, 255, 0.9);
       border-radius: 50%;
       cursor: pointer;
-      box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.18);
+      box-shadow: 0 0 0 4px rgba(139, 69, 19, 0.18);
       transition: all 0.3s ease;
       z-index: 10;
     }
 
-    .map-spot:hover {
+    .shrine-hotspot:hover {
       transform: scale(1.5);
-      background: var(--ink-deep);
-      box-shadow: 0 0 0 8px rgba(192, 57, 43, 0.12);
+      background: var(--secondary-yellow);
+      box-shadow: 0 0 0 8px rgba(212, 177, 106, 0.3);
     }
 
-    .map-spot::after {
+    .shrine-hotspot::after {
       content: '';
       position: absolute;
       inset: -6px;
       border-radius: 50%;
-      border: 2px solid var(--cinnabar);
+      border: 2px solid var(--primary-redwood);
       animation: pulse 2s ease-in-out infinite;
     }
 
@@ -190,6 +192,182 @@
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 第一视角按钮 */
+    .first-person-btn {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: var(--primary-redwood);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-title);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+      z-index: 15;
+    }
+
+    .first-person-btn:hover {
+      background: var(--secondary-blue);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(74, 111, 140, 0.4);
+    }
+
+    /* 第一视角模态框 */
+    .first-person-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(160deg, rgba(254, 250, 240, 0.95) 0%, rgba(248, 240, 220, 0.95) 55%, rgba(242, 232, 204, 0.95) 100%);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
+    }
+
+    .first-person-modal .modal-content {
+      background: #fffbf0;
+      border: 1px solid var(--border-ink);
+      border-radius: var(--radius-sm);
+      width: 95%;
+      max-width: 1200px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 15px 45px rgba(139, 69, 19, 0.3);
+      position: relative;
+      animation: modalSlideIn 0.3s ease-out;
+      will-change: transform, opacity;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .first-person-modal .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 2rem;
+      color: var(--primary-redwood);
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+
+    .first-person-modal .close-modal:hover {
+      color: var(--secondary-blue);
+      transform: rotate(90deg) scale(1.2);
+    }
+
+    .first-person-modal .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border-ink);
+      text-align: center;
+      background: linear-gradient(to right, rgba(139, 69, 19, 0.1), rgba(74, 111, 140, 0.1));
+    }
+
+    .first-person-modal .modal-header h3 {
+      font-family: var(--font-title);
+      color: var(--primary-redwood);
+      font-size: 1.5rem;
+      margin: 0;
+      letter-spacing: 2px;
+    }
+
+    .first-person-modal .modal-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .first-person-modal .view-container {
+      position: relative;
+      width: 100%;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .first-person-modal .view-image {
+      width: 100%;
+      height: 65vh;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 10px 30px rgba(139, 69, 19, 0.3);
+      transition: transform 0.2s ease;
+      margin-bottom: 20px;
+      max-width: 100%;
+    }
+
+    .first-person-modal .view-image:hover {
+      transform: scale(1.01);
+      box-shadow: 0 15px 40px rgba(139, 69, 19, 0.4);
+    }
+
+    .first-person-modal .view-info {
+      background: rgba(139, 69, 19, 0.9);
+      color: white;
+      padding: 15px 20px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-note);
+      font-size: 1rem;
+      line-height: 1.5;
+      animation: fadeIn 0.3s ease-out;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+    }
+
+    .first-person-modal .navigation-controls {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .first-person-modal .nav-btn {
+      background: var(--primary-redwood);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-title);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(139, 69, 19, 0.3);
+    }
+
+    .first-person-modal .nav-btn:hover {
+      background: var(--secondary-blue);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(74, 111, 140, 0.4);
+    }
+
+    .first-person-modal .nav-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(139, 69, 19, 0.3);
     }
 
     /* 模块3：族规卷轴 */
@@ -535,7 +713,7 @@
       <div class="clan-module" id="cluster-layout">
         <h3 class="module-title">宗族聚居与建筑布局</h3>
         <p style="font-size: 1rem; line-height: 1.6; color: #4a3d2e; margin-bottom: 1.5rem;">
-          徽派宗族以"祠堂为核心、支祠为分支、民居为节点"的聚居模式，直接影响了村落的整体布局。宗族制度通过等级分明的建筑规划，体现了长幼有序、尊卑有别的社会秩序。
+          徽派宗族以"祠堂为核心、支祠为分支、民居为节点"，依托山水形胜形成"枕山环水、祠居一体"的聚居格局，建筑布局即宗族秩序的具象体现。
         </p>
         <!-- 手绘素材区：宗族村落布局手绘示意图 -->
         <div class="zongzu-img" style="margin: 1.5rem 0;">
@@ -555,28 +733,99 @@
 
       <div class="clan-module" id="shrine">
         <h3 class="module-title">祠堂礼制</h3>
-        <p class="placeholder-text">祠堂是建筑的灵魂。点击红点探索空间秩序</p>
-        <div class="shrine-map">
-          <div style="width:100%; height:100%; position:relative;">
-            <!-- 手绘祠堂示意图 -->
-            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20ancestral%20hall%20floor%20plan%2C%20traditional%20Huizhou%20architecture%20layout%2C%20warm%20yellow%20tones%2C%20ink%20painting%20style%2C%20with%20labels%20for%20main%20halls%20and%20courtyards&image_size=landscape_16_9" alt="祠堂平面示意图" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
-          </div>
+        <p style="font-size: 1rem; line-height: 1.6; color: #4a3d2e; margin-bottom: 1.5rem;">
+          祠堂是宗族的核心建筑，体现了严格的礼制等级。通过空间布局和装饰规格，反映了宗族内部的尊卑秩序和社会地位。
+        </p>
+        
+        <!-- 沉浸式漫游祠堂空间 -->
+        <div class="shrine-map" id="shrineMap">
+          <!-- 真实祠堂平面图 -->
+          <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=detailed%20Huizhou%20ancestral%20hall%20floor%20plan%2C%20traditional%20Chinese%20architecture%2C%20clear%20layout%20with%20labeled%20areas%2C%20ink%20painting%20style" alt="祠堂平面示意图" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
           
-          <!-- 交互热点 -->
-          <div class="map-spot" style="top:20%; left:50%; transform:translateX(-50%);" onmouseover="showInfo('门厅：祠堂的入口，通常设有牌楼式大门，彰显宗族威严，是身份地位的象征。门前多立石狮、旗杆，显示家族荣耀。')" onmouseout="hideInfo()"></div>
-          <div class="map-spot" style="top:45%; left:50%; transform:translateX(-50%);" onmouseover="showInfo('享堂：祠堂的核心空间，是族人集会、议事的场所，也是举行重大仪式的地方。堂中设有祖先牌位和供桌，是宗族活动的中心。')" onmouseout="hideInfo()"></div>
-          <div class="map-spot" style="top:70%; left:50%; transform:translateX(-50%);" onmouseover="showInfo('寝堂：祠堂的最内部分，供奉祖先牌位，是祭祀活动的中心场所。通常只有宗族长辈和重要人物才能进入。')" onmouseout="hideInfo()"></div>
-          <div class="map-spot" style="top:45%; left:22.5%;" onmouseover="showInfo('东厢房：通常用作宗族学校或存放宗族文献、族谱的地方，是家族文化传承的重要场所。')" onmouseout="hideInfo()"></div>
-          <div class="map-spot" style="top:45%; right:22.5%;" onmouseover="showInfo('西厢房：通常用作接待宾客或宗族议事的辅助场所，体现了宗族的礼仪规范。')" onmouseout="hideInfo()"></div>
-          <div class="map-spot" style="top:35%; left:50%; transform:translateX(-50%);" onmouseover="showInfo('天井：祠堂中的露天空间，不仅具有采光、通风的功能，也是宗族活动的重要场所，体现了天人合一的设计理念。')" onmouseout="hideInfo()"></div>
+          <!-- 祠堂热点 -->
+          <div class="shrine-hotspot" data-area="门厅" data-info="门厅是祠堂的入口，象征宗族的门面，通常悬挂堂号匾额，显示宗族身份。" data-image="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20Huizhou%20ancestral%20hall%20entrance%2C%20traditional%20Chinese%20architecture%2C%20ink%20painting%20style" style="top: 15%; left: 50%; transform: translateX(-50%);"></div>
+          <div class="shrine-hotspot" data-area="享堂" data-info="享堂是祠堂的核心空间，用于举行祭祀、议事等重大宗族活动，是宗族权力的象征。" data-image="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20Huizhou%20ancestral%20hall%20main%20hall%2C%20traditional%20Chinese%20architecture%2C%20ink%20painting%20style" style="top: 40%; left: 50%; transform: translateX(-50%);"></div>
+          <div class="shrine-hotspot" data-area="寝堂" data-info="寝堂是供奉祖先牌位的地方，是祠堂最神圣的空间，体现了对祖先的尊敬和崇拜。" data-image="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20Huizhou%20ancestral%20hall%20back%20hall%2C%20traditional%20Chinese%20architecture%2C%20ink%20painting%20style" style="top: 65%; left: 50%; transform: translateX(-50%);"></div>
+          <div class="shrine-hotspot" data-area="天井" data-info="天井是祠堂的采光通风空间，也是宗族活动的重要场所，体现了天人合一的理念。" data-image="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20Huizhou%20traditional%20courtyard%2C%20ancient%20Chinese%20architecture%2C%20ink%20painting%20style" style="top: 28%; left: 50%; transform: translateX(-50%);"></div>
+          <div class="shrine-hotspot" data-area="东厢" data-info="东厢通常用于存放宗族档案、族谱等重要文献，是宗族文化传承的重要场所。" data-image="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20Huizhou%20traditional%20study%20room%2C%20ancient%20Chinese%20architecture%2C%20ink%20painting%20style" style="top: 40%; left: 25%;"></div>
+          <div class="shrine-hotspot" data-area="西厢" data-info="西厢通常用于宗族子弟读书学习，体现了徽州重视教育的传统。" data-image="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20Huizhou%20traditional%20classroom%2C%20ancient%20Chinese%20architecture%2C%20ink%20painting%20style" style="top: 40%; right: 25%;"></div>
           
           <!-- 信息提示框 -->
           <div id="infoOverlay" class="info-overlay">
-            <div style="font-weight: bold; margin-bottom: 8px; color: var(--cinnabar); font-family: 'Ma Shan Zheng', cursive;">空间功能</div>
+            <div style="font-weight: bold; margin-bottom: 8px; color: var(--secondary-yellow); font-family: var(--font-title);">空间功能</div>
             <div id="infoContent"></div>
+          </div>
+          
+          <!-- 第一视角按钮 -->
+          <button class="first-person-btn" id="firstPersonBtn">第一视角漫游</button>
+        </div>
+        
+        <!-- 第一视角漫游模态框 -->
+        <div class="first-person-modal" id="firstPersonModal">
+          <div class="modal-content">
+            <button class="close-modal">×</button>
+            <div class="modal-header">
+              <h3 id="modalTitle">祠堂第一视角漫游</h3>
+            </div>
+            <div class="modal-body">
+              <div class="view-container">
+                <img id="viewImage" src="" alt="祠堂内部视图">
+                <div class="view-info" id="viewInfo">
+                  点击热点进入对应空间
+                </div>
+              </div>
+              <div class="navigation-controls">
+                <button class="nav-btn prev" id="prevView">上一个空间</button>
+                <button class="nav-btn next" id="nextView">下一个空间</button>
+              </div>
+            </div>
           </div>
         </div>
         
+        <!-- 礼制对比开关 -->
+        <div class="ritual-comparison" style="margin-top: 20px;">
+          <div class="comparison-toggle">
+            <input type="checkbox" id="comparisonToggle">
+            <label for="comparisonToggle">开启礼制对比</label>
+          </div>
+          <div class="comparison-content" id="comparisonContent" style="display: none; margin-top: 20px; padding: 20px; background: rgba(245, 240, 232, 0.6); border-radius: var(--radius-sm);">
+            <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin-bottom: 15px;">祠堂 vs 民居空间对比</h4>
+            <div class="comparison-item">
+              <h5 style="font-family: var(--font-title); color: var(--secondary-blue);">享堂 vs 正厅</h5>
+              <div style="display: flex; gap: 20px; margin-top: 10px;">
+                <div style="flex: 1;">
+                  <strong>祠堂享堂：</strong>
+                  <p>面阔三间或五间，进深多进，气势恢宏，装饰华丽，用于宗族公共活动。</p>
+                </div>
+                <div style="flex: 1;">
+                  <strong>民居正厅：</strong>
+                  <p>面阔三间，进深较浅，装饰简约，主要用于家庭日常活动和接待宾客。</p>
+                </div>
+              </div>
+            </div>
+            <div class="comparison-item" style="margin-top: 15px;">
+              <h5 style="font-family: var(--font-title); color: var(--secondary-blue);">寝堂 vs 内室</h5>
+              <div style="display: flex; gap: 20px; margin-top: 10px;">
+                <div style="flex: 1;">
+                  <strong>祠堂寝堂：</strong>
+                  <p>供奉祖先牌位，神圣庄严，一般人不得随意进入，体现对祖先的尊敬。</p>
+                </div>
+                <div style="flex: 1;">
+                  <strong>民居内室：</strong>
+                  <p>家庭成员居住空间，注重隐私和舒适，装饰温馨实用。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 文化内核内容 -->
+        <div class="antique-note" style="margin-top: 1.5rem;">
+          <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin-bottom: 10px;">礼制等级</h4>
+          <p style="font-size: 0.9rem; line-height: 1.6; color: var(--primary-text);">
+            《大明会典》规定："品官祠堂三间，庶人祠堂一间。"徽州宗族通过祠堂的规模、装饰和布局，严格体现等级制度，官祠气势恢宏，私祠小巧精致，支祠则根据族支地位而定。
+          </p>
+        </div>
       </div>
 
       <div class="clan-module" id="symbols">
@@ -1300,6 +1549,150 @@
         button.textContent = '展开卷轴';
       }
     }
-  </script>
-</body>
-</html>
+
+    // 第一视角漫游功能
+    document.addEventListener('DOMContentLoaded', function() {
+      // 祠堂热点交互
+      const hotspots = document.querySelectorAll('.shrine-hotspot');
+      const infoOverlay = document.getElementById('infoOverlay');
+      const infoContent = document.getElementById('infoContent');
+      const firstPersonBtn = document.getElementById('firstPersonBtn');
+      const firstPersonModal = document.getElementById('firstPersonModal');
+      const closeModal = document.querySelector('.close-modal');
+      const viewImage = document.getElementById('viewImage');
+      const viewInfo = document.getElementById('viewInfo');
+      const prevView = document.getElementById('prevView');
+      const nextView = document.getElementById('nextView');
+      const modalTitle = document.getElementById('modalTitle');
+      
+      // 视角数据
+      const views = [
+        {
+          area: '门厅',
+          image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20Huizhou%20ancestral%20hall%20entrance%2C%20traditional%20Chinese%20architecture%2C%20ink%20painting%20style',
+          info: '门厅是祠堂的入口，象征宗族的门面，通常悬挂堂号匾额，显示宗族身份。'
+        },
+        {
+          area: '天井',
+          image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20Huizhou%20traditional%20courtyard%2C%20ancient%20Chinese%20architecture%2C%20ink%20painting%20style',
+          info: '天井是祠堂的采光通风空间，也是宗族活动的重要场所，体现了天人合一的理念。'
+        },
+        {
+          area: '享堂',
+          image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20Huizhou%20ancestral%20hall%20main%20hall%2C%20traditional%20Chinese%20architecture%2C%20ink%20painting%20style',
+          info: '享堂是祠堂的核心空间，用于举行祭祀、议事等重大宗族活动，是宗族权力的象征。'
+        },
+        {
+          area: '寝堂',
+          image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20Huizhou%20ancestral%20hall%20back%20hall%2C%20traditional%20Chinese%20architecture%2C%20ink%20painting%20style',
+          info: '寝堂是供奉祖先牌位的地方，是祠堂最神圣的空间，体现了对祖先的尊敬和崇拜。'
+        },
+        {
+          area: '东厢',
+          image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20Huizhou%20traditional%20study%20room%2C%20ancient%20Chinese%20architecture%2C%20ink%20painting%20style',
+          info: '东厢通常用于存放宗族档案、族谱等重要文献，是宗族文化传承的重要场所。'
+        },
+        {
+          area: '西厢',
+          image: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20Huizhou%20traditional%20classroom%2C%20ancient%20Chinese%20architecture%2C%20ink%20painting%20style',
+          info: '西厢通常用于宗族子弟读书学习，体现了徽州重视教育的传统。'
+        }
+      ];
+      
+      let currentViewIndex = 0;
+      
+      // 显示信息提示
+      hotspots.forEach(hotspot => {
+        hotspot.addEventListener('mouseenter', function() {
+          const area = this.dataset.area;
+          const info = this.dataset.info;
+          infoContent.innerHTML = `<strong>${area}</strong><br>${info}`;
+          infoOverlay.style.display = 'block';
+          
+          // 添加光晕效果
+          this.style.boxShadow = '0 0 20px rgba(212, 177, 106, 0.6)';
+        });
+        
+        hotspot.addEventListener('mouseleave', function() {
+          infoOverlay.style.display = 'none';
+          this.style.boxShadow = '0 0 0 4px rgba(139, 69, 19, 0.18)';
+        });
+        
+        hotspot.addEventListener('click', function() {
+          const area = this.dataset.area;
+          const index = views.findIndex(view => view.area === area);
+          if (index !== -1) {
+            currentViewIndex = index;
+            updateView();
+            firstPersonModal.style.display = 'flex';
+          }
+        });
+      });
+      
+      // 第一视角按钮
+      if (firstPersonBtn) {
+        firstPersonBtn.addEventListener('click', function() {
+          currentViewIndex = 0;
+          updateView();
+          firstPersonModal.style.display = 'flex';
+        });
+      }
+      
+      // 关闭模态框
+      if (closeModal) {
+        closeModal.addEventListener('click', function() {
+          firstPersonModal.style.display = 'none';
+        });
+      }
+      
+      // 点击模态框外部关闭
+      window.addEventListener('click', function(event) {
+        if (event.target === firstPersonModal) {
+          firstPersonModal.style.display = 'none';
+        }
+      });
+      
+      // 上一个空间
+      if (prevView) {
+        prevView.addEventListener('click', function() {
+          currentViewIndex = (currentViewIndex - 1 + views.length) % views.length;
+          updateView();
+        });
+      }
+      
+      // 下一个空间
+      if (nextView) {
+        nextView.addEventListener('click', function() {
+          currentViewIndex = (currentViewIndex + 1) % views.length;
+          updateView();
+        });
+      }
+      
+      // 更新视角
+      function updateView() {
+        const currentView = views[currentViewIndex];
+        if (viewImage) {
+          viewImage.src = currentView.image;
+        }
+        if (viewInfo) {
+          viewInfo.textContent = currentView.info;
+        }
+        if (modalTitle) {
+          modalTitle.textContent = `祠堂第一视角漫游 - ${currentView.area}`;
+        }
+      }
+      
+      // 礼制对比开关
+      const comparisonToggle = document.getElementById('comparisonToggle');
+      const comparisonContent = document.getElementById('comparisonContent');
+      
+      if (comparisonToggle && comparisonContent) {
+        comparisonToggle.addEventListener('change', function() {
+          if (this.checked) {
+            comparisonContent.style.display = 'block';
+          } else {
+            comparisonContent.style.display = 'none';
+          }
+        });
+      }
+    });
