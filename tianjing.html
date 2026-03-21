@@ -27,20 +27,20 @@ body{
   font-family:'Ma Shan Zheng','Noto Serif SC','SimSun',serif;
   color:var(--ink-black);
   display:flex;flex-direction:column;
-  background-color: #faf6ee;
+  background-color: #1e180e;
 }
 
 /* ── 视频背景 ── */
 #bgVideo{
   position:fixed;inset:0;width:100%;height:100%;
-  object-fit:cover;z-index:-3;opacity:0.4;
+  object-fit:cover;z-index:-3;opacity:0.72;
   pointer-events:none;
 }
 
 /* ── 浅色宣纸蒙版 ── */
 .bg-overlay{
   position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background:rgba(245,240,232,0.85);
+  background:rgba(245,240,232,0.22);
 }
 /* 边缘渐暗晕染，模拟宣纸四边焦痕 */
 .bg-vignette{
@@ -77,10 +77,11 @@ body{
 
 /* ── WRAPPER ── */
 .page-wrapper{
-  position:relative;z-index:10;
+  position:relative;
   flex:1;display:flex;flex-direction:column;
   height:100vh;min-height:0;
   animation:wrapIn .7s ease both;
+  z-index:auto;
 }
 @keyframes wrapIn{from{opacity:0;}to{opacity:1;}}
 
@@ -93,7 +94,7 @@ body{
 }
 .circle-btn{
   width:46px;height:46px;border-radius:50%;
-  background:rgba(245,240,232,1);
+  background:rgba(245,240,232,0.82);
   backdrop-filter:blur(12px);
   border:1.5px solid rgba(168,112,16,.3);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
@@ -108,7 +109,7 @@ body{
 }
 .circle-btn:hover{
   background:rgba(184,48,32,.9);border-color:var(--cinnabar);
-  color:rgba(245,240,232,1);transform:translateY(-2px) scale(1.06);
+  color:rgba(245,240,232,0.82);transform:translateY(-2px) scale(1.06);
   box-shadow:0 6px 20px rgba(184,48,32,.36);
 }
 .circle-btn:hover span,.circle-btn:hover svg{color:#f5eedc;}
@@ -123,8 +124,8 @@ body{
 ═══════════════════════════════ */
 .hero-header{
   position:relative;flex-shrink:0;
-  background:rgba(245,240,232,1);
-  backdrop-filter:blur(18px);
+  background:rgba(245,240,232,0.55);
+  backdrop-filter:blur(14px);
   border-bottom:2px solid rgba(168,112,16,.25);
   overflow:hidden;
   box-shadow:0 4px 24px rgba(60,35,10,.12);
@@ -151,7 +152,7 @@ body{
   width:268px;flex-shrink:0;padding:15px 20px 17px;
   border-right:1px solid rgba(168,112,16,.18);
   display:flex;flex-direction:column;justify-content:center;
-  background:rgba(245,240,232,1);
+  background:rgba(245,240,232,0.55);
 }
 .hero-badge{
   display:inline-flex;align-items:center;gap:6px;
@@ -231,7 +232,7 @@ body{
 /* 主描述盒 */
 .hero-desc{
   font-size:.92rem;line-height:1.85;color:var(--ink-medium);
-  background:rgba(245,240,232,1);
+  background:rgba(245,240,232,0.65);
   padding:10px 18px 13px;
   border:1px solid rgba(168,112,16,.16);border-bottom:none;
   border-radius:6px 6px 0 0;border-left:3px solid var(--cinnabar);
@@ -264,7 +265,7 @@ body{
 .hero-stats{
   display:flex;gap:0;margin-bottom:0;
   border:1px solid rgba(168,112,16,.16);border-top:none;border-bottom:none;
-  background:rgba(245,240,232,1);
+  background:rgba(245,240,232,0.65);
   animation:descIn .8s cubic-bezier(.22,1,.36,1) .4s both;
 }
 .stat-item{
@@ -295,8 +296,8 @@ body{
 ═══════════════════════════════ */
 .sidebar{
   width:262px;flex-shrink:0;
-  background:rgba(245,240,232,1);
-  backdrop-filter:blur(18px) saturate(1.2);
+  background:rgba(245,240,232,0.55);
+  backdrop-filter:blur(14px) saturate(1.2);
   border-right:1px solid rgba(168,112,16,.18);
   padding:9px 12px 0;
   display:flex;flex-direction:column;
@@ -319,7 +320,7 @@ body{
   background:rgba(184,48,32,.08);color:var(--cinnabar);
   font-size:.58rem;transition:all .22s;
 }
-.ds-play-btn:hover{background:var(--cinnabar);color:rgba(245,240,232,1);transform:scale(1.14);}
+.ds-play-btn:hover{background:var(--cinnabar);color:rgba(245,240,232,0.82);transform:scale(1.14);}
 .ds-speed-label{
   font-family:'ZCOOL QingKe HuangYou',cursive;
   font-size:.55rem;color:var(--ink-light);letter-spacing:.1em;
@@ -354,8 +355,8 @@ body{
 
 .data-scroll-outer{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;min-height:0;}
 .dsm-top,.dsm-bot{position:absolute;left:0;right:0;height:38px;z-index:4;pointer-events:none;}
-.dsm-top{top:0;background:linear-gradient(to bottom,rgba(245,240,232,1),transparent);}
-.dsm-bot{bottom:0;background:linear-gradient(to top,rgba(245,240,232,1),transparent);}
+.dsm-top{top:0;background:linear-gradient(to bottom,rgba(245,240,232,0.82),transparent);}
+.dsm-bot{bottom:0;background:linear-gradient(to top,rgba(245,240,232,0.82),transparent);}
 .data-scroll-track{overflow:hidden;flex:1;position:relative;}
 .data-scroll-belt{display:flex;flex-direction:column;width:100%;animation:beltV 50s linear infinite;}
 .data-scroll-belt:hover,.data-scroll-belt.paused{animation-play-state:paused;}
@@ -431,7 +432,7 @@ body{
 /* 书页 */
 .pg{
   position:relative;overflow:hidden;
-  background:linear-gradient(152deg,#fefbf0rgba(245,240,232,1) 0%,rgba(245,240,232,1) 50%,rgba(245,240,232,1) 100%);
+  background:linear-gradient(152deg,#fefbf0 0%,rgba(245,240,232,0.82) 50%,rgba(245,240,232,0.82) 100%);
 }
 .pg::before{
   content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
@@ -553,6 +554,7 @@ body{
   line-height:1.8;letter-spacing:.15em;
 }
 .poetry-block cite{
+  display:block;text-align:right;
   font-family:'ZCOOL XiaoWei',serif;
   font-size:.58rem;color:var(--ink-light);
   letter-spacing:.1em;display:block;margin-top:4px;
@@ -624,7 +626,6 @@ body{
   font-family:'ZCOOL XiaoWei',serif;
   font-size:.68rem;color:var(--ink-deep);
   line-height:1.9;letter-spacing:.06em;
-  text-indent:1.2em;
 }
 .ancient-quote cite{
   display:block;text-align:right;
@@ -806,7 +807,7 @@ body{
    FOOTER
 ═══════════════════════════════ */
 .site-footer{
-  background:rgba(245,240,232,1);
+  background:rgba(245,240,232,0.60);
   backdrop-filter:blur(14px);
   padding:9px 50px;position:relative;z-index:10;flex-shrink:0;
   border-top:1px solid rgba(168,112,16,.2);
@@ -839,8 +840,8 @@ body{
 <body>
 
 <video id="bgVideo" autoplay loop muted playsinline
-  style="position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;opacity:0.4;pointer-events:none;">
-  <source src="素材/9ba0a2e6346f2a8446c8b10f630c6071.mp4" type="video/mp4"/>
+  style="position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;opacity:0.72;pointer-events:none;">
+  <source src="素材/天井与保护补充素材/天井.mp4" type="video/mp4"/>
 </video>
 
 <!-- 宣纸纹理背景 -->
