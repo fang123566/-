@@ -45,14 +45,45 @@ staticFiles.forEach(file => {
   }
 });
 
-// 复制public和素材文件夹
-const dirsToCopy = ['public', '素材'];
+// 复制public、素材和zongzu文件夹
+const dirsToCopy = ['public', '素材', 'zongzu'];
 dirsToCopy.forEach(dir => {
   const src = path.join(rootDir, dir);
   if (fs.existsSync(src)) {
     copyDir(src, path.join(distDir, dir));
   }
 });
+
+// 修复路径：将所有 HTML/JS/CSS 文件中的反斜杠路径替换为正斜杠（兼容 Linux/Vercel）
+function fixPathsInFile(filePath) {
+  try {
+    let content = fs.readFileSync(filePath, 'utf8');
+    // 将 素材\ 和 zongzu\ 开头的路径反斜杠替换为正斜杠
+    const fixed = content.replace(/(['"`])((?:[^'"`]*\\)+[^'"`]*)\1/g, (match, quote, p) => {
+      return quote + p.replace(/\\/g, '/') + quote;
+    });
+    if (fixed !== content) {
+      fs.writeFileSync(filePath, fixed, 'utf8');
+      console.log('Fixed paths in:', path.relative(distDir, filePath));
+    }
+  } catch (e) {
+    // skip binary files
+  }
+}
+
+function fixPathsInDir(dir) {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      fixPathsInDir(fullPath);
+    } else if (/\.(html|js|css)$/i.test(entry.name)) {
+      fixPathsInFile(fullPath);
+    }
+  }
+}
+
+fixPathsInDir(distDir);
 
 console.log('Build completed successfully!');
 console.log('Files copied to dist/');
