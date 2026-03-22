@@ -111,8 +111,6 @@
         <button class="nav-dot" data-index="2" onclick="scrollToModule(2)"></button>
         <button class="nav-dot" data-index="3" onclick="scrollToModule(3)"></button>
         <button class="nav-dot" data-index="4" onclick="scrollToModule(4)"></button>
-        <button class="nav-dot" data-index="5" onclick="scrollToModule(5)"></button>
-        <button class="nav-dot" data-index="6" onclick="scrollToModule(6)"></button>
       </div>
       <button class="nav-btn next-btn" onclick="scrollModules(1)">下一页 →</button>
     </div>
@@ -486,59 +484,6 @@
           </div>
         </div>
 
-        <!-- 宗族文化符号 -->
-        <div class="clan-module" id="symbols">
-          <h3 class="module-title">宗族文化符号在建筑中的体现</h3>
-          <p style="font-size: 1rem; line-height: 1.6; color: #4a3d2e; margin-bottom: 1.5rem;">
-            徽派建筑中的"堂号匾""家训楹联"是宗族文化的直接体现，通过建筑装饰传递宗族价值观和家族荣耀。这些文化符号不仅是装饰元素，更是宗族身份和文化传承的重要载体。
-          </p>
-          
-          <!-- 鎏金描边匾额/楹联交互 -->
-          <div class="symbols-container">
-            <!-- 匾额 -->
-            <div class="symbol-item" data-type="匾额" data-info="堂号匾额是宗族身份的重要标识，通常悬挂在祠堂或民居的正厅上方，显示宗族的郡望和堂号。">
-              <div class="symbol-wrapper">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20wooden%20plaque%20with%20calligraphy%2C%20traditional%20Huizhou%20architecture%20decoration%2C%20warm%20yellow%20tones%2C%20ink%20painting%20style&image_size=square" alt="宗族匾额" class="symbol-image">
-                <div class="golden-stroke"></div>
-              </div>
-              <div class="symbol-label">宗族匾额</div>
-            </div>
-            
-            <!-- 楹联 -->
-            <div class="symbol-item" data-type="楹联" data-info="家训楹联是宗族价值观的重要载体，通常刻在祠堂或民居的柱子上，传递宗族的道德规范和人生哲理。">
-              <div class="symbol-wrapper">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20couplet%20with%20calligraphy%2C%20traditional%20Huizhou%20architecture%20decoration%2C%20warm%20yellow%20tones%2C%20ink%20painting%20style&image_size=square" alt="宗族楹联" class="symbol-image">
-                <div class="golden-stroke"></div>
-              </div>
-              <div class="symbol-label">宗族楹联</div>
-            </div>
-          </div>
-          
-          <!-- 虚拟正厅符号摆放交互 -->
-          <div class="virtual-hall" style="margin-top: 30px;">
-            <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin-bottom: 15px; text-align: center;">虚拟正厅</h4>
-            <div class="hall-canvas" id="hallCanvas">
-              <div class="hall-background">
-                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20living%20room%20interior%2C%20traditional%20Huizhou%20architecture%20style%2C%20warm%20yellow%20tones%2C%20ink%20painting%20style&image_size=landscape_16_9" alt="虚拟正厅" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm);">
-              </div>
-              <div class="plaque-placeholder" data-position="plaque">匾额位置</div>
-              <div class="couplet-placeholder left" data-position="couplet-left">左楹联位置</div>
-              <div class="couplet-placeholder right" data-position="couplet-right">右楹联位置</div>
-            </div>
-            <p style="font-size: 0.9rem; line-height: 1.5; color: #8c7a60; font-style: italic; text-align: center; margin-top: 10px;">
-              拖拽匾额和楹联到正厅相应位置
-            </p>
-          </div>
-          
-          <!-- 文化内核内容 -->
-          <div class="antique-note" style="margin-top: 1.5rem;">
-            <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin-bottom: 10px;">雕刻工艺与宗族地位</h4>
-            <p style="font-size: 0.9rem; line-height: 1.6; color: var(--primary-text);">
-              族长家的匾额通常采用深浮雕工艺，雕刻精美，图案复杂；普通族人的匾额则为浅浮雕，工艺相对简单。这种差异直接体现了宗族内部的等级差异和身份认同。
-            </p>
-          </div>
-        </div>
-
         <!-- 家风族规卷轴 -->
         <div class="clan-module" id="rules">
           <h3 class="module-title" style="text-align: center;">家风族规卷轴</h3>
@@ -598,111 +543,71 @@
           </div>
         </div>
 
-        <!-- 贾而好儒 -->
-        <div class="clan-module" id="merchant">
-          <h3 class="module-title">贾而好儒</h3>
-          <p style="font-size: 1rem; line-height: 1.6; color: #4a3d2e; margin-bottom: 1.5rem;">
-            徽商秉持"贾而好儒"的理念，在经商致富后，将大量财富投入教育和宗族建设，形成了独特的儒商文化。
-          </p>
+        <!-- 综合文化模块 -->
+        <div class="clan-module" id="culture-composite">
+          <h3 class="module-title">宗族文化综合</h3>
           
-          <!-- 墨块演化图表 -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: 300px;">
-            <div class="chart-box" id="clanChart">
-              <div class="chart-title">宗族建设投资比例</div>
-            </div>
-            <div class="chart-box" id="educationChart">
-              <div class="chart-title">教育投资比例</div>
-            </div>
-          </div>
-          <div style="margin-top: 20px; height: 250px;">
-            <div class="chart-box" id="merchantChart">
-              <div class="chart-title">徽商发展趋势</div>
-            </div>
-          </div>
-          
-          <!-- 儒商平衡滑块 -->
-          <div class="merchant-slider" style="margin-top: 30px;">
-            <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin-bottom: 15px; text-align: center;">儒商平衡</h4>
-            <div class="slider-container">
-              <div class="slider-label left">经商</div>
-              <input type="range" min="0" max="100" value="50" class="merchant-slider-input" id="merchantSlider">
-              <div class="slider-label right">科举</div>
-            </div>
-            <div class="slider-value" id="sliderValue">平衡状态: 50%</div>
-          </div>
-          
-          <!-- 文化内核内容 -->
-          <div class="antique-note" style="margin-top: 1.5rem;">
-            <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin-bottom: 10px;">儒商建筑体现</h4>
-            <p style="font-size: 0.9rem; line-height: 1.6; color: var(--primary-text);">
-              徽商故居通常设有"藏书楼"和"学堂"，而非单纯的商业空间。例如，徽商大户的宅第中，往往辟出专门的房间用于藏书和教育，体现了"贾而好儒"的价值观。
-            </p>
-          </div>
-        </div>
-
-        <!-- 枕山环水 -->
-        <div class="clan-module" id="fengshui">
-          <h3 class="module-title">枕山环水</h3>
-          <p class="placeholder-text">宗族聚落与地理风水的关系模拟</p>
-          <div class="fengshui-map" style="width:100%; height:400px; border:1px solid var(--border-ink); border-radius:var(--radius-sm); position:relative; overflow:hidden;">
-            <!-- 手绘风水布局示意图 -->
-            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20feng%20shui%20village%20layout%2C%20traditional%20Huizhou%20architecture%20with%20mountains%20at%20back%2C%20water%20in%20front%2C%20warm%20yellow%20tones%2C%20ink%20painting%20style&image_size=landscape_16_9" alt="宗族聚落风水布局示意图" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm);">
-            
-            <!-- 风水热点 -->
-            <div class="map-spot" style="top:15%; left:50%; transform:translateX(-50%);" onmouseover="showInfo('靠山：宗族聚落背后的山脉，象征背后有依靠，为宗族提供庇护和安全感。')" onmouseout="hideInfo()"></div>
-            <div class="map-spot" style="bottom:30%; left:50%; transform:translateX(-50%);" onmouseover="showInfo('明堂：宗族建筑前方的开阔空间，象征前途光明，运势亨通。')" onmouseout="hideInfo()"></div>
-            <div class="map-spot" style="bottom:17.5%; left:50%; transform:translateX(-50%);" onmouseover="showInfo('水局：宗族前方的水系，象征财富汇聚，为宗族带来财运和生机。')" onmouseout="hideInfo()"></div>
-            <div class="map-spot" style="top:50%; left:20%;" onmouseover="showInfo('青龙：左侧的山脉或建筑，象征吉祥和贵人相助。')" onmouseout="hideInfo()"></div>
-            <div class="map-spot" style="top:50%; right:20%;" onmouseover="showInfo('白虎：右侧的山脉或建筑，象征守护和辟邪。')" onmouseout="hideInfo()"></div>
-            
-            <!-- 风水说明 -->
-            <div style="position:absolute; top:10px; left:10px; background:rgba(51, 51, 51, 0.7); color:white; padding:8px 12px; border-radius:var(--radius-sm); font-size:0.8rem; backdrop-filter:blur(4px);">
-              <div style="font-family:var(--font-title); margin-bottom:4px; color:var(--secondary-yellow);">风水布局</div>
-              <div>左青龙 · 右白虎 · 前朱雀 · 后玄武</div>
-            </div>
-          </div>
-          
-          <!-- 风水说明文字 -->
-          <div style="margin-top:20px; padding:15px; background:rgba(245, 240, 232, 0.6); border-radius:var(--radius-sm); border-left:3px solid var(--primary-redwood);">
-            <h4 style="font-family:var(--font-title); color:var(--primary-text); margin-bottom:10px;">风水理念</h4>
-            <p style="font-size:0.9rem; line-height:1.6; color:var(--primary-text);">
-              徽派宗族聚落注重风水布局，通常遵循"枕山、环水、面屏"的原则。背后有靠山提供庇护，前方有明堂开阔视野，左右有青龙白虎守护，前方有水系汇聚财富，形成理想的居住环境。这种布局不仅体现了中国传统的风水观念，也反映了宗族对美好生活的向往和追求。
-            </p>
-          </div>
-          
-          <!-- 风水实际案例 -->
-          <div class="fengshui-cases" style="margin-top:20px;">
-            <h4 style="font-family:var(--font-title); color:var(--primary-redwood); margin-bottom:15px;">经典风水案例</h4>
-            <div class="cases-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-              <div class="case-item" style="background: white; padding: 15px; border-radius: var(--radius-sm); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-ink);">
-                <h5 style="font-family:var(--font-title); color:var(--primary-text); margin-bottom:10px;">宏村</h5>
-                <p style="font-size:0.8rem; line-height:1.5; color:var(--primary-text);">
-                  宏村被誉为"中国画里的乡村"，其布局遵循"牛形"风水模式，以月沼为牛胃，南湖为牛肚，村中的水系为牛肠，形成完整的风水系统，体现了徽州人对自然环境的巧妙利用。
-                </p>
+          <!-- 三栏网格布局 -->
+          <div class="composite-grid">
+            <!-- 宗族文化符号 -->
+            <div class="composite-item">
+              <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin-bottom: 15px; text-align: center;">宗族文化符号</h4>
+              <div class="symbols-container">
+                <div class="symbol-item" data-type="匾额" data-info="堂号匾额是宗族身份的重要标识，通常悬挂在祠堂或民居的正厅上方，显示宗族的郡望和堂号。">
+                  <div class="symbol-wrapper">
+                    <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20wooden%20plaque%20with%20calligraphy%2C%20traditional%20Huizhou%20architecture%20decoration%2C%20warm%20yellow%20tones%2C%20ink%20painting%20style&image_size=square" alt="宗族匾额" class="symbol-image">
+                    <div class="golden-stroke"></div>
+                  </div>
+                  <div class="symbol-label">宗族匾额</div>
+                </div>
+                <div class="symbol-item" data-type="楹联" data-info="家训楹联是宗族价值观的重要载体，通常刻在祠堂或民居的柱子上，传递宗族的道德规范和人生哲理。">
+                  <div class="symbol-wrapper">
+                    <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20couplet%20with%20calligraphy%2C%20traditional%20Huizhou%20architecture%20decoration%2C%20warm%20yellow%20tones%2C%20ink%20painting%20style&image_size=square" alt="宗族楹联" class="symbol-image">
+                    <div class="golden-stroke"></div>
+                  </div>
+                  <div class="symbol-label">宗族楹联</div>
+                </div>
               </div>
-              <div class="case-item" style="background: white; padding: 15px; border-radius: var(--radius-sm); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-ink);">
-                <h5 style="font-family:var(--font-title); color:var(--primary-text); margin-bottom:10px;">西递</h5>
-                <p style="font-size:0.8rem; line-height:1.5; color:var(--primary-text);">
-                  西递村背倚罗峰山，面临西川河，形成"背山面水"的理想风水格局。村落整体呈船形，象征一帆风顺，体现了徽州人对美好生活的向往和对宗族繁荣的期盼。
-                </p>
-              </div>
+              <p style="font-size: 0.85rem; line-height: 1.5; color: var(--primary-text); margin-top: 15px;">
+                徽派建筑中的"堂号匾""家训楹联"是宗族文化的直接体现，通过建筑装饰传递宗族价值观和家族荣耀。
+              </p>
             </div>
-          </div>
-          
-          <!-- 风水与宗族文化 -->
-          <div class="fengshui-culture" style="margin-top:20px; padding:15px; background:rgba(245, 240, 232, 0.6); border-radius:var(--radius-sm); border-left:3px solid var(--secondary-blue);">
-            <h4 style="font-family:var(--font-title); color:var(--secondary-blue); margin-bottom:10px;">风水与宗族文化的融合</h4>
-            <p style="font-size:0.9rem; line-height:1.6; color:var(--primary-text);">
-              徽州宗族将风水观念与宗族文化紧密结合，认为良好的风水布局可以保障宗族的繁荣昌盛。祠堂通常建在村落的风水宝地，象征宗族的核心地位。同时，风水观念也影响了宗族的建筑风格和布局，形成了独特的徽派建筑特色。
-            </p>
-          </div>
-          
-          <!-- 文化内核内容 -->
-          <div class="antique-note" style="margin-top: 1.5rem;">
-            <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin-bottom: 10px;">风水与宗族生存</h4>
-            <p style="font-size: 0.9rem; line-height: 1.6; color: var(--primary-text);">
-              徽州风水布局不仅是迷信，更是对自然环境的科学利用。靠山可以阻挡北风，水系保证灌溉和生活用水，明堂提供晒谷场和活动空间，这些布局都直接关系到宗族的生存和发展。
-            </p>
+            
+            <!-- 贾而好儒 -->
+            <div class="composite-item">
+              <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin-bottom: 15px; text-align: center;">贾而好儒</h4>
+              <div style="height: 200px; margin-bottom: 15px;">
+                <div class="chart-box" id="merchantChart">
+                  <div class="chart-title">徽商发展趋势</div>
+                </div>
+              </div>
+              <div class="merchant-slider" style="margin-top: 15px;">
+                <div class="slider-container">
+                  <div class="slider-label left">经商</div>
+                  <input type="range" min="0" max="100" value="50" class="merchant-slider-input" id="merchantSlider">
+                  <div class="slider-label right">科举</div>
+                </div>
+                <div class="slider-value" id="sliderValue">平衡状态: 50%</div>
+              </div>
+              <p style="font-size: 0.85rem; line-height: 1.5; color: var(--primary-text); margin-top: 15px;">
+                徽商秉持"贾而好儒"的理念，在经商致富后，将大量财富投入教育和宗族建设，形成了独特的儒商文化。
+              </p>
+            </div>
+            
+            <!-- 枕山环水 -->
+            <div class="composite-item">
+              <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin-bottom: 15px; text-align: center;">枕山环水</h4>
+              <div class="fengshui-map" style="width:100%; height:200px; border:1px solid var(--border-ink); border-radius:var(--radius-sm); position:relative; overflow:hidden; margin-bottom: 15px;">
+                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20feng%20shui%20village%20layout%2C%20traditional%20Huizhou%20architecture%20with%20mountains%20at%20back%2C%20water%20in%20front%2C%20warm%20yellow%20tones%2C%20ink%20painting%20style&image_size=landscape_16_9" alt="宗族聚落风水布局示意图" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm);">
+                <div style="position:absolute; top:10px; left:10px; background:rgba(51, 51, 51, 0.7); color:white; padding:8px 12px; border-radius:var(--radius-sm); font-size:0.8rem; backdrop-filter:blur(4px);">
+                  <div style="font-family:var(--font-title); margin-bottom:4px; color:var(--secondary-yellow);">风水布局</div>
+                  <div>左青龙 · 右白虎 · 前朱雀 · 后玄武</div>
+                </div>
+              </div>
+              <p style="font-size: 0.85rem; line-height: 1.5; color: var(--primary-text);">
+                徽派宗族聚落注重风水布局，通常遵循"枕山、环水、面屏"的原则，形成理想的居住环境，体现了宗族对美好生活的向往。
+              </p>
+            </div>
           </div>
         </div>
       </div>

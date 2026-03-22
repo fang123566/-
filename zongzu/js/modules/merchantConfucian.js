@@ -2,181 +2,203 @@
 
 // 确保DOM加载完成
 document.addEventListener('DOMContentLoaded', function() {
-  // 初始化宗族建设投资比例图表
-  const clanChart = echarts.init(document.getElementById('clanChart'));
-  const clanOption = {
-    title: {
-      text: '宗族建设投资比例',
-      left: 'center',
-      textStyle: {
-        fontFamily: 'Ma Shan Zheng, cursive',
-        color: '#8B4513'
-      }
-    },
-    tooltip: {
-      trigger: 'item'
-    },
-    legend: {
-      orient: 'vertical',
-      left: 'left',
-      textStyle: {
-        fontFamily: 'Noto Serif SC, serif',
-        color: '#333333'
-      }
-    },
-    series: [
-      {
-        name: '投资比例',
-        type: 'pie',
-        radius: '70%',
-        center: ['50%', '60%'],
-        data: [
-          { value: 35, name: '祠堂建设' },
-          { value: 25, name: '族谱修撰' },
-          { value: 20, name: '宗族教育' },
-          { value: 15, name: '族田购置' },
-          { value: 5, name: '其他' }
-        ],
-        emphasis: {
-          itemStyle: {
-            shadowBlur: 10,
-            shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)'
-          }
-        },
-        itemStyle: {
-          color: function(params) {
-            const colors = ['#8B4513', '#4A6F8C', '#D4B16A', '#707070', '#C0392B'];
-            return colors[params.dataIndex];
-          }
-        }
-      }
-    ]
-  };
-  clanChart.setOption(clanOption);
-
-  // 初始化教育投资比例图表
-  const educationChart = echarts.init(document.getElementById('educationChart'));
-  const educationOption = {
-    title: {
-      text: '教育投资比例',
-      left: 'center',
-      textStyle: {
-        fontFamily: 'Ma Shan Zheng, cursive',
-        color: '#8B4513'
-      }
-    },
-    tooltip: {
-      trigger: 'item'
-    },
-    legend: {
-      orient: 'vertical',
-      left: 'left',
-      textStyle: {
-        fontFamily: 'Noto Serif SC, serif',
-        color: '#333333'
-      }
-    },
-    series: [
-      {
-        name: '投资比例',
-        type: 'pie',
-        radius: '70%',
-        center: ['50%', '60%'],
-        data: [
-          { value: 40, name: '书院建设' },
-          { value: 30, name: '科举资助' },
-          { value: 15, name: '藏书购置' },
-          { value: 10, name: '教师聘请' },
-          { value: 5, name: '其他' }
-        ],
-        emphasis: {
-          itemStyle: {
-            shadowBlur: 10,
-            shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)'
-          }
-        },
-        itemStyle: {
-          color: function(params) {
-            const colors = ['#4A6F8C', '#D4B16A', '#8B4513', '#707070', '#C0392B'];
-            return colors[params.dataIndex];
-          }
-        }
-      }
-    ]
-  };
-  educationChart.setOption(educationOption);
+  // 检查echarts是否加载
+  if (typeof echarts === 'undefined') {
+    console.warn('ECharts library not loaded');
+    return;
+  }
 
   // 初始化徽商发展趋势图表
-  const merchantChart = echarts.init(document.getElementById('merchantChart'));
-  const merchantOption = {
-    title: {
-      text: '徽商发展趋势',
-      left: 'center',
-      textStyle: {
-        fontFamily: 'Ma Shan Zheng, cursive',
-        color: '#8B4513'
-      }
-    },
-    tooltip: {
-      trigger: 'axis'
-    },
-    legend: {
-      data: ['商业规模', '文化影响力'],
-      textStyle: {
-        fontFamily: 'Noto Serif SC, serif',
-        color: '#333333'
-      }
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
-    },
-    xAxis: {
-      type: 'category',
-      boundaryGap: false,
-      data: ['唐代', '宋代', '元代', '明代', '清代', '现代'],
-      axisLabel: {
-        fontFamily: 'Noto Serif SC, serif'
-      }
-    },
-    yAxis: {
-      type: 'value',
-      axisLabel: {
-        fontFamily: 'Noto Serif SC, serif'
-      }
-    },
-    series: [
-      {
-        name: '商业规模',
-        type: 'line',
-        stack: 'Total',
-        data: [10, 30, 40, 80, 100, 60],
-        lineStyle: {
-          color: '#8B4513'
-        },
-        itemStyle: {
-          color: '#8B4513'
+  const merchantChartElement = document.getElementById('merchantChart');
+  if (merchantChartElement) {
+    const merchantChart = echarts.init(merchantChartElement);
+    const merchantOption = {
+      tooltip: {
+        trigger: 'axis'
+      },
+      legend: {
+        data: ['商业规模', '文化影响力'],
+        textStyle: {
+          fontFamily: 'Noto Serif SC, serif',
+          color: '#333333'
         }
       },
-      {
-        name: '文化影响力',
-        type: 'line',
-        stack: 'Total',
-        data: [5, 20, 30, 70, 90, 80],
-        lineStyle: {
-          color: '#4A6F8C'
-        },
-        itemStyle: {
-          color: '#4A6F8C'
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: ['唐代', '宋代', '元代', '明代', '清代', '现代'],
+        axisLabel: {
+          fontFamily: 'Noto Serif SC, serif'
         }
-      }
-    ]
-  };
-  merchantChart.setOption(merchantOption);
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: {
+          fontFamily: 'Noto Serif SC, serif'
+        }
+      },
+      series: [
+        {
+          name: '商业规模',
+          type: 'line',
+          stack: 'Total',
+          data: [10, 30, 40, 80, 100, 60],
+          lineStyle: {
+            color: '#8B4513'
+          },
+          itemStyle: {
+            color: '#8B4513'
+          }
+        },
+        {
+          name: '文化影响力',
+          type: 'line',
+          stack: 'Total',
+          data: [5, 20, 30, 70, 90, 80],
+          lineStyle: {
+            color: '#4A6F8C'
+          },
+          itemStyle: {
+            color: '#4A6F8C'
+          }
+        }
+      ]
+    };
+    merchantChart.setOption(merchantOption);
+
+    // 添加chart-visible类使图表显示
+    merchantChartElement.classList.add('chart-visible');
+
+    // 响应式调整
+    window.addEventListener('resize', function() {
+      merchantChart.resize();
+    });
+  }
+
+  // 初始化徽商经营范围分布图表
+  const merchantDistributionChartElement = document.getElementById('merchantDistributionChart');
+  if (merchantDistributionChartElement) {
+    const merchantDistributionChart = echarts.init(merchantDistributionChartElement);
+    const merchantDistributionOption = {
+      tooltip: {
+        trigger: 'item'
+      },
+      legend: {
+        orient: 'vertical',
+        left: 'left',
+        textStyle: {
+          fontFamily: 'Noto Serif SC, serif',
+          color: '#333333'
+        }
+      },
+      series: [
+        {
+          name: '经营范围',
+          type: 'pie',
+          radius: '60%',
+          data: [
+            { value: 30, name: '盐业' },
+            { value: 20, name: '茶叶' },
+            { value: 15, name: '木材' },
+            { value: 15, name: '典当' },
+            { value: 10, name: '丝绸' },
+            { value: 10, name: '其他' }
+          ],
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          },
+          itemStyle: {
+            color: function(params) {
+              const colors = ['#8B4513', '#A0522D', '#CD853F', '#D2B48C', '#DEB887', '#F5DEB3'];
+              return colors[params.dataIndex];
+            }
+          },
+          label: {
+            fontFamily: 'Noto Serif SC, serif'
+          }
+        }
+      ]
+    };
+    merchantDistributionChart.setOption(merchantDistributionOption);
+
+    // 添加chart-visible类使图表显示
+    merchantDistributionChartElement.classList.add('chart-visible');
+
+    // 响应式调整
+    window.addEventListener('resize', function() {
+      merchantDistributionChart.resize();
+    });
+  }
+
+  // 初始化风水要素重要性图表
+  const fengshuiElementsChartElement = document.getElementById('fengshuiElementsChart');
+  if (fengshuiElementsChartElement) {
+    const fengshuiElementsChart = echarts.init(fengshuiElementsChartElement);
+    const fengshuiElementsOption = {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'
+        }
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'value',
+        axisLabel: {
+          fontFamily: 'Noto Serif SC, serif'
+        }
+      },
+      yAxis: {
+        type: 'category',
+        data: ['案山', '水口', '道路', '朝向', '环水', '枕山'],
+        axisLabel: {
+          fontFamily: 'Noto Serif SC, serif'
+        }
+      },
+      series: [
+        {
+          name: '重要性',
+          type: 'bar',
+          data: [75, 85, 60, 90, 95, 100],
+          itemStyle: {
+            color: function(params) {
+              const colors = ['#4A6F8C', '#5A7F9C', '#6A8FAF', '#7AA0C2', '#8AB1D5', '#9BC2E8'];
+              return colors[params.dataIndex];
+            }
+          },
+          label: {
+            show: true,
+            position: 'right',
+            fontFamily: 'Noto Serif SC, serif'
+          }
+        }
+      ]
+    };
+    fengshuiElementsChart.setOption(fengshuiElementsOption);
+
+    // 添加chart-visible类使图表显示
+    fengshuiElementsChartElement.classList.add('chart-visible');
+
+    // 响应式调整
+    window.addEventListener('resize', function() {
+      fengshuiElementsChart.resize();
+    });
+  }
 
   // 儒商平衡滑块
   const merchantSlider = document.getElementById('merchantSlider');
@@ -197,16 +219,4 @@ document.addEventListener('DOMContentLoaded', function() {
     // 这里可以添加根据滑块值更新图表的逻辑
     // 例如调整饼图的比例或折线图的趋势
   }
-
-  // 添加chart-visible类使图表显示
-  document.getElementById('clanChart').classList.add('chart-visible');
-  document.getElementById('educationChart').classList.add('chart-visible');
-  document.getElementById('merchantChart').classList.add('chart-visible');
-
-  // 响应式调整
-  window.addEventListener('resize', function() {
-    clanChart.resize();
-    educationChart.resize();
-    merchantChart.resize();
-  });
 });
