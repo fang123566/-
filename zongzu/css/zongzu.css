@@ -1,4 +1,4 @@
-/* 宗族页面国奖级视觉规范 */
+﻿/* 宗族页面国奖级视觉规范 */
 :root {
   /* 徽派水墨古风专属色板 */
   --primary-redwood: #8B4513; /* 赭石色（红木） */
@@ -37,7 +37,7 @@
 
 body {
   font-family: var(--font-body);
-  background: var(--primary-bg);
+  background: #1e180e;
   color: var(--primary-text);
   line-height: 1.8;
   overflow-x: hidden;
@@ -75,7 +75,8 @@ body::after {
   padding: 44px 56px 40px;
   overflow: hidden;
   border-bottom: 1px solid rgba(184, 134, 11, 0.2);
-  background: linear-gradient(to right, var(--primary-bg) 0%, #faf6ee 60%, rgba(212, 177, 106, 0.18) 100%);
+  background: rgba(255, 252, 247, 0.65);
+  backdrop-filter: blur(14px);
 }
 
 /* 右侧水墨晕渲效果 */
@@ -236,12 +237,13 @@ body::after {
   overflow-y: hidden;
   white-space: nowrap;
   padding: var(--spacing-xl) 0;
-  background: var(--primary-bg);
+  background: rgba(252, 250, 245, 0.75);
+  backdrop-filter: blur(12px);
   position: relative;
   z-index: 10;
   scroll-behavior: smooth;
   scrollbar-width: thin;
-  scrollbar-color: var(--primary-redwood) var(--primary-bg);
+  scrollbar-color: var(--primary-redwood) transparent;
 }
 
 /* 滚动条样式 */
@@ -250,7 +252,7 @@ body::after {
 }
 
 .clan-container::-webkit-scrollbar-track {
-  background: var(--primary-bg);
+  background: transparent;
   border-radius: 4px;
 }
 
@@ -274,7 +276,7 @@ body::after {
 
 /* 通用模块样式 */
 .clan-module {
-  background: #fffbf0;
+  background: rgba(255, 253, 250, 0.50);
   border: 1px solid var(--border-ink);
   padding: var(--spacing-md);
   border-radius: var(--radius-sm);
@@ -283,8 +285,8 @@ body::after {
   position: relative;
   overflow: hidden;
   background-image: 
-    radial-gradient(circle at top left, rgba(139, 69, 19, 0.04) 0%, transparent 50%),
-    radial-gradient(circle at bottom right, rgba(139, 69, 19, 0.04) 0%, transparent 50%);
+    radial-gradient(circle at top left, rgba(139, 69, 19, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at bottom right, rgba(139, 69, 19, 0.03) 0%, transparent 50%);
   width: 100vw;
   min-width: 100vw;
   white-space: normal;
@@ -936,10 +938,12 @@ body::after {
   border-radius: 3px;
   outline: none;
   -webkit-appearance: none;
+  appearance: none;
 }
 
 .layer-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
+  appearance: none;
   width: 18px;
   height: 18px;
   background: var(--primary-redwood);
@@ -1201,24 +1205,24 @@ body::after {
 }
 
 /* 水墨生长谱系树 */
-#genealogyTree {
-  width: 100%;
-  height: 500px;
-  background: linear-gradient(160deg, #fefaf0 0%, #f8f0dc 55%, #f2e8cc 100%);
+.genealogy-scroll {
+  background: #fffbf0;
   border: 1px solid var(--border-ink);
   border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-inner);
+  padding: 20px;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-inner);
   transition: all 0.3s ease;
 }
 
-#genealogyTree:hover {
+.genealogy-scroll:hover {
   transform: scale(1.02);
-  box-shadow: 0 10px 30px rgba(139, 69, 19, 0.2);
+  box-shadow: 0 10px 30px rgba(139, 69, 19, 0.3);
+  border-color: var(--primary-redwood);
 }
 
-#genealogyTree::before {
+.genealogy-scroll::before {
   content: '';
   position: absolute;
   top: 0;
@@ -1231,430 +1235,6 @@ body::after {
 }
 
 /* 仿古族谱页 */
-.genealogy-scroll {
-  background: #fffbf0;
-  border: 1px solid var(--border-ink);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-inner);
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.genealogy-scroll:hover {
-  transform: scale(1.02);
-  box-shadow: 0 10px 30px rgba(139, 69, 19, 0.2);
-}
-
-.genealogy-scroll::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: repeating-linear-gradient(0deg, transparent, transparent 29px, rgba(212, 177, 106, 0.05) 29px, rgba(212, 177, 106, 0.05) 30px);
-  pointer-events: none;
-}
-
-.scroll-header {
-  text-align: center;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid var(--border-ink);
-}
-
-.scroll-header h4 {
-  font-family: var(--font-title);
-  color: var(--primary-redwood);
-  font-size: 1.5rem;
-  font-weight: 600;
-  letter-spacing: 2px;
-}
-
-.scroll-body {
-  position: relative;
-  z-index: 1;
-}
-
-.person-info {
-  text-align: center;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: var(--radius-sm);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.person-info:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 24px rgba(139, 69, 19, 0.2);
-}
-
-.person-name {
-  font-family: var(--font-title);
-  color: var(--primary-redwood);
-  font-size: 1.8rem;
-  font-weight: 600;
-  margin-bottom: 10px;
-  letter-spacing: 2px;
-}
-
-.person-desc {
-  font-family: var(--font-note);
-  color: var(--primary-text);
-  font-size: 1.1rem;
-  margin-bottom: 20px;
-  line-height: 1.6;
-}
-
-.person-impact {
-  text-align: left;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border-ink);
-}
-
-.person-impact h5 {
-  font-family: var(--font-title);
-  color: var(--secondary-blue);
-  font-size: 1.1rem;
-  margin-bottom: 10px;
-}
-
-.person-impact p {
-  font-family: var(--font-note);
-  color: var(--primary-text);
-  font-size: 1rem;
-  line-height: 1.6;
-}
-
-.scroll-footer {
-  text-align: center;
-  margin-top: 20px;
-  padding-top: 10px;
-  border-top: 2px solid var(--border-ink);
-}
-
-.scroll-seal {
-  display: inline-block;
-  width: 80px;
-  height: 80px;
-  border: 2px solid var(--primary-redwood);
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-title);
-  color: var(--primary-redwood);
-  font-size: 1rem;
-  transform: rotate(15deg);
-  opacity: 0.8;
-  transition: all 0.3s ease;
-}
-
-.scroll-seal:hover {
-  transform: rotate(5deg) scale(1.1);
-  opacity: 1;
-}
-
-
-
-/* 流觞曲水动画 */
-@keyframes flowAnimation {
-  0% {
-    stroke-dashoffset: 100;
-  }
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
-
-.link.flowing {
-  animation: flowAnimation 2s ease-in-out;
-}
-
-/* 节点生长动画 */
-@keyframes nodeGrowth {
-  0% {
-    opacity: 0;
-    transform: scale(0.1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(0.8);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.node.growing {
-  animation: nodeGrowth 1s ease-out;
-}
-
-/* 谱系树节点和连接线样式 */
-.node circle { 
-  fill: var(--primary-redwood);
-  stroke: var(--primary-bg);
-  stroke-width: 2px;
-  transition: all 0.3s ease;
-}
-
-.node:hover circle {
-  fill: var(--secondary-yellow);
-  stroke: var(--primary-redwood);
-  stroke-width: 3px;
-  transform: scale(1.2);
-}
-
-.node text { 
-  font: 12px 'Noto Serif SC';
-  fill: var(--primary-text);
-  transition: all 0.3s ease;
-}
-
-.node:hover text {
-  fill: var(--primary-redwood);
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.link { 
-  fill: none; 
-  stroke: var(--secondary-gray); 
-  stroke-width: 1.5px;
-  transition: all 0.3s ease;
-}
-
-.link:hover {
-  stroke: var(--primary-redwood);
-  stroke-width: 2px;
-}
-
-/* 工具提示样式 */
-.tooltip {
-  position: absolute;
-  background: rgba(26, 20, 16, 0.9);
-  color: white;
-  padding: 12px 16px;
-  border-radius: 8px;
-  pointer-events: none;
-  opacity: 0;
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
-  z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(8px);
-}
-
-.tooltip::before {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 8px solid transparent;
-  border-top-color: rgba(26, 20, 16, 0.9);
-}
-
-/* 时间轴滑块样式优化 */
-.timeline-slider-container {
-  margin-bottom: 20px;
-}
-
-.timeline-slider {
-  width: 100%;
-  height: 8px;
-  background: rgba(139, 69, 19, 0.2);
-  border-radius: 4px;
-  outline: none;
-  -webkit-appearance: none;
-  position: relative;
-  margin: 10px 0;
-}
-
-.timeline-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 24px;
-  height: 24px;
-  background: var(--primary-redwood);
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(139, 69, 19, 0.3);
-  transition: all 0.3s ease;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpolyline points='12 6 12 12 16 14'/%3E%3C/svg%3E");
-  background-size: 16px;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.timeline-slider::-webkit-slider-thumb:hover {
-  background: var(--secondary-blue);
-  transform: scale(1.2);
-  box-shadow: 0 4px 12px rgba(74, 111, 140, 0.4);
-}
-
-.timeline-markers {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-}
-
-.timeline-marker {
-  font-family: var(--font-title);
-  color: var(--secondary-gray);
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  padding: 5px 10px;
-  border-radius: var(--radius-sm);
-}
-
-.timeline-marker:hover {
-  color: var(--primary-redwood);
-  background: rgba(139, 69, 19, 0.1);
-  transform: translateY(-3px);
-}
-
-.timeline-marker.active {
-  color: var(--primary-redwood);
-  background: rgba(139, 69, 19, 0.2);
-  font-weight: bold;
-  transform: translateY(-3px);
-  box-shadow: 0 2px 8px rgba(139, 69, 19, 0.3);
-}
-
-/* 宗族名人榜样式优化 */
-.genealogy-famous {
-  margin-top: 30px;
-  padding: 20px;
-  background: rgba(245, 240, 232, 0.6);
-  border-radius: var(--radius-sm);
-  border-left: 3px solid var(--secondary-blue);
-}
-
-.famous-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-}
-
-.famous-item {
-  display: flex;
-  align-items: center;
-  background: white;
-  padding: 15px;
-  border-radius: var(--radius-sm);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--border-ink);
-  transition: all 0.3s ease;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.5s ease;
-}
-
-.famous-item:hover {
-  transform: translateY(-10px) scale(1.05);
-  box-shadow: 0 10px 20px rgba(139, 69, 19, 0.2);
-  border-color: var(--primary-redwood);
-}
-
-.famous-avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: var(--secondary-blue);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-title);
-  font-size: 1.4rem;
-  margin-right: 15px;
-  flex-shrink: 0;
-  transition: all 0.3s ease;
-}
-
-.famous-item:hover .famous-avatar {
-  background: var(--primary-redwood);
-  transform: scale(1.1) rotate(5deg);
-}
-
-.famous-info h4 {
-  font-family: var(--font-title);
-  color: var(--primary-text);
-  margin-bottom: 5px;
-  font-size: 1.1rem;
-}
-
-.famous-info p {
-  font-size: 0.85rem;
-  color: var(--secondary-gray);
-  line-height: 1.4;
-}
-
-/* 谱系树容器样式优化 */
-#genealogyTree {
-  width: 100%;
-  height: 500px;
-  background: linear-gradient(160deg, #fefaf0 0%, #f8f0dc 55%, #f2e8cc 100%);
-  border: 1px solid var(--border-ink);
-  border-radius: var(--radius-sm);
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow-inner);
-  transition: all 0.3s ease;
-}
-
-#genealogyTree:hover {
-  transform: scale(1.02);
-  box-shadow: 0 15px 30px rgba(139, 69, 19, 0.3);
-}
-
-#genealogyTree::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: repeating-linear-gradient(0deg, transparent, transparent 29px, rgba(212, 177, 106, 0.05) 29px, rgba(212, 177, 106, 0.05) 30px);
-  pointer-events: none;
-  animation: inkFlow 20s ease-in-out infinite;
-}
-
-/* 仿古族谱页样式优化 */
-.genealogy-scroll {
-  background: #fffbf0;
-  border: 1px solid var(--border-ink);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-inner);
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.genealogy-scroll:hover {
-  transform: scale(1.02);
-  box-shadow: 0 15px 30px rgba(139, 69, 19, 0.3);
-  border-color: var(--primary-redwood);
-}
-
-.genealogy-scroll::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: repeating-linear-gradient(0deg, transparent, transparent 29px, rgba(212, 177, 106, 0.05) 29px, rgba(212, 177, 106, 0.05) 30px);
-  pointer-events: none;
-  animation: inkFlow 20s ease-in-out infinite;
-}
 
 .person-info {
   text-align: center;
@@ -2075,8 +1655,8 @@ body::after {
 }
 
 .scroll-pole {
-  width: 40px;
-  height: 900px;
+  width: 32px;
+  height: clamp(480px, calc(88vh - 120px), 680px);
   background: linear-gradient(90deg, #6B3410 0%, #8B4513 50%, #6B3410 100%);
   border-radius: 8px;
   z-index: 2;
@@ -2187,7 +1767,7 @@ body::after {
 
 .scroll-paper {
   width: 0;
-  height: 900px;
+  height: clamp(480px, calc(88vh - 120px), 680px);
   background-color: #F5F0DC;
   margin: 0 -2px;
   overflow: hidden;
@@ -2245,13 +1825,13 @@ body::after {
   column-count: 3;
   column-rule: 1px solid rgba(212, 177, 106, 0.15);
   font-family: var(--font-note);
-  line-height: 2.2;
+  line-height: 1.6;
   text-align: justify;
   color: var(--primary-text);
   position: relative;
   z-index: 1;
   letter-spacing: 0.03em;
-  padding: 40px;
+  padding: 18px 22px 10px;
   opacity: 0;
   transform: translateX(-20px);
   transition: opacity 1s ease 2s, transform 1s ease 2s;
@@ -2270,18 +1850,18 @@ body::after {
 .rule-title {
   font-family: var(--font-title);
   color: var(--primary-redwood);
-  font-size: 1.2rem;
-  margin-bottom: 12px;
+  font-size: 1rem;
+  margin-bottom: 6px;
   font-weight: 700;
   text-align: center;
   letter-spacing: 0.1em;
 }
 
 .scroll-content-inner p {
-  margin-bottom: 24px;
+  margin-bottom: 12px;
   text-indent: 2em;
-  font-size: 1rem;
-  line-height: 2.2;
+  font-size: 0.85rem;
+  line-height: 1.6;
 }
 
 .scroll-footer {
@@ -2314,11 +1894,6 @@ body::after {
 }
 
 /* 增强模块交互动画 */
-.clan-module {
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-}
-
 .clan-module:hover {
   transform: translateY(-15px) scale(1.03) rotateY(3deg);
   box-shadow: 0 30px 60px rgba(139, 69, 19, 0.25);
@@ -2704,11 +2279,13 @@ body::after {
   border-radius: 3px;
   outline: none;
   -webkit-appearance: none;
+  appearance: none;
   margin: 10px 0;
 }
 
 .merchant-slider-input::-webkit-slider-thumb {
   -webkit-appearance: none;
+  appearance: none;
   width: 18px;
   height: 18px;
   background: var(--primary-redwood);
@@ -2863,11 +2440,13 @@ body::after {
   border-radius: 3px;
   outline: none;
   -webkit-appearance: none;
+  appearance: none;
   margin: 10px 0;
 }
 
 .merchant-slider-input::-webkit-slider-thumb {
   -webkit-appearance: none;
+  appearance: none;
   width: 18px;
   height: 18px;
   background: var(--primary-redwood);
@@ -3055,6 +2634,32 @@ body::after {
   color: var(--primary-redwood);
 }
 
+.timeline-point-v {
+  transition: background 0.25s, box-shadow 0.25s;
+}
+.timeline-point-v:hover {
+  background: rgba(139,69,19,0.08) !important;
+  box-shadow: inset 3px 0 0 rgba(139,69,19,0.35);
+}
+.timeline-point-v.active {
+  background: rgba(192,57,43,0.13) !important;
+  box-shadow: inset 3px 0 0 var(--primary-redwood);
+}
+
+/* Override inline styles on active dot circle and label */
+.timeline-point-v.active > div:first-child {
+  background: var(--primary-redwood) !important;
+  animation: timelineDotPulse 1.8s ease-in-out infinite !important;
+}
+.timeline-point-v.active > div:last-child > div:first-child {
+  color: var(--primary-redwood) !important;
+  font-weight: bold !important;
+}
+@keyframes timelineDotPulse {
+  0%,100% { box-shadow: 0 0 0 2px rgba(255,251,242,0.9), 0 0 0 5px rgba(192,57,43,0.22); }
+  50%      { box-shadow: 0 0 0 2px rgba(255,251,242,0.9), 0 0 0 10px rgba(192,57,43,0.0); }
+}
+
 .timeline-info {
   background: white;
   padding: 20px;
@@ -3097,28 +2702,20 @@ body::after {
 .tree-wrapper {
   position: relative;
   width: 100%;
-  height: 600px;
+  height: 100%;
 }
 
 #genealogyTree {
   width: 100%;
-  height: 600px;
+  height: 450px;
+  min-height: 400px;
   background: linear-gradient(160deg, #fefaf0 0%, #f8f0dc 55%, #f2e8cc 100%);
-  border: 1px solid var(--border-ink);
   border-radius: var(--radius-sm);
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-inner);
-  transition: all 0.3s ease;
-  min-height: 600px;
   display: block;
   visibility: visible;
   opacity: 1;
-}
-
-#genealogyTree:hover {
-  transform: scale(1.02);
-  box-shadow: 0 15px 30px rgba(139, 69, 19, 0.3);
 }
 
 #genealogyTree::before {
@@ -3358,28 +2955,30 @@ body::after {
 .person-modal, .inheritance-modal {
   display: none;
   position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
+  z-index: 9999;
+  inset: 0;
   width: 100%;
   height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(10px);
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(20, 15, 10, 0.72);
+  backdrop-filter: blur(4px);
   animation: fadeIn 0.3s ease;
 }
 
 .person-modal .modal-content, .inheritance-modal .modal-content {
-  background-color: #fffbf0;
-  margin: 10% auto;
-  padding: 30px;
-  border: 1px solid var(--border-ink);
-  border-radius: var(--radius-sm);
-  width: 80%;
-  max-width: 600px;
+  background: linear-gradient(160deg, #fdf8f2, #f5ede0);
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(139,69,19,0.25);
+  border-radius: 14px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 82vh;
+  overflow-y: auto;
   position: relative;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-  animation: slideIn 0.5s ease;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  animation: slideIn 0.3s ease;
 }
 
 .person-modal .close-modal, .inheritance-modal .close-modal {
@@ -5109,12 +4708,6 @@ body::after {
   perspective: 1000px;
 }
 
-/* 优化动画性能 */
-@keyframes noiseFlow, bgFlow, inkFlow, floatY, moduleHover, progressFlow, elementFloat, inkGrowth, flowAnimation, nodeGrowth, pulse, fadeIn, fadeOut, slideIn, glow, navDotPulse, btnFloat, caseFloat, chartFloat, goldenGlow, modalSlideIn {
-  /* 确保所有动画都有适当的性能优化 */
-  transform: translate3d(0, 0, 0);
-}
-
 /* 减少重绘和回流 */
 .layer-container, .village-element, .node, .link {
   will-change: transform, opacity;
@@ -5182,18 +4775,6 @@ body::after {
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  border: 2px solid transparent;
-  border-radius: var(--radius-sm);
-  background: linear-gradient(45deg, var(--secondary-yellow), #f4d03f, var(--secondary-yellow)) border-box;
-  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: all 0.5s ease;
-  z-index: 2;
-  animation: goldenGlow 2s ease-in-out infinite;
 }
 
 .symbol-wrapper:hover .golden-stroke {
@@ -5488,11 +5069,13 @@ body::after {
   border-radius: 4px;
   outline: none;
   -webkit-appearance: none;
+  appearance: none;
   position: relative;
 }
 
 .merchant-slider-input::-webkit-slider-thumb {
   -webkit-appearance: none;
+  appearance: none;
   width: 24px;
   height: 24px;
   background: var(--primary-redwood);
@@ -5558,12 +5141,12 @@ body::after {
   align-items: center;
   justify-content: space-between;
   padding: 16px 24px;
-  background: var(--primary-bg);
+  background: rgba(248, 245, 240, 0.55);
   border-bottom: 1px solid var(--border-ink);
   position: sticky;
   top: 0;
   z-index: 90;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
 }
 
 .nav-btn {

@@ -7,74 +7,86 @@ const familyData = {
     {
       name: "汪华",
       year: "唐",
-      description: "徽州汪氏始祖，唐初名将，封越国公",
+      period: "586–649年",
+      description: "汪氏家族巅峰人物，第44世祖。隋末起兵占据歙、宣、杭、睦、婺、饶六州，号称「吴王」。唐武德四年归唐，封「越国公」，执掌禁军，深得唐太宗信任。历朝十一次加封，宋徽宗赐「忠显」庙额，民间尊为「汪公大帝」，誉为「古徽州第一伟人」。",
       children: [
         {
           name: "汪建",
           year: "唐",
-          description: "汪华长子，继承父业",
+          period: "隋唐之际",
+          description: "汪华长子，字子尚，第45世祖。生有六子，长子汪处修迁居旌德新建，其余五子迁往四川眉山。是徽州汪氏建公支派始祖。",
           children: [
             {
               name: "汪处修",
               year: "宋",
-              description: "宋代官员",
+              period: "宋代",
+              description: "汪建长子，第46世祖。迁居旌德新建，是建公支派在安徽旌德的开基祖，开一方宗族之基。",
               children: [
                 {
-                  name: "汪叔詹",
+                  name: "汪璟",
                   year: "宋",
-                  description: "宋代学者"
+                  period: "宋代",
+                  description: "汪氏支系先祖，汪处修脉系传承人，具体生平有待考证，承续旌德一支香火。"
                 }
               ]
+            },
+            {
+              name: "汪权修",
+              year: "宋",
+              period: "宋代",
+              description: "与汪处修同辈，汪建之子，汪氏建公支派族人，为宗族另一重要支脉之祖。"
             }
           ]
         },
         {
-          name: "汪璨",
+          name: "汪道安",
           year: "唐",
-          description: "汪华次子",
+          period: "唐代",
+          description: "汪华第七子汪爽的后裔，唐宣宗时由歙县慈菰迁居婺源，是婺源汪氏开基祖，后裔散居休宁、婺源二邑间，绵延数百年。",
           children: [
             {
-              name: "汪道安",
-              year: "宋",
-              description: "宋代商人"
+              name: "汪道昆",
+              year: "明",
+              period: "1525–1593年",
+              description: "明代徽州府歙县人，字伯玉，号南明。嘉靖二十六年进士，授义乌知县，与戚继光募义乌兵破倭寇，官至兵部左侍郎，与王世贞并称「两司马」。为「后五子」之一，著有《太函集》《大雅堂杂剧》等，曾作《黄鹤楼记》传世。",
+              children: [
+                {
+                  name: "汪仲淹",
+                  year: "明",
+                  period: "明代",
+                  description: "即汪道贯，字仲淹，汪道昆之弟。工词赋，通篆籀真行。督学吴公路称之「小司马」，与从弟汪道会并称「二仲」，著有《汪次公集》。"
+                }
+              ]
+            },
+            {
+              name: "汪中",
+              year: "清",
+              period: "1744–1794年",
+              description: "清代江苏江都人，字容甫。出身孤贫，勤奋好学，乾隆四十二年拔贡生。为学私淑顾炎武，是清代第一流学者，著有《述学》6卷、《广陵通典》10卷，在经学、小学、诸子学等方面均有卓见。",
+              children: [
+                {
+                  name: "汪喜孙",
+                  year: "清",
+                  period: "清代",
+                  description: "汪中之子，一名喜荀，字孟慈。嘉庆十二年举人，出补河南怀庆府知府。整理父亲遗稿编成《述学》6卷本，著有《大戴礼记补》《且住庵诗文稿》等。"
+                }
+              ]
+            },
+            {
+              name: "汪大燮",
+              year: "现代",
+              period: "1859–1929年",
+              description: "晚清至民国外交官、政治家，浙江钱塘人，先世由安徽黟县宏村迁居钱塘。举人出身，历任驻英公使、邮传部左侍郎等职。民国后任教育、交通、外交等部总长，1917年一度代理国务总理，在五四运动、国民外交中有重要影响。",
+              children: [
+                {
+                  name: "汪世铭",
+                  year: "现代",
+                  period: "1896–1977年",
+                  description: "安徽桐城人，又名汪心渠。清华学校毕业后留学美国弗吉尼亚军校、哥伦比亚大学。曾任东北军团长、湖南大学教授、国民政府军委会外事局少将局长。1949年作为特邀代表出席中国人民政治协商会议，后任政务院参事、第一至三届全国人大代表。"
+                }
+              ]
             }
           ]
-        }
-      ]
-    },
-    {
-      name: "汪道昆",
-      year: "明",
-      description: "明代文学家，戏曲家，徽商代表",
-      children: [
-        {
-          name: "汪仲淹",
-          year: "明",
-          description: "明代官员"
-        }
-      ]
-    },
-    {
-      name: "汪中",
-      year: "清",
-      description: "清代学者，骈文家，扬州学派代表",
-      children: [
-        {
-          name: "汪喜孙",
-          year: "清",
-          description: "清代学者"
-        }
-      ]
-    },
-    {
-      name: "汪大燮",
-      year: "现代",
-      description: "近代政治家，外交家，民国总理",
-      children: [
-        {
-          name: "汪世铭",
-          year: "现代",
-          description: "现代企业家"
         }
       ]
     }
@@ -139,6 +151,17 @@ const personData = {
   }
 };
 
+// 朝代颜色映射（模块级，供 filterNodesByYear 复用）
+const dynastyColors = {
+  '唐': { fill: 'rgba(192,57,43,0.13)', stroke: '#C0392B', text: '#7B1A10' },
+  '宋': { fill: 'rgba(46,107,158,0.12)', stroke: '#2E6B9E', text: '#1A4A7B' },
+  '元': { fill: 'rgba(123,94,58,0.13)', stroke: '#7B5E3A', text: '#4A3010' },
+  '明': { fill: 'rgba(46,125,91,0.13)', stroke: '#2E7D5B', text: '#1A5A3A' },
+  '清': { fill: 'rgba(107,78,138,0.13)', stroke: '#6B4E8A', text: '#4A2E6A' },
+  '现代': { fill: 'rgba(44,74,110,0.13)', stroke: '#2C4A6E', text: '#1A2E50' }
+};
+const rootNodeColor = { fill: 'rgba(139,69,19,0.22)', stroke: '#8B4513', text: '#4a1e0a' };
+
 // 初始化血脉延绵模块
 function initBloodlineModule() {
   // 初始化谱系树
@@ -149,537 +172,324 @@ function initBloodlineModule() {
   
   // 初始化家族名人堂
   initHallOfFame();
+  
+  // 初始化文化传承
+  initCulturalInheritance();
 }
 
 // 初始化谱系树
 function initGenealogyTree() {
   try {
-    console.log('开始初始化谱系树');
     const treeElement = document.getElementById('genealogyTree');
-    if (!treeElement) {
-      console.error('未找到genealogyTree元素');
-      return;
-    }
-    
-    const width = treeElement.clientWidth || 800;
-    const height = treeElement.clientHeight || 600;
-    
-    console.log('谱系树容器尺寸:', width, 'x', height);
-    
-    // 清除现有内容
+    if (!treeElement) return;
+
     d3.select('#genealogyTree').selectAll('*').remove();
-    
-    // 创建SVG容器
-    const svg = d3.select('#genealogyTree')
-      .append('svg')
-      .attr('width', width)
-      .attr('height', height)
-      .append('g')
-      .attr('transform', `translate(50, 50)`);
-    
-    console.log('SVG容器创建成功');
-    
-    // 创建树布局
-    const tree = d3.tree()
-      .size([height - 100, width - 100]);
-    
-    // 创建层次结构
+
+    const nW = 84, nH = 38;
     const root = d3.hierarchy(familyData);
-    
-    // 计算节点位置
-    tree(root);
-    
-    console.log('节点位置计算完成，节点数量:', root.descendants().length);
-    
-    // 创建连接线
-    const link = svg.selectAll('.link')
+    const treeLayout = d3.tree().nodeSize([nH + 18, nW + 32]);
+    treeLayout(root);
+
+    let x0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    root.each(d => {
+      if (d.x < x0) x0 = d.x;
+      if (d.x > x1) x1 = d.x;
+      if (d.y > y1) y1 = d.y;
+    });
+    const pad = { t: 28, r: 58, b: 28, l: 58 };
+    const vbW = y1 + pad.l + pad.r;
+    const vbH = (x1 - x0) + pad.t + pad.b;
+
+    const svgEl = d3.select('#genealogyTree')
+      .append('svg')
+      .attr('width', '100%')
+      .attr('height', '100%')
+      .attr('viewBox', `-${pad.l} ${x0 - pad.t} ${vbW} ${vbH}`)
+      .attr('preserveAspectRatio', 'xMidYMid meet');
+
+    // 阴影滤镜
+    const defs = svgEl.append('defs');
+    const flt = defs.append('filter')
+      .attr('id', 'treeShadow')
+      .attr('x', '-20%').attr('y', '-20%')
+      .attr('width', '140%').attr('height', '140%');
+    flt.append('feDropShadow')
+      .attr('dx', 0).attr('dy', 2)
+      .attr('stdDeviation', 2)
+      .attr('flood-color', 'rgba(0,0,0,0.14)');
+
+    const svg = svgEl.append('g');
+
+    // Bezier 连接线（从源矩形右边缘到目标矩形左边缘）
+    svg.selectAll('.link')
       .data(root.links())
-      .enter()
-      .append('path')
+      .enter().append('path')
       .attr('class', 'link')
-      .attr('d', d3.linkHorizontal()
-        .x(d => d.y)
-        .y(d => d.x))
-      .style('stroke', '#8B4513')
-      .style('stroke-width', '1.5px')
+      .attr('d', d => {
+        const sx = d.source.y + nW / 2;
+        const sy = d.source.x;
+        const tx = d.target.y - nW / 2;
+        const ty = d.target.x;
+        const mx = (sx + tx) / 2;
+        return `M${sx},${sy} C${mx},${sy} ${mx},${ty} ${tx},${ty}`;
+      })
       .style('fill', 'none')
-      .style('stroke-dasharray', '10,5')
-      .style('stroke-dashoffset', '100')
-      .style('opacity', 0);
-    
-    // 创建节点
+      .style('stroke', d => {
+        const c = dynastyColors[d.target.data.year];
+        return c ? c.stroke : '#8B4513';
+      })
+      .style('stroke-width', '1.5px')
+      .style('stroke-opacity', 0.5)
+      .style('opacity', 0)
+      .transition().duration(1200)
+      .style('opacity', 1);
+
+    // 节点组
     const node = svg.selectAll('.node')
       .data(root.descendants())
-      .enter()
-      .append('g')
+      .enter().append('g')
       .attr('class', 'node')
       .attr('transform', d => `translate(${d.y},${d.x})`)
-      .style('opacity', 0);
-    
-    // 添加节点圆圈
-    node.append('circle')
-      .attr('r', 10)
-      .attr('class', 'node-circle')
-      .style('fill', '#8B4513')
-      .style('stroke', '#F8F5F0')
-      .style('stroke-width', '2px');
-    
-    // 添加节点文本
+      .style('opacity', 0)
+      .style('cursor', 'pointer');
+
+    // 节点圆角矩形背景
+    node.append('rect')
+      .attr('class', 'node-rect')
+      .attr('x', -nW / 2)
+      .attr('y', -nH / 2)
+      .attr('width', nW)
+      .attr('height', nH)
+      .attr('rx', 8).attr('ry', 8)
+      .attr('filter', 'url(#treeShadow)')
+      .style('fill', d => {
+        if (d.depth === 0) return rootNodeColor.fill;
+        const c = dynastyColors[d.data.year];
+        return c ? c.fill : 'rgba(139,69,19,0.10)';
+      })
+      .style('stroke', d => {
+        if (d.depth === 0) return rootNodeColor.stroke;
+        const c = dynastyColors[d.data.year];
+        return c ? c.stroke : '#8B4513';
+      })
+      .style('stroke-width', d => d.depth === 0 ? '2px' : '1.5px');
+
+    // 姓名文字
     node.append('text')
-      .attr('dy', 4)
-      .attr('x', d => d.children ? -15 : 15)
-      .style('text-anchor', d => d.children ? 'end' : 'start')
-      .style('font', '12px "Noto Serif SC"')
-      .style('fill', '#333333')
+      .attr('class', 'node-name')
+      .attr('dy', d => (d.depth > 0 && d.data.year) ? 0 : 5)
+      .attr('x', 0)
+      .style('text-anchor', 'middle')
+      .style('font', d => d.depth === 0
+        ? 'bold 13px "Ma Shan Zheng", "Noto Serif SC", serif'
+        : '12px "Noto Serif SC", serif')
+      .style('fill', d => {
+        if (d.depth === 0) return rootNodeColor.text;
+        const c = dynastyColors[d.data.year];
+        return c ? c.text : '#333';
+      })
+      .style('pointer-events', 'none')
       .text(d => d.data.name);
-    
-    // 添加节点描述
-    node.append('text')
-      .attr('dy', 20)
-      .attr('x', d => d.children ? -15 : 15)
-      .style('text-anchor', d => d.children ? 'end' : 'start')
-      .style('font-size', '10px')
-      .style('fill', '#666')
-      .text(d => d.data.description);
-    
-    // 添加年份标签
-    node.append('text')
-      .attr('dy', 35)
-      .attr('x', d => d.children ? -15 : 15)
-      .style('text-anchor', d => d.children ? 'end' : 'start')
-      .style('font-size', '8px')
-      .style('fill', '#999')
-      .text(d => d.data.year);
-    
-    console.log('节点和连接线创建完成');
-    
-    // 动画效果
-    setTimeout(() => {
-      console.log('开始动画效果');
-      // 连接线动画
-      link.transition()
-        .duration(2000)
-        .style('opacity', 1)
-        .style('stroke-dashoffset', '0');
-      
-      // 节点动画
-      node.transition()
-        .duration(1000)
-        .style('opacity', 1);
-    }, 500);
-    
-    // 节点点击事件
-    node.on('click', function(event, d) {
-      // 切换展开/折叠状态
-      if (d.children) {
-        d._children = d.children;
-        d.children = null;
-      } else {
-        d.children = d._children;
-        d._children = null;
-      }
-      
-      // 重新绘制
-      updateTree(svg, tree, root);
-    });
-    
-    // 添加工具提示
+
+    // 朝代年份小标签
+    node.filter(d => d.depth > 0 && d.data.year)
+      .append('text')
+      .attr('class', 'node-year')
+      .attr('dy', 13)
+      .attr('x', 0)
+      .style('text-anchor', 'middle')
+      .style('font-size', '9px')
+      .style('fill', d => {
+        const c = dynastyColors[d.data.year];
+        return c ? c.stroke : '#888';
+      })
+      .style('opacity', 0.82)
+      .style('pointer-events', 'none')
+      .text(d => `${d.data.year}代`);
+
+    node.transition().duration(700)
+      .delay((d, i) => i * 55)
+      .style('opacity', 1);
+
+    // 悬浮提示 + 矩形高亮
     node.on('mouseover', function(event, d) {
-      const tooltip = d3.select('body')
-        .append('div')
-        .attr('class', 'tooltip')
-        .style('left', (event.pageX + 10) + 'px')
-        .style('top', (event.pageY - 28) + 'px')
-        .style('opacity', 0);
-      
-      tooltip.transition()
-        .duration(200)
-        .style('opacity', 0.9);
-      
-      tooltip.html(`
-        <div style="font-weight: bold;">${d.data.name}</div>
-        <div>${d.data.description}</div>
-        <div style="font-size: 0.8rem; color: #ccc;">${d.data.year}</div>
-      `);
-    })
-    .on('mouseout', function() {
-      d3.select('.tooltip').remove();
+      d3.select('body').selectAll('.tree-tooltip').remove();
+      if (d.depth > 0 && d.data.description) {
+        const dc = dynastyColors[d.data.year] || { stroke: '#8B4513', text: '#4a1e0a' };
+        const periodHtml = d.data.period
+          ? `<div style="font-size:0.7rem;color:${dc.stroke};letter-spacing:0.06em;margin-bottom:5px;">${d.data.period}</div>`
+          : '';
+        const dynBadge = d.data.year
+          ? `<span style="display:inline-block;padding:1px 7px;border-radius:10px;font-size:0.66rem;background:${dc.stroke};color:#fff;letter-spacing:0.1em;margin-bottom:5px;">${d.data.year}代</span>`
+          : '';
+        const nodeRect = this.getBoundingClientRect();
+        const left = Math.min(nodeRect.right + 10, window.innerWidth - 295);
+        const top = Math.max(nodeRect.top - 10, 8);
+        d3.select('body').append('div')
+          .attr('class', 'tree-tooltip')
+          .style('position', 'fixed')
+          .style('left', left + 'px')
+          .style('top', top + 'px')
+          .style('max-width', '278px')
+          .style('background', 'rgba(255,252,245,0.98)')
+          .style('color', '#3a2a1a')
+          .style('padding', '12px 14px')
+          .style('border-radius', '8px')
+          .style('font-size', '0.78rem')
+          .style('line-height', '1.7')
+          .style('box-shadow', `0 6px 22px rgba(0,0,0,0.16), 0 0 0 1px ${dc.stroke}44`)
+          .style('border', `1px solid ${dc.stroke}55`)
+          .style('pointer-events', 'none')
+          .style('z-index', '9999')
+          .style('opacity', 0)
+          .html(`
+            ${dynBadge}
+            <div style="font-family:'Ma Shan Zheng',cursive;font-size:1rem;color:${dc.stroke};margin-bottom:2px;letter-spacing:0.05em;">${d.data.name}</div>
+            ${periodHtml}
+            <div style="font-size:0.74rem;color:#5a4030;line-height:1.72;">${d.data.description}</div>
+          `)
+          .transition().duration(160).style('opacity', 1);
+      }
+      d3.select(this).select('.node-rect')
+        .transition().duration(150)
+        .attr('x', -nW / 2 - 3).attr('y', -nH / 2 - 3)
+        .attr('width', nW + 6).attr('height', nH + 6)
+        .style('stroke-width', '2.5px')
+        .style('filter', 'url(#treeShadow) brightness(1.08)');
+    }).on('mouseout', function(event, d) {
+      d3.select('body').selectAll('.tree-tooltip')
+        .transition().duration(120).style('opacity', 0).remove();
+      d3.select(this).select('.node-rect')
+        .transition().duration(150)
+        .attr('x', -nW / 2).attr('y', -nH / 2)
+        .attr('width', nW).attr('height', nH)
+        .style('stroke-width', d.depth === 0 ? '2px' : '1.5px')
+        .style('filter', 'url(#treeShadow)');
     });
-    
-    // 初始化树控制按钮
-    initTreeControls(svg, tree, root);
+
+    // 缩放/平移行为
+    const zoom = d3.zoom()
+      .scaleExtent([0.3, 3])
+      .on('zoom', e => svg.attr('transform', e.transform));
+    svgEl.call(zoom);
+
+    initTreeControls(svgEl, zoom);
     console.log('谱系树初始化完成');
   } catch (error) {
     console.error('初始化谱系树时出错:', error);
   }
 }
 
-// 更新树
-function updateTree(svg, tree, root) {
-  try {
-    console.log('开始更新树');
-    // 重新计算节点位置
-    tree(root);
-    
-    // 清除旧的连接线和节点
-    svg.selectAll('.link').remove();
-    svg.selectAll('.node').remove();
-    
-    // 创建新的连接线
-    const link = svg.selectAll('.link')
-      .data(root.links())
-      .enter()
-      .append('path')
-      .attr('class', 'link')
-      .attr('d', d3.linkHorizontal()
-        .x(d => d.y)
-        .y(d => d.x))
-      .style('stroke', '#8B4513')
-      .style('stroke-width', '1.5px')
-      .style('fill', 'none')
-      .style('stroke-dasharray', '10,5')
-      .style('stroke-dashoffset', '100')
-      .style('opacity', 0)
-      .transition()
-      .duration(500)
-      .style('opacity', 1)
-      .style('stroke-dashoffset', '0');
-    
-    // 创建新的节点
-    const node = svg.selectAll('.node')
-      .data(root.descendants())
-      .enter()
-      .append('g')
-      .attr('class', 'node')
-      .attr('transform', d => `translate(${d.y},${d.x})`)
-      .style('opacity', 0)
-      .transition()
-      .duration(500)
-      .style('opacity', 1);
-    
-    // 添加节点圆圈
-    node.append('circle')
-      .attr('r', 10)
-      .attr('class', 'node-circle')
-      .style('fill', '#8B4513')
-      .style('stroke', '#F8F5F0')
-      .style('stroke-width', '2px');
-    
-    // 添加节点文本
-    node.append('text')
-      .attr('dy', 4)
-      .attr('x', d => d.children ? -15 : 15)
-      .style('text-anchor', d => d.children ? 'end' : 'start')
-      .style('font', '12px "Noto Serif SC"')
-      .style('fill', '#333333')
-      .text(d => d.data.name);
-    
-    // 添加节点描述
-    node.append('text')
-      .attr('dy', 20)
-      .attr('x', d => d.children ? -15 : 15)
-      .style('text-anchor', d => d.children ? 'end' : 'start')
-      .style('font-size', '10px')
-      .style('fill', '#666')
-      .text(d => d.data.description);
-    
-    // 添加年份标签
-    node.append('text')
-      .attr('dy', 35)
-      .attr('x', d => d.children ? -15 : 15)
-      .style('text-anchor', d => d.children ? 'end' : 'start')
-      .style('font-size', '8px')
-      .style('fill', '#999')
-      .text(d => d.data.year);
-    
-    // 绑定事件
-    node.on('click', function(event, d) {
-      // 阻止事件冒泡
-      event.stopPropagation();
-      // 切换展开/折叠状态
-      if (d.children) {
-        d._children = d.children;
-        d.children = null;
-      } else {
-        d.children = d._children;
-        d._children = null;
-      }
-      updateTree(svg, tree, root);
-    })
-    .on('mouseover', function(event, d) {
-      const tooltip = d3.select('body')
-        .append('div')
-        .attr('class', 'tooltip')
-        .style('left', (event.pageX + 10) + 'px')
-        .style('top', (event.pageY - 28) + 'px')
-        .style('opacity', 0);
-      
-      tooltip.transition()
-        .duration(200)
-        .style('opacity', 0.9);
-      
-      tooltip.html(`
-        <div style="font-weight: bold;">${d.data.name}</div>
-        <div>${d.data.description}</div>
-        <div style="font-size: 0.8rem; color: #ccc;">${d.data.year}</div>
-      `);
-    })
-    .on('mouseout', function() {
-      d3.select('.tooltip').remove();
-    });
-    console.log('树更新完成');
-  } catch (error) {
-    console.error('更新树时出错:', error);
-  }
+// 根据年份筛选节点
+function filterNodesByYear(year) {
+  d3.selectAll('.node').each(function(d) {
+    const rect = d3.select(this).select('.node-rect');
+    if (d.data.year === year) {
+      rect.transition().duration(500)
+        .style('fill', 'rgba(212,177,106,0.45)')
+        .style('stroke', '#D4B16A')
+        .style('stroke-width', '2.5px');
+    } else {
+      const c = dynastyColors[d.data.year];
+      rect.transition().duration(500)
+        .style('fill', d.depth === 0 ? rootNodeColor.fill : (c ? c.fill : 'rgba(139,69,19,0.10)'))
+        .style('stroke', d.depth === 0 ? rootNodeColor.stroke : (c ? c.stroke : '#8B4513'))
+        .style('stroke-width', d.depth === 0 ? '2px' : '1.5px');
+    }
+  });
 }
 
 // 初始化树控制按钮
-function initTreeControls(svg, tree, root) {
-  console.log('初始化树控制按钮');
-  
-  // 找到树控制容器
-  const treeControls = document.querySelector('.tree-controls');
-  console.log('找到树控制容器:', treeControls);
-  
-  if (treeControls) {
-    // 绑定放大按钮事件
-    const zoomInBtn = treeControls.querySelector('.tree-btn.zoom-in');
-    if (zoomInBtn) {
-      console.log('找到放大按钮');
-      zoomInBtn.addEventListener('click', function() {
-        console.log('点击放大按钮');
-        const currentTransform = d3.zoomTransform(svg.node());
-        svg.transition()
-          .duration(300)
-          .call(d3.zoom().transform, d3.zoomIdentity.translate(currentTransform.x, currentTransform.y).scale(currentTransform.k * 1.2));
-      });
-    }
-    
-    // 绑定缩小按钮事件
-    const zoomOutBtn = treeControls.querySelector('.tree-btn.zoom-out');
-    if (zoomOutBtn) {
-      console.log('找到缩小按钮');
-      zoomOutBtn.addEventListener('click', function() {
-        console.log('点击缩小按钮');
-        const currentTransform = d3.zoomTransform(svg.node());
-        svg.transition()
-          .duration(300)
-          .call(d3.zoom().transform, d3.zoomIdentity.translate(currentTransform.x, currentTransform.y).scale(currentTransform.k / 1.2));
-      });
-    }
-    
-    // 绑定重置按钮事件
-    const resetBtn = treeControls.querySelector('.tree-btn.reset');
-    if (resetBtn) {
-      console.log('找到重置按钮');
-      resetBtn.addEventListener('click', function() {
-        console.log('点击重置按钮');
-        svg.transition()
-          .duration(300)
-          .call(d3.zoom().transform, d3.zoomIdentity.translate(50, 50).scale(1));
-      });
-    }
-    
-    // 绑定展开全部按钮事件
-    const expandBtn = treeControls.querySelector('.tree-btn.expand');
-    if (expandBtn) {
-      console.log('找到展开全部按钮');
-      expandBtn.addEventListener('click', function() {
-        console.log('点击展开全部按钮');
-        expandAll(root);
-        updateTree(svg, tree, root);
-      });
-    }
-    
-    // 绑定收起全部按钮事件
-    const collapseBtn = treeControls.querySelector('.tree-btn.collapse');
-    if (collapseBtn) {
-      console.log('找到收起全部按钮');
-      collapseBtn.addEventListener('click', function() {
-        console.log('点击收起全部按钮');
-        collapseAll(root);
-        updateTree(svg, tree, root);
-      });
-    }
+function initTreeControls(svgEl, zoom) {
+  const zoomInBtn = document.getElementById('zoomIn');
+  const zoomOutBtn = document.getElementById('zoomOut');
+  const resetBtn = document.getElementById('resetView');
+  if (zoomInBtn) {
+    zoomInBtn.addEventListener('click', () => svgEl.transition().duration(300).call(zoom.scaleBy, 1.4));
   }
-  
-  // 添加缩放功能
-  svg.call(d3.zoom()
-    .scaleExtent([0.1, 4])
-    .on('zoom', function(event) {
-      svg.selectAll('g').attr('transform', event.transform);
-    }));
-  
-  console.log('树控制按钮初始化完成');
-}
-
-// 展开所有节点
-function expandAll(node) {
-  if (node._children) {
-    node.children = node._children;
-    node._children = null;
+  if (zoomOutBtn) {
+    zoomOutBtn.addEventListener('click', () => svgEl.transition().duration(300).call(zoom.scaleBy, 0.7));
   }
-  if (node.children) {
-    node.children.forEach(expandAll);
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => svgEl.transition().duration(750).call(zoom.transform, d3.zoomIdentity));
   }
 }
 
-// 收起所有节点
-function collapseAll(node) {
-  if (node.children) {
-    node._children = node.children;
-    node.children = null;
-    node._children.forEach(collapseAll);
-  }
-}
-
-// 初始化时间轴
-function initTimeline() {
-  console.log('开始初始化时间轴');
-  const timelinePoints = document.querySelectorAll('.timeline-point');
-  const timelineInfo = document.getElementById('timelineInfo');
-  
-  console.log('时间轴点数量:', timelinePoints.length);
-  console.log('timelineInfo元素:', timelineInfo);
-  
-  // 默认激活第一个时间点
-  if (timelinePoints.length > 0) {
-    console.log('默认激活第一个时间点');
-    const firstYear = timelinePoints[0].getAttribute('data-year');
-    handleTimelineClick(firstYear);
-  }
-}
-
-// 根据年份筛选节点
-function filterNodesByYear(year) {
-  // 筛选并高亮对应年份的节点
-  d3.selectAll('.node').each(function(d) {
-    if (d.data.year === year) {
-      d3.select(this).select('circle')
-        .transition()
-        .duration(500)
-        .attr('r', 15)
-        .style('fill', '#D4B16A')
-        .style('stroke', '#8B4513')
-        .style('stroke-width', '3px');
-    } else {
-      d3.select(this).select('circle')
-        .transition()
-        .duration(500)
-        .attr('r', 10)
-        .style('fill', '#8B4513')
-        .style('stroke', '#F8F5F0')
-        .style('stroke-width', '2px');
-    }
-  });
-}
-
-// 初始化家族名人堂
 function initHallOfFame() {
+  console.log('initHallOfFame 开始执行');
   const hallOfFameCards = document.querySelectorAll('.hall-of-fame-card');
-  const modal = document.getElementById('personModal');
-  const modalTitle = document.getElementById('modalTitle');
-  const modalImage = document.getElementById('modalImage');
-  const modalText = document.getElementById('modalText');
-  const closeModal = document.querySelector('.person-modal .close-modal');
-  
-  // 名人卡片点击事件
+  console.log('找到家族名人堂卡片数量:', hallOfFameCards.length);
+  let tooltip = document.querySelector('.hall-tooltip');
+  if (!tooltip) {
+    tooltip = document.createElement('div');
+    tooltip.className = 'hall-tooltip';
+    tooltip.style.cssText = 'position:fixed;z-index:9999;width:600px;padding:0;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.35),0 0 0 1px rgba(184,134,11,0.25);pointer-events:none;display:none;overflow:hidden;';
+    document.body.appendChild(tooltip);
+    console.log('hall-tooltip 元素已创建');
+  }
   hallOfFameCards.forEach(card => {
-    card.addEventListener('click', function() {
-      const personId = this.getAttribute('data-person');
-      const person = personData[personId];
-      
-      if (person) {
-        modalTitle.textContent = person.title;
-        modalImage.src = person.image;
-        modalText.textContent = person.text;
-        modal.style.display = 'block';
-      }
+    const personKey = card.getAttribute('data-person');
+    const data = personData[personKey];
+    console.log('处理卡片:', personKey, '数据:', data ? '有' : '无');
+    if (!data) return;
+    card.addEventListener('mouseenter', function(e) {
+      console.log('mouseenter:', data.title);
+      const imgHtml = data.image ? `<div style="width:260px;flex-shrink:0;position:relative;overflow:hidden;border-radius:16px 0 0 16px;"><img src="${data.image}" alt="${data.title}" style="width:100%;height:100%;object-fit:cover;display:block;"></div>` : '';
+      tooltip.innerHTML = `<div style="display:flex;align-items:stretch;height:340px;width:620px;background:#faf7f2;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.15);overflow:hidden;">${imgHtml}<div style="padding:28px 32px;flex:1;min-width:0;overflow-y:auto;background:linear-gradient(135deg,#faf7f2 0%,#f5f0e8 100%);"><div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;"><div style="width:3px;height:28px;background:linear-gradient(to bottom,#8B4513,#D4A017);border-radius:2px;"></div><div style="font-family:'Ma Shan Zheng',cursive;font-size:1.4rem;color:#5a2d0c;letter-spacing:0.08em;">${data.title}</div></div><div style="font-size:0.9rem;line-height:2;color:#4a3a2a;text-indent:2em;">${data.text.replace(/\n/g, '<br>')}</div></div></div>`;
+      tooltip.style.display = 'block';
+      tooltip.style.left = Math.min(e.clientX + 18, window.innerWidth - 650) + 'px';
+      tooltip.style.top = Math.max(e.clientY - 170, 8) + 'px';
+      console.log('tooltip 已显示');
+    });
+    card.addEventListener('mouseleave', function() {
+      tooltip.style.display = 'none';
+      console.log('tooltip 已隐藏');
     });
   });
-  
-  // 关闭模态框
-  closeModal.addEventListener('click', function() {
-    modal.style.display = 'none';
-  });
-  
-  // 点击模态框外部关闭
-  window.addEventListener('click', function(event) {
-    if (event.target === modal) {
-      modal.style.display = 'none';
-    }
-  });
+  console.log('initHallOfFame 执行完毕');
 }
-
-// 文化传承数据
-const inheritanceData = {
-  genealogy: {
-    title: "族谱编纂",
-    image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20traditional%20Chinese%20family%20tree%2C%20Huizhou%20style%2C%20ink%20painting%20style%2C%20detailed%20brush%20strokes%2C%20high%20quality",
-    text: "汪氏宗族重视族谱编纂，每三十年修订一次，详细记录宗族历史、血脉传承、人物事迹等内容。族谱不仅是家族历史的记录，更是宗族认同的重要载体，通过族谱，族人可以了解自己的祖先和家族历史，增强宗族凝聚力。\n\n汪氏族谱通常包括序、凡例、世系表、人物传、家训、族规等内容，体例严谨，内容丰富。在编纂过程中，族人会邀请族中有学问的人担任编纂官，确保族谱的准确性和权威性。\n\n族谱修成后，会在祠堂举行隆重的颁谱仪式，将族谱分发给各支派保管，确保族谱的传承和保存。"
-  },
-  ritual: {
-    title: "祠堂祭祀",
-    image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20Huizhou%20ancestral%20hall%20ritual%2C%20traditional%20Chinese%20ceremony%2C%20ink%20painting%20style%2C%20detailed%20brush%20strokes%2C%20high%20quality",
-    text: "祠堂祭祀是汪氏宗族最重要的礼仪活动之一，通常在春节、清明节、中元节等传统节日举行。祭祀活动由族长主持，全体族人参加，通过向祖先牌位敬献祭品、上香、行礼等仪式，表达对祖先的敬意和追思。\n\n祭祀仪式通常包括准备祭品、请神、献祭、读祭文、行礼、分胙等环节，程序严谨，庄严肃穆。通过祭祀活动，族人可以增强对宗族的认同，传承家族价值观，同时也是对年轻一代进行宗族文化教育的重要机会。\n\n除了常规祭祀外，汪氏宗族还会在重大事件时举行特别祭祀，如族谱修成、祠堂修缮完成等，以感谢祖先的庇佑，祈求宗族的繁荣昌盛。"
-  },
-  education: {
-    title: "教育传统",
-    image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20traditional%20Chinese%20study%20room%2C%20Huizhou%20style%2C%20ink%20painting%20style%2C%20detailed%20brush%20strokes%2C%20high%20quality",
-    text: "汪氏宗族重视教育，早在宋代就开始设立义学，资助贫困学子读书。明清时期 ，随着徽商的崛起，汪氏宗族更加重视教育，纷纷设立书院、私塾，培养族中子弟。\n\n汪氏宗族的教育传统体现在多个方面：一是设立义田，用田租收入资助族中贫困学子；二是制定族规，鼓励子弟读书上进；三是对取得功名的族人进行奖励，如在祠堂立碑表彰等。\n\n这种重视教育的传统，使得汪氏宗族人才辈出，涌现出许多学者、官员、商人等杰出人物，形成了'贾而好儒'的传统，为徽州文化的繁荣做出了重要贡献。"
-  },
-  "mutual-aid": {
-    title: "宗族互助",
-    image: "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20traditional%20Chinese%20family%20gathering%2C%20Huizhou%20style%2C%20ink%20painting%20style%2C%20detailed%20brush%20strokes%2C%20high%20quality",
-    text: "汪氏宗族内部建立了完善的互助机制，在族人遇到困难时提供帮助。这种互助精神体现在多个方面：一是经济互助，如设立义田、义仓，资助贫困族人；二是生活互助，如帮助族人操办红白喜事；三是教育互助，如资助贫困学子读书。\n\n宗族互助的核心是'一方有难，八方支援'的精神，通过互助，族人之间的联系更加紧密，宗族的凝聚力和向心力得到增强。这种互助传统不仅在过去发挥了重要作用，在现代社会仍然具有积极意义。\n\n汪氏宗族的互助机制通常由族长和族老负责组织和管理，通过宗族会议制定相关规则，确保互助活动的公平、公正、公开。"
-  }
-};
 
 // 初始化文化传承
 function initCulturalInheritance() {
-  const inheritanceItems = document.querySelectorAll('.inheritance-item');
-  const modal = document.getElementById('inheritanceModal');
-  const modalTitle = document.getElementById('inheritanceModalTitle');
-  const modalImage = document.getElementById('inheritanceModalImage');
-  const modalText = document.getElementById('inheritanceModalText');
-  const closeModal = document.querySelector('.inheritance-modal .close-modal');
-  
-  // 文化传承项目点击事件
-  inheritanceItems.forEach(item => {
-    item.addEventListener('click', function() {
-      const type = this.getAttribute('data-type');
-      const inheritance = inheritanceData[type];
-      
-      if (inheritance) {
-        modalTitle.textContent = inheritance.title;
-        modalImage.src = inheritance.image;
-        modalText.textContent = inheritance.text;
-        modal.style.display = 'block';
-      }
-    });
-  });
-  
-  // 关闭模态框
-  closeModal.addEventListener('click', function() {
-    modal.style.display = 'none';
-  });
-  
-  // 点击模态框外部关闭
-  window.addEventListener('click', function(event) {
-    if (event.target === modal) {
-      modal.style.display = 'none';
-    }
-  });
+const items = document.querySelectorAll('.inheritance-item');
+let tooltip = document.querySelector('.inheritance-tooltip');
+if (!tooltip) {
+tooltip = document.createElement('div');
+tooltip.className = 'inheritance-tooltip';
+tooltip.style.cssText = 'position:fixed;z-index:9999;max-width:360px;background:rgba(30,20,10,0.94);color:#f5ecd4;border-radius:8px;font-size:0.82rem;line-height:1.6;box-shadow:0 8px 28px rgba(0,0,0,0.4);pointer-events:none;display:none;border:1px solid rgba(212,177,106,0.3);overflow:hidden;';
+document.body.appendChild(tooltip);
+}
+items.forEach(item => {
+item.style.cursor = 'pointer';
+const img = item.querySelector('.inheritance-icon img');
+const titleEl = item.querySelector('h5');
+const descEl = item.querySelector('p');
+item.addEventListener('mouseenter', function(e) {
+const imgSrc = img ? img.src : '';
+const titleText = titleEl ? titleEl.textContent : '';
+const imgHtml = imgSrc ? `<img src="${imgSrc}" alt="${titleText}" style="width:200px;height:auto;max-height:280px;object-fit:cover;display:block;border-radius:8px;">` : '';
+tooltip.innerHTML = `<div style="padding:0;">${imgHtml}</div>`;
+tooltip.style.display = 'block';
+tooltip.style.left = Math.min(e.clientX + 18, window.innerWidth - 240) + 'px';
+tooltip.style.top = Math.max(e.clientY - 80, 8) + 'px';
+});
+item.addEventListener('mouseleave', function() {
+tooltip.style.display = 'none';
+});
+item.addEventListener('click', function() {
+this.classList.toggle('expanded');
+});
+});
 }
 
 // 时间轴点击处理函数
 function handleTimelineClick(year) {
   console.log('时间轴点击处理函数被调用:', year);
-  const timelinePoints = document.querySelectorAll('.timeline-point');
+  const timelinePoints = document.querySelectorAll('.timeline-point-v');
   const timelineInfo = document.getElementById('timelineInfo');
   
-  // 移除所有点的active类
-  timelinePoints.forEach(p => p.classList.remove('active'));
+  // 移除所有点的active类并清除内联背景（防止残留）
+  timelinePoints.forEach(p => { p.classList.remove('active'); p.style.background = ''; });
   // 添加当前点的active类
   const currentPoint = Array.from(timelinePoints).find(p => p.getAttribute('data-year') === year);
   if (currentPoint) {
@@ -701,10 +511,25 @@ function handleTimelineClick(year) {
 }
 
 // 页面加载完成后初始化
-window.addEventListener('load', function() {
-  console.log('页面加载完成，初始化血脉延绵模块');
-  // 直接执行，不需要延迟
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initBloodlineModule);
+} else {
   initBloodlineModule();
-  initCulturalInheritance();
-  console.log('血脉延绵模块初始化完成');
+}
+
+// 同时保留 window.load 作为备用
+window.addEventListener('load', function() {
+  console.log('window.load 触发，重新检查初始化状态');
+  const hallOfFameCards = document.querySelectorAll('.hall-of-fame-card');
+  const inheritanceItems = document.querySelectorAll('.inheritance-item');
+  console.log('家族名人堂卡片数:', hallOfFameCards.length);
+  console.log('文化传承项目数:', inheritanceItems.length);
+  if (hallOfFameCards.length > 0 && !document.querySelector('.hall-tooltip')) {
+    console.log('重新初始化家族名人堂');
+    initHallOfFame();
+  }
+  if (inheritanceItems.length > 0 && !document.querySelector('.inheritance-tooltip')) {
+    console.log('重新初始化文化传承');
+    initCulturalInheritance();
+  }
 });

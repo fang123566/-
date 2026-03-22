@@ -11,11 +11,15 @@
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
 </head>
 <body>
+  <!-- 背景视频 -->
+  <video id="bgVideo" autoplay loop muted playsinline
+    style="position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;opacity:0.92;pointer-events:none;">
+    <source src="素材/宗族/宗族背景.mp4" type="video/mp4"/>
+  </video>
+
   <!-- 滚动进度条 -->
   <div class="scroll-progress" id="scrollProgress"></div>
 
-  <!-- 音效控制 -->
-  <div class="sound-control" id="soundControl" title="音效开关">🔊</div>
 
   <!-- 徽派瓦当造型导航栏 -->
   <nav id="circleNav">
@@ -49,57 +53,47 @@
     </a>
   </nav>
 
-  <!-- 徽派门簪造型内部导航 - 暂时关闭 -->
-  <!-- <div class="internal-nav">
-    <div class="nav-pin" data-target="cluster-layout" title="宗族聚居与建筑布局">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-    </div>
-    <div class="nav-pin" data-target="genealogy" title="血脉延绵">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-    </div>
-    <div class="nav-pin" data-target="shrine" title="祠堂礼制">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18"/><path d="M12 3v18"/><path d="M12 10v8"/></svg>
-    </div>
-    <div class="nav-pin" data-target="symbols" title="宗族文化符号">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4a2 2 0 00-2 2v3H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2z"/><polyline points="16 17 12 13 8 17"/></svg>
-    </div>
-    <div class="nav-pin" data-target="rules" title="家风族规卷轴">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-    </div>
-    <div class="nav-pin" data-target="merchant" title="贾而好儒">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-    </div>
-    <div class="nav-pin" data-target="fengshui" title="枕山环水">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    </div>
-  </div> -->
-
   <section class="page sub-page">
-    <div class="hero-header">
-      <div class="hero-inner">
-        <div class="hero-left">
-          <div class="hero-badge">
-            <span>宗族文化</span>
-          </div>
-          <h1 class="hero-title-zh">宗族文化</h1>
-          <p class="hero-title-en">CLAN SYSTEM & ANCESTRAL HALL</p>
-          <p class="hero-desc">
-            徽州宗族文化以祠堂为核心，通过建筑布局、血脉传承、家风族规等方面，展现了中国传统社会的宗族制度和文化内涵。
-          </p>
-          <div class="history-section">
-            <div class="history-section-label">宗族文化传承</div>
-            <div class="history-lines-wrap">
-              <div class="history-line">祠堂为核心，支祠为分支，民居为节点</div>
-              <div class="history-line">血脉延绵，宗族谱系清晰可考</div>
-              <div class="history-line">家风族规，传承千年的道德规范</div>
-              <div class="history-line">贾而好儒，徽商文化与宗族精神的融合</div>
-            </div>
-          </div>
+    <div class="hero-header" style="padding: 28px 40px; min-height: auto; background: linear-gradient(to right, rgba(252,250,245,0.42) 0%, rgba(250,246,240,0.36) 50%, rgba(245,240,232,0.28) 100%); position: relative; overflow: hidden;">
+      <!-- 右侧水墨晕渲装饰 -->
+      <div style="position: absolute; top: 0; right: 0; width: 45%; height: 100%; background: radial-gradient(ellipse 70% 90% at 85% 50%, rgba(139,69,19,0.06) 0%, transparent 70%), radial-gradient(ellipse 40% 60% at 100% 30%, rgba(74,61,46,0.04) 0%, transparent 60%); pointer-events: none; z-index: 0;"></div>
+      
+      <div class="hero-inner" style="display: flex; align-items: flex-start; justify-content: flex-start; position: relative; z-index: 1; gap: 12px;">
+        <!-- 左侧：标题 -->
+        <div class="hero-left" style="flex: 0 0 auto;">
+          <h1 class="hero-title-zh" style="font-family: 'Ma Shan Zheng', cursive; font-size: clamp(2.2rem, 3vw, 3rem); color: #4a3d2e; line-height: 1.1; letter-spacing: 0.05em; margin-bottom: 8px; text-shadow: 2px 2px 8px rgba(26,20,16,0.1); animation: fadeSlideDown 0.7s cubic-bezier(0.22,1,0.36,1) 0.1s both;">宗族文化</h1>
+          <p class="hero-title-en" style="font-size: 0.58rem; letter-spacing: 0.22em; color: #8c7a60; margin: 0; text-transform: uppercase; font-weight: 300; animation: fadeSlideDown 0.6s cubic-bezier(0.22,1,0.36,1) 0.2s both;">CLAN SYSTEM & ANCESTRAL HALL</p>
         </div>
-        <div class="hero-right">
-          <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20ancestral%20hall%20with%20traditional%20Huizhou%20architecture%2C%20ink%20painting%20style%2C%20warm%20yellow%20tones%2C%20detailed%20brush%20strokes&image_size=landscape_16_9" alt="宗族文化手绘" style="width: 100%; border-radius: 8px; box-shadow: 0 8px 24px rgba(26, 20, 16, 0.1);">
+        
+        <!-- 右侧：古风文字描述，逐行浮现 -->
+        <div class="hero-desc-section" style="flex: 1; max-width: 650px; padding-left: 16px; border-left: 2px solid rgba(192,57,43,0.25);">
+          <div style="font-family: 'Noto Serif SC', serif; font-size: clamp(0.72rem, 1vw, 0.85rem); line-height: 1.85; color: #4a3d2e; font-weight: 300;">
+            <p class="desc-line" style="margin-bottom: 10px; opacity: 0; transform: translateY(8px); transition: opacity 0.6s ease, transform 0.6s ease;">徽派建筑的宗族文化，是将血缘秩序写入空间的语言。祠堂居中，民居环列，形成<span style="color: #8B4513; font-weight: 500;">「千丁之族未尝散居」</span>的聚落格局——开间数量、马头墙层数、天井尺寸，无一不是身份等级的外在编码。</p>
+            <p class="desc-line" style="margin-bottom: 10px; opacity: 0; transform: translateY(8px); transition: opacity 0.6s ease, transform 0.6s ease;">以天井为单元的院落随家族繁衍不断增生，边门一开则户户相通，边门一闭则各自独立，将<span style="color: #8B4513; font-weight: 500;">「敬宗收族」</span>的伦理从精神层面落实到砖瓦之间。</p>
+            <p class="desc-line" style="margin-bottom: 0; opacity: 0; transform: translateY(8px); transition: opacity 0.6s ease, transform 0.6s ease;">而<span style="color: #8B4513; font-weight: 500;">「四水归堂」</span>的财气隐喻，更将徽商的商业智慧与宗族凝聚力融为一体——聚财为聚族，聚族为聚财，在这片高墙深院中，建筑与宗族相互塑造，生生不息。</p>
+          </div>
         </div>
       </div>
+      
+      <style>
+        @keyframes fadeSlideDown {
+          from { opacity: 0; transform: translateY(-14px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .desc-line.visible { opacity: 1 !important; transform: translateY(0) !important; }
+      </style>
+      
+      <script>
+        // 页面加载后逐行显示文字
+        document.addEventListener('DOMContentLoaded', function() {
+          var lines = document.querySelectorAll('.desc-line');
+          lines.forEach(function(line, index) {
+            setTimeout(function() {
+              line.classList.add('visible');
+            }, 400 + index * 350);
+          });
+        });
+      </script>
     </div>
 
     <!-- 横向滚动导航 -->
@@ -110,7 +104,6 @@
         <button class="nav-dot" data-index="1" onclick="scrollToModule(1)"></button>
         <button class="nav-dot" data-index="2" onclick="scrollToModule(2)"></button>
         <button class="nav-dot" data-index="3" onclick="scrollToModule(3)"></button>
-        <button class="nav-dot" data-index="4" onclick="scrollToModule(4)"></button>
       </div>
       <button class="nav-btn next-btn" onclick="scrollModules(1)">下一页 →</button>
     </div>
@@ -129,19 +122,19 @@
             </p>
           </div>
           
-          <!-- 建筑布局图片展示区 -->
-          <div class="compact-layout-section">
-            <!-- 顶部图片 - 格局总览 -->
-            <div class="compact-main-image">
-              <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20Huizhou%20village%20ink%20scroll%2C%20traditional%20Chinese%20architecture%2C%20ancestral%20hall%20in%20center%2C%20branch%20halls%20surrounding%2C%20residences%20radiating%2C%20water%20system%2C%20ink%20painting%20style" alt="格局总览" class="compact-main-img" loading="lazy">
-            </div>
-            
-            <!-- 网格布局 -->
-            <div class="compact-grid">
-              <!-- 左侧：小图片网格 -->
+          <!-- 左右布局容器 -->
+          <div style="display:flex;gap:28px;align-items:flex-start;margin-top:16px;">
+
+            <!-- 左侧：建筑布局图片 -->
+            <div style="flex:0 0 52%;min-width:0;">
+              <!-- 格局总览大图 -->
+              <div class="compact-main-image" style="margin-bottom:12px;">
+                <img src="素材\宗族\格局总览.png" alt="格局总览" class="compact-main-img" loading="lazy">
+              </div>
+              <!-- 细节图片六宫格 -->
               <div class="compact-images">
                 <div class="compact-image-item">
-                  <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20Huizhou%20clan%20village%20layout%2C%20traditional%20Chinese%20architecture%2C%20ink%20painting%20style%2C%20detailed%20brush%20strokes%2C%20warm%20colors%2C%20professional%20Chinese%20painting" alt="徽派宗族村落布局" loading="lazy">
+                  <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20Huizhou%20clan%20village%20layout%2C%20traditional%20Chinese%20architecture%2C%20ink%20painting%20style%2C%20detailed%20brush%20strokes%2C%20warm%20colors%2C%20professional%20Chinese%20painting" alt="村落布局" loading="lazy">
                   <span>村落布局</span>
                 </div>
                 <div class="compact-image-item">
@@ -165,9 +158,12 @@
                   <span>水口</span>
                 </div>
               </div>
-              
-              <!-- 右侧：文字说明 -->
-              <div class="compact-description">
+            </div>
+
+            <!-- 右侧：格局解读 + 宗族文化符号 -->
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap: 15px;">
+              <!-- 格局解读文字 -->
+              <div class="compact-description" style="margin:0;">
                 <h4 class="compact-title">格局解读</h4>
                 <p class="compact-text">
                   徽州宗族的聚族而居制度、宗法等级制度、风水文化理念，共同塑造了徽派村落「祠为核心、支祠环绕、民居辐射、枕山环水、水口锁村」的经典布局。建筑是宗族文化的具象载体，宗族是建筑布局的核心灵魂，二者相融相生，形成了徽州独有的「祠居一体」的建筑文化特色。
@@ -179,117 +175,122 @@
                   宗法制度规定「祠为尊」，所有建筑不得超越祠堂的规模和高度，体现「尊祖敬宗」的宗族理念。支祠作为分支祠堂，规模次之，分布在村落的各个区域，形成宗族的分支网络。
                 </p>
               </div>
-            </div>
-          </div>
-          
-          <!-- 宗族文化符号 -->
-          <div class="culture-symbols-section" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-ink);">
-            <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin-bottom: 15px;">宗族文化符号</h4>
-            <div class="symbols-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
-              <div class="symbol-item" style="text-align: center; transition: all 0.3s ease;">
-                <div class="symbol-wrapper" style="position: relative; display: inline-block; margin-bottom: 10px;">
-                  <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20wooden%20plaque%20with%20calligraphy%2C%20traditional%20Huizhou%20architecture%20decoration%2C%20warm%20yellow%20tones%2C%20ink%20painting%20style&image_size=square" alt="宗族匾额" class="symbol-image" style="width: 100%; max-width: 250px; height: 220px; object-fit: cover; border-radius: var(--radius-sm); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
-                  <div class="golden-stroke"></div>
+
+              <!-- 宗族文化符号 -->
+              <div style="padding-top:16px;border-top:1px solid var(--border-ink);">
+                <h4 style="font-family:var(--font-title);color:var(--primary-redwood);margin-bottom:14px;">宗族文化符号</h4>
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
+                  <div class="symbol-item" style="text-align:center;background:rgba(255,255,255,0.6);border:1px solid var(--border-ink);border-radius:var(--radius-sm);padding:10px;">
+                    <div style="width:100%;height:140px;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:8px;">
+                      <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20wooden%20plaque%20with%20calligraphy%2C%20traditional%20Huizhou%20architecture%20decoration%2C%20warm%20yellow%20tones%2C%20ink%20painting%20style&image_size=square" alt="宗族匾额" style="width:100%;height:100%;object-fit:cover;">
+                    </div>
+                    <div class="symbol-label" style="font-family:var(--font-title);color:var(--primary-redwood);font-size:0.85rem;">宗族匾额</div>
+                    <p style="font-size:0.72rem;line-height:1.4;color:var(--primary-text);margin-top:5px;">堂号匾额是宗族身份的重要标识，通常悬挂在祠堂或民居的正厅上方。</p>
+                  </div>
+                  <div class="symbol-item" style="text-align:center;background:rgba(255,255,255,0.6);border:1px solid var(--border-ink);border-radius:var(--radius-sm);padding:10px;">
+                    <div style="width:100%;height:140px;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:8px;">
+                      <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20couplet%20with%20calligraphy%2C%20traditional%20Huizhou%20architecture%20decoration%2C%20warm%20yellow%20tones%2C%20ink%20painting%20style&image_size=square" alt="宗族楹联" style="width:100%;height:100%;object-fit:cover;">
+                    </div>
+                    <div class="symbol-label" style="font-family:var(--font-title);color:var(--primary-redwood);font-size:0.85rem;">宗族楹联</div>
+                    <p style="font-size:0.72rem;line-height:1.4;color:var(--primary-text);margin-top:5px;">家训楹联是宗族价值观的重要载体，通常刻在祠堂或民居的柱子上。</p>
+                  </div>
+                  <div class="symbol-item" style="text-align:center;background:rgba(255,255,255,0.6);border:1px solid var(--border-ink);border-radius:var(--radius-sm);padding:10px;">
+                    <div style="width:100%;height:140px;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:8px;">
+                      <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20family%20tree%20scroll%2C%20traditional%20Huizhou%20culture%2C%20ink%20painting%20style&image_size=square" alt="族谱" style="width:100%;height:100%;object-fit:cover;">
+                    </div>
+                    <div class="symbol-label" style="font-family:var(--font-title);color:var(--primary-redwood);font-size:0.85rem;">族谱</div>
+                    <p style="font-size:0.72rem;line-height:1.4;color:var(--primary-text);margin-top:5px;">族谱详细记载了宗族的世系、人物、事迹，是宗族文化的重要载体。</p>
+                  </div>
+                  <div class="symbol-item" style="text-align:center;background:rgba(255,255,255,0.6);border:1px solid var(--border-ink);border-radius:var(--radius-sm);padding:10px;">
+                    <div style="width:100%;height:140px;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:8px;">
+                      <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20ancestral%20tablets%2C%20traditional%20Huizhou%20culture%2C%20ink%20painting%20style&image_size=square" alt="祖先牌位" style="width:100%;height:100%;object-fit:cover;">
+                    </div>
+                    <div class="symbol-label" style="font-family:var(--font-title);color:var(--primary-redwood);font-size:0.85rem;">祖先牌位</div>
+                    <p style="font-size:0.72rem;line-height:1.4;color:var(--primary-text);margin-top:5px;">祖先牌位供奉于祠堂寝堂中，是宗族祭祀活动的核心对象。</p>
+                  </div>
                 </div>
-                <div class="symbol-label" style="font-family: var(--font-title); color: var(--primary-redwood); font-size: 0.9rem; font-weight: 500;">宗族匾额</div>
-                <p style="font-size: 0.75rem; line-height: 1.4; color: var(--primary-text); margin-top: 8px;">
-                  堂号匾额是宗族身份的重要标识，通常悬挂在祠堂或民居的正厅上方，显示宗族的郡望和堂号。
-                </p>
-              </div>
-              <div class="symbol-item" style="text-align: center; transition: all 0.3s ease;">
-                <div class="symbol-wrapper" style="position: relative; display: inline-block; margin-bottom: 10px;">
-                  <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20couplet%20with%20calligraphy%2C%20traditional%20Huizhou%20architecture%20decoration%2C%20warm%20yellow%20tones%2C%20ink%20painting%20style&image_size=square" alt="宗族楹联" class="symbol-image" style="width: 100%; max-width: 250px; height: 220px; object-fit: cover; border-radius: var(--radius-sm); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
-                  <div class="golden-stroke"></div>
-                </div>
-                <div class="symbol-label" style="font-family: var(--font-title); color: var(--primary-redwood); font-size: 0.9rem; font-weight: 500;">宗族楹联</div>
-                <p style="font-size: 0.75rem; line-height: 1.4; color: var(--primary-text); margin-top: 8px;">
-                  家训楹联是宗族价值观的重要载体，通常刻在祠堂或民居的柱子上，传递宗族的道德规范和人生哲理。
-                </p>
-              </div>
-              <div class="symbol-item" style="text-align: center; transition: all 0.3s ease;">
-                <div class="symbol-wrapper" style="position: relative; display: inline-block; margin-bottom: 10px;">
-                  <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20family%20tree%20scroll%2C%20traditional%20Huizhou%20culture%2C%20ink%20painting%20style&image_size=square" alt="族谱" class="symbol-image" style="width: 100%; max-width: 250px; height: 220px; object-fit: cover; border-radius: var(--radius-sm); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
-                  <div class="golden-stroke"></div>
-                </div>
-                <div class="symbol-label" style="font-family: var(--font-title); color: var(--primary-redwood); font-size: 0.9rem; font-weight: 500;">族谱</div>
-                <p style="font-size: 0.75rem; line-height: 1.4; color: var(--primary-text); margin-top: 8px;">
-                  族谱是记录宗族血脉传承的重要文献，详细记载了宗族的世系、人物、事迹等，是宗族文化的重要载体。
-                </p>
-              </div>
-              <div class="symbol-item" style="text-align: center; transition: all 0.3s ease;">
-                <div class="symbol-wrapper" style="position: relative; display: inline-block; margin-bottom: 10px;">
-                  <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20ancient%20Chinese%20ancestral%20tablets%2C%20traditional%20Huizhou%20culture%2C%20ink%20painting%20style&image_size=square" alt="祖先牌位" class="symbol-image" style="width: 100%; max-width: 250px; height: 220px; object-fit: cover; border-radius: var(--radius-sm); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
-                  <div class="golden-stroke"></div>
-                </div>
-                <div class="symbol-label" style="font-family: var(--font-title); color: var(--primary-redwood); font-size: 0.9rem; font-weight: 500;">祖先牌位</div>
-                <p style="font-size: 0.75rem; line-height: 1.4; color: var(--primary-text); margin-top: 8px;">
-                  祖先牌位是供奉祖先神灵的重要物品，通常放置在祠堂的寝堂中，是宗族祭祀活动的核心对象。
-                </p>
               </div>
             </div>
+
           </div>
         </div>
 
         <!-- 血脉延绵 -->
         <div class="clan-module" id="genealogy">
           <h3 class="module-title">血脉延绵</h3>
-          <p class="module-desc">以流觞曲水的方式展现家族传承，探索宗族血脉的历史脉络</p>
           
-          <!-- 时空联动时间轴 -->
-          <div class="timeline-container">
-            <h4 class="timeline-title">宗族历史时间轴</h4>
-            <div class="timeline-scroll">
-              <div class="timeline-track">
-                <div class="timeline-line"></div>
-                <div class="timeline-point active" data-year="唐" data-period="618-907" onclick="handleTimelineClick('唐')">
-                  <div class="point-circle"></div>
-                  <div class="point-label">唐</div>
-                  <div class="point-period">618-907</div>
-                </div>
-                <div class="timeline-point" data-year="宋" data-period="960-1279" onclick="handleTimelineClick('宋')">
-                  <div class="point-circle"></div>
-                  <div class="point-label">宋</div>
-                  <div class="point-period">960-1279</div>
-                </div>
-                <div class="timeline-point" data-year="元" data-period="1271-1368" onclick="handleTimelineClick('元')">
-                  <div class="point-circle"></div>
-                  <div class="point-label">元</div>
-                  <div class="point-period">1271-1368</div>
-                </div>
-                <div class="timeline-point" data-year="明" data-period="1368-1644" onclick="handleTimelineClick('明')">
-                  <div class="point-circle"></div>
-                  <div class="point-label">明</div>
-                  <div class="point-period">1368-1644</div>
-                </div>
-                <div class="timeline-point" data-year="清" data-period="1644-1912" onclick="handleTimelineClick('清')">
-                  <div class="point-circle"></div>
-                  <div class="point-label">清</div>
-                  <div class="point-period">1644-1912</div>
-                </div>
-                <div class="timeline-point" data-year="现代" data-period="1912-至今" onclick="handleTimelineClick('现代')">
-                  <div class="point-circle"></div>
-                  <div class="point-label">现代</div>
-                  <div class="point-period">1912-至今</div>
+          <!-- 时空联动时间轴与谱系树左右布局 -->
+          <div style="display: flex; gap: 20px; margin-bottom: 20px; min-height: 500px; align-items: stretch;">
+            <!-- 左侧：纵向宗族历史时间轴 -->
+            <div style="flex: 0 0 215px; display: flex; flex-direction: column; background: linear-gradient(160deg, rgba(255,251,242,0.97), rgba(250,245,235,0.93)); border: 1px solid rgba(139,69,19,0.22); border-radius: 10px; padding: 16px; box-shadow: 0 3px 14px rgba(139,69,19,0.09);">
+              <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin: 0 0 14px 0; font-size: 0.9rem; text-align: center; letter-spacing: 2px; padding-bottom: 10px; border-bottom: 1px solid rgba(139,69,19,0.18);">宗族历史时间轴</h4>
+              <div style="position: relative; flex: 1;">
+                <div style="position: absolute; left: 11px; top: 10px; bottom: 10px; width: 2px; background: linear-gradient(to bottom, rgba(139,69,19,0.45), rgba(139,69,19,0.08)); border-radius: 1px; pointer-events: none;"></div>
+                <div style="display: flex; flex-direction: column; gap: 3px;">
+                  <div class="timeline-point-v active" data-year="唐" onclick="handleTimelineClick('唐')" style="display: flex; align-items: center; gap: 10px; padding: 8px 6px; cursor: pointer; border-radius: 6px; transition: all 0.25s;">
+                    <div style="width: 24px; height: 24px; border-radius: 50%; background: var(--primary-redwood); border: 2px solid #fffbf5; flex-shrink: 0; display: flex; align-items: center; justify-content: center; z-index: 1; box-shadow: 0 0 0 2px rgba(192,57,43,0.25);"><div style="width: 7px; height: 7px; background: #fff; border-radius: 50%;"></div></div>
+                    <div><div style="font-family: var(--font-title); font-size: 0.82rem; color: var(--primary-redwood); font-weight: bold;">唐代</div><div style="font-size: 0.62rem; color: #a0886e;">618 – 907</div></div>
+                  </div>
+                  <div class="timeline-point-v" data-year="宋" onclick="handleTimelineClick('宋')" style="display: flex; align-items: center; gap: 10px; padding: 8px 6px; cursor: pointer; border-radius: 6px; transition: all 0.25s;">
+                    <div style="width: 24px; height: 24px; border-radius: 50%; background: #c8b89a; border: 2px solid #fffbf5; flex-shrink: 0; display: flex; align-items: center; justify-content: center; z-index: 1;"><div style="width: 7px; height: 7px; background: #fff; border-radius: 50%;"></div></div>
+                    <div><div style="font-family: var(--font-title); font-size: 0.82rem; color: #6b5a42;">宋代</div><div style="font-size: 0.62rem; color: #a0886e;">960 – 1279</div></div>
+                  </div>
+                  <div class="timeline-point-v" data-year="元" onclick="handleTimelineClick('元')" style="display: flex; align-items: center; gap: 10px; padding: 8px 6px; cursor: pointer; border-radius: 6px; transition: all 0.25s;">
+                    <div style="width: 24px; height: 24px; border-radius: 50%; background: #c8b89a; border: 2px solid #fffbf5; flex-shrink: 0; display: flex; align-items: center; justify-content: center; z-index: 1;"><div style="width: 7px; height: 7px; background: #fff; border-radius: 50%;"></div></div>
+                    <div><div style="font-family: var(--font-title); font-size: 0.82rem; color: #6b5a42;">元代</div><div style="font-size: 0.62rem; color: #a0886e;">1271 – 1368</div></div>
+                  </div>
+                  <div class="timeline-point-v" data-year="明" onclick="handleTimelineClick('明')" style="display: flex; align-items: center; gap: 10px; padding: 8px 6px; cursor: pointer; border-radius: 6px; transition: all 0.25s;">
+                    <div style="width: 24px; height: 24px; border-radius: 50%; background: #c8b89a; border: 2px solid #fffbf5; flex-shrink: 0; display: flex; align-items: center; justify-content: center; z-index: 1;"><div style="width: 7px; height: 7px; background: #fff; border-radius: 50%;"></div></div>
+                    <div><div style="font-family: var(--font-title); font-size: 0.82rem; color: #6b5a42;">明代</div><div style="font-size: 0.62rem; color: #a0886e;">1368 – 1644</div></div>
+                  </div>
+                  <div class="timeline-point-v" data-year="清" onclick="handleTimelineClick('清')" style="display: flex; align-items: center; gap: 10px; padding: 8px 6px; cursor: pointer; border-radius: 6px; transition: all 0.25s;">
+                    <div style="width: 24px; height: 24px; border-radius: 50%; background: #c8b89a; border: 2px solid #fffbf5; flex-shrink: 0; display: flex; align-items: center; justify-content: center; z-index: 1;"><div style="width: 7px; height: 7px; background: #fff; border-radius: 50%;"></div></div>
+                    <div><div style="font-family: var(--font-title); font-size: 0.82rem; color: #6b5a42;">清代</div><div style="font-size: 0.62rem; color: #a0886e;">1644 – 1912</div></div>
+                  </div>
+                  <div class="timeline-point-v" data-year="现代" onclick="handleTimelineClick('现代')" style="display: flex; align-items: center; gap: 10px; padding: 8px 6px; cursor: pointer; border-radius: 6px; transition: all 0.25s;">
+                    <div style="width: 24px; height: 24px; border-radius: 50%; background: #c8b89a; border: 2px solid #fffbf5; flex-shrink: 0; display: flex; align-items: center; justify-content: center; z-index: 1;"><div style="width: 7px; height: 7px; background: #fff; border-radius: 50%;"></div></div>
+                    <div><div style="font-family: var(--font-title); font-size: 0.82rem; color: #6b5a42;">现代</div><div style="font-size: 0.62rem; color: #a0886e;">1912 – 至今</div></div>
+                  </div>
                 </div>
               </div>
+              <div id="timelineInfo" style="margin-top: 12px; padding: 10px 12px; background: linear-gradient(135deg, rgba(139,69,19,0.08), rgba(212,177,106,0.05)); border: 1px solid rgba(139,69,19,0.2); border-radius: 6px; font-size: 0.72rem; min-height: 85px;">
+                <h5 style="margin: 0 0 5px 0; color: var(--primary-redwood); font-family: var(--font-title); font-size: 0.8rem;">唐代</h5>
+                <p style="margin: 0; line-height: 1.5; color: var(--primary-text);">汪华（586-649），徽州汪氏始祖，唐初名将，封越国公。</p>
+              </div>
             </div>
-            <div class="timeline-info" id="timelineInfo">
-              <h5>唐代</h5>
-              <p>汪华（586-649），徽州汪氏始祖，唐初名将，封越国公。为徽州地区的稳定和发展做出了重要贡献，被后世徽州人视为保护神。</p>
-            </div>
-          </div>
-          
-          <!-- 流觞曲水谱系树 -->
-          <div class="genealogy-tree-container">
-            <h4 class="tree-title">汪氏宗族谱系树</h4>
-            <div class="tree-wrapper">
-              <div id="genealogyTree" class="genealogy-tree"></div>
-              <div class="tree-controls">
-                <button class="tree-btn zoom-in">放大</button>
-                <button class="tree-btn zoom-out">缩小</button>
-                <button class="tree-btn reset">重置</button>
-                <button class="tree-btn expand">展开全部</button>
-                <button class="tree-btn collapse">收起全部</button>
+            
+            <!-- 右侧：汪氏宗族谱系树 + 家族背景总览 -->
+            <div style="flex: 1; display: flex; gap: 16px; min-width: 0;">
+              <!-- 谱系树区域（缩窄） -->
+              <div style="flex: 0 0 55%; display: flex; flex-direction: column; min-width: 0; background: linear-gradient(160deg, rgba(255,251,242,0.97), rgba(250,245,235,0.93)); border: 1px solid rgba(139,69,19,0.22); border-radius: 10px; overflow: hidden; box-shadow: 0 3px 14px rgba(139,69,19,0.09);">
+                <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin: 0; padding: 12px 16px; font-size: 0.9rem; text-align: center; letter-spacing: 2px; border-bottom: 1px solid rgba(139,69,19,0.18); background: rgba(139,69,19,0.04);">汪氏宗族谱系树</h4>
+                <div style="flex: 1; padding: 15px; overflow: auto; min-height: 0;">
+                  <div id="genealogyTree" style="width: 100%; min-height: 380px;"></div>
+                </div>
+              </div>
+              <!-- 家族背景总览 -->
+              <div style="flex: 0 0 43%; display: flex; flex-direction: column; background: linear-gradient(160deg, rgba(255,251,242,0.97), rgba(250,245,235,0.93)); border: 1px solid rgba(139,69,19,0.22); border-radius: 10px; padding: 18px 20px; box-shadow: 0 3px 14px rgba(139,69,19,0.09);">
+                <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin: 0 0 14px 0; font-size: 0.92rem; text-align: center; letter-spacing: 2px; padding-bottom: 12px; border-bottom: 1px solid rgba(139,69,19,0.18);">家族背景总览</h4>
+                <div style="flex: 1; overflow-y: auto; font-size: 0.78rem; line-height: 1.85; color: var(--primary-text);">
+                  <p style="margin: 0 0 12px 0; text-indent: 2em;">
+                    汪氏家族源远流长，可追溯至<strong>春秋时期</strong>——鲁成公之子出生时手有"汪"字纹，被封于颍川，后世以汪为姓。
+                  </p>
+                  <p style="margin: 0 0 12px 0; text-indent: 2em;">
+                    <strong>东汉末年</strong>，汪文和渡江南迁定居歙县，成为徽州汪氏一世祖。
+                  </p>
+                  <p style="margin: 0 0 12px 0; text-indent: 2em;">
+                    <strong>唐代</strong>汪华封越国公，生九子，后裔遍布徽州及全国各地，形成<span style="color: var(--primary-redwood); font-weight: 500;">"黟歙之人，十姓九汪，皆华之后"</span>的盛况。
+                  </p>
+                  <p style="margin: 0 0 12px 0; text-indent: 2em;">
+                    <strong>明清时期</strong>，汪氏家族在科举、文学、商业等领域均有杰出人物涌现，如明代文学家汪道昆、清代学者汪中、晚清外交官汪大燮等，彰显了汪氏宗族的文化底蕴与社会影响力。
+                  </p>
+                  <div style="margin-top: 14px; padding: 12px; background: linear-gradient(135deg, rgba(139,69,19,0.06), rgba(212,177,106,0.04)); border-radius: 6px; border-left: 3px solid var(--primary-redwood);">
+                    <div style="font-family: var(--font-title); font-size: 0.82rem; color: var(--primary-redwood); margin-bottom: 6px;">◆ 宗族特色</div>
+                    <div style="font-size: 0.74rem; line-height: 1.7;">
+                      崇文重教 · 贾而好儒 · 忠孝传家 · 经世致用
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -350,66 +351,35 @@
                   <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20traditional%20Chinese%20family%20tree%2C%20Huizhou%20style%2C%20ink%20painting%20style%2C%20detailed%20brush%20strokes" alt="族谱编纂">
                 </div>
                 <h5>族谱编纂</h5>
-                <p>汪氏宗族重视族谱编纂，定期修订，记录宗族历史和血脉传承，确保家族记忆的延续。</p>
+                <p>族谱是宗族记忆的书写，汪氏家族自唐代起便系统修撰《汪氏统宗谱》，以"收族"之功将散居各地的支系串联为"一本千枝"的血缘网络。每三十年一修的规矩恪守不渝，晒谱仪式庄重如仪，让后代铭记"我从何处来"。族谱不仅记录世系传承，更将先祖的功绩德行刻入族人的集体记忆，使宗族认同在笔墨间代代相传。</p>
               </div>
               <div class="inheritance-item" data-type="ritual">
                 <div class="inheritance-icon">
                   <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20Huizhou%20ancestral%20hall%20ritual%2C%20traditional%20Chinese%20ceremony%2C%20ink%20painting%20style%2C%20detailed%20brush%20strokes" alt="祠堂祭祀">
                 </div>
                 <h5>祠堂祭祀</h5>
-                <p>通过定期的祠堂祭祀活动，强化宗族认同，传承家族价值观，增强宗族凝聚力。</p>
+                <p>祠堂是宗族空间的灵魂，从汪华越国公祠到各村支祠，祠堂不仅是供奉祖先牌位的场所，更是议事、教化、庆典的中心。春祭秋享的仪式将"敬宗收祖"的伦理刻入族人的身体记忆，高大威严的祠堂建筑本身便是宗族力量的视觉宣言。在徽州村落中，祠堂永远是最高的建筑，其五开间的规制、繁复精美的木雕，无一不在昭示着祖先的荣耀与宗族的凝聚力。</p>
               </div>
               <div class="inheritance-item" data-type="education">
                 <div class="inheritance-icon">
                   <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20traditional%20Chinese%20study%20room%2C%20Huizhou%20style%2C%20ink%20painting%20style%2C%20detailed%20brush%20strokes" alt="教育传统">
                 </div>
                 <h5>教育传统</h5>
-                <p>汪氏宗族重视教育，设立义学，资助贫困学子，培养人才，形成了"贾而好儒"的传统。</p>
+                <p>教育是宗族绵延的根本，徽州有"十户之村，不废诵读"之说。宗族以族产资助族中子弟读书，汪氏家族自宋代起便涌现大量进士举人，明清时期更以"父子进士""兄弟翰林"传为美谈。宗祠中往往附设书院，将"读书为第一等事"的家训代代相传。族中富商亦将大量利润投入家乡教育，形成"富而教之"的传统，让书香与商贾在徽州大地上交织出独特的文化景观。</p>
               </div>
               <div class="inheritance-item" data-type="mutual-aid">
                 <div class="inheritance-icon">
                   <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=hand-drawn%20traditional%20Chinese%20family%20gathering%2C%20Huizhou%20style%2C%20ink%20painting%20style%2C%20detailed%20brush%20strokes" alt="宗族互助">
                 </div>
                 <h5>宗族互助</h5>
-                <p>宗族内部建立互助机制，在困难时期相互扶持，体现了"一方有难，八方支援"的宗族精神。</p>
+                <p>宗族互助是血脉共同体的保障，族田的收入用于接济孤寡、资助婚丧、修桥铺路。徽商在外经营所得利润大量投入宗族公益，形成"富者捐资、贫者出力"的内部循环。当族人遭遇变故，宗族出面援助；当子弟学业有成，宗族给予奖励。这种互助机制将血缘关系转化为实实在在的生活保障，让"家"的概念从一户一院扩展为整个宗族，构筑起千年不散的温情网络。</p>
               </div>
             </div>
           </div>
           
-          <!-- 文化传承详情弹窗 -->
-          <div class="inheritance-modal" id="inheritanceModal">
-            <div class="modal-content">
-              <button class="close-modal">×</button>
-              <div class="modal-header">
-                <h3 id="inheritanceModalTitle">文化传承详情</h3>
-              </div>
-              <div class="modal-body">
-                <div class="modal-image">
-                  <img id="inheritanceModalImage" src="" alt="文化传承">
-                </div>
-                <div class="modal-text">
-                  <p id="inheritanceModalText"></p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- 名人详情弹窗 -->
-          <div class="person-modal" id="personModal">
-            <div class="modal-content">
-              <button class="close-modal">×</button>
-              <div class="modal-header">
-                <h3 id="modalTitle">名人详情</h3>
-              </div>
-              <div class="modal-body">
-                <div class="modal-image">
-                  <img id="modalImage" src="" alt="名人肖像">
-                </div>
-                <div class="modal-text">
-                  <p id="modalText"></p>
-                </div>
-              </div>
-            </div>
+          <!-- 家风族规卷轴展开按钮 -->
+          <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(139,69,19,0.2);">
+            <button onclick="openScrollModal()" style="background: linear-gradient(135deg, rgba(139,69,19,0.12) 0%, rgba(212,177,106,0.12) 100%); border: 1px solid rgba(139,69,19,0.35); padding: 12px 32px; border-radius: 24px; font-family: 'Ma Shan Zheng', cursive; font-size: 1rem; color: #8B4513; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 10px rgba(139,69,19,0.12); letter-spacing: 2px;">📜 查看家风族规卷轴</button>
           </div>
         </div>
 
@@ -424,26 +394,6 @@
           <div class="shrine-map" id="shrineMap">
             <!-- 真实祠堂平面图 -->
             <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=detailed%20Huizhou%20ancestral%20hall%20floor%20plan%2C%20traditional%20Chinese%20architecture%2C%20clear%20layout%20with%20labeled%20areas%2C%20ink%20painting%20style" alt="祠堂平面示意图" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
-            
-            <!-- 祠堂点位标注 -->
-            <div class="shrine-hotspot" style="top: 15%; left: 50%; transform: translateX(-50%);" data-name="门厅">
-              <div class="hotspot-label">门厅</div>
-            </div>
-            <div class="shrine-hotspot" style="top: 40%; left: 50%; transform: translateX(-50%);" data-name="享堂">
-              <div class="hotspot-label">享堂</div>
-            </div>
-            <div class="shrine-hotspot" style="top: 65%; left: 50%; transform: translateX(-50%);" data-name="寝堂">
-              <div class="hotspot-label">寝堂</div>
-            </div>
-            <div class="shrine-hotspot" style="top: 28%; left: 50%; transform: translateX(-50%);" data-name="天井">
-              <div class="hotspot-label">天井</div>
-            </div>
-            <div class="shrine-hotspot" style="top: 40%; left: 25%;" data-name="东厢">
-              <div class="hotspot-label">东厢</div>
-            </div>
-            <div class="shrine-hotspot" style="top: 40%; right: 25%;" data-name="西厢">
-              <div class="hotspot-label">西厢</div>
-            </div>
           </div>
           
           <!-- 空间功能说明 -->
@@ -549,65 +499,6 @@
           </div>
         </div>
 
-        <!-- 家风族规卷轴 -->
-        <div class="clan-module" id="rules">
-          <h3 class="module-title" style="text-align: center;">家风族规卷轴</h3>
-          <button onclick="toggleScroll()" class="scroll-btn">展开卷轴</button>
-          <div class="scroll-container">
-            <!-- 左轴杆 -->
-            <div class="scroll-pole pole-left">
-              <div class="pole-cap"></div>
-              <div class="pole-base"></div>
-            </div>
-            <!-- 卷纸 -->
-            <div class="scroll-paper" id="scrollPaper">
-              <!-- 印章装饰 -->
-              <div class="scroll-seal">
-                汪氏家训
-              </div>
-              <!-- 卷轴内容 -->
-              <div class="scroll-content-inner">
-                <div class="scroll-column">
-                  <p class="rule-title">第一款 孝父母</p>
-                  <p>父母养育之恩，昊天罔极。为人子女者，当尽孝道，晨昏定省，冬温夏凊，使父母安享天伦之乐。父母在，不远游，游必有方。父母之年，不可不知也，一则以喜，一则以惧。</p>
-                  <p class="rule-title">第二款 和兄弟</p>
-                  <p>兄弟本是同根生，当和睦相处，互敬互爱，患难与共，勿因小利而伤手足之情。兄友弟恭，长幼有序，家族方能兴旺。</p>
-                  <p class="rule-title">第三款 睦宗族</p>
-                  <p>宗族一脉相承，当团结互助，守望相助，共荣共辱，维护宗族声誉。宗族事务，当群策群力，共同参与，共建和谐宗族。</p>
-                </div>
-                <div class="scroll-column">
-                  <p class="rule-title">第四款 勤职业</p>
-                  <p>业精于勤，荒于嬉。无论士农工商，当勤奋敬业，精益求精，创造家业。职业无贵贱，敬业则崇高，懒惰则可耻。</p>
-                  <p class="rule-title">第五款 崇节俭</p>
-                  <p>俭以养德，奢则败家。当厉行节约，反对浪费，量入为出，积累家业。一粥一饭，当思来之不易；半丝半缕，恒念物力维艰。</p>
-                  <p class="rule-title">第六款 严教训</p>
-                  <p>子女教育，关系家族兴衰。当严格管教，导之以正，培养良好品德。因材施教，循序渐进，不可溺爱，不可苛责，使子女成为有用之才。</p>
-                </div>
-                <div class="scroll-column">
-                  <p class="rule-title">第七款 禁赌博</p>
-                  <p>赌博害人害己，败家丧志。当严禁赌博，远离恶习，保持清白家风。赌博之人，轻则倾家荡产，重则家破人亡，不可不戒。</p>
-                  <p class="rule-title">第八款 慎祭奠</p>
-                  <p>祖先祭祀，慎终追远。当恭敬虔诚，按时祭扫，传承家族文化。祭祀之时，当心怀敬畏，至诚至敬，表达对祖先的追思之情。</p>
-                  <p class="rule-title">第九款 重教育</p>
-                  <p>教育为本，知识为宝。当重视子女教育，不惜重金，培养人才。万般皆下品，唯有读书高，读书则明理，明理则修身。</p>
-                </div>
-              </div>
-              <!-- 底部装饰 -->
-              <div class="scroll-footer">
-                <div class="scroll-footer-line"></div>
-                <div class="scroll-footer-text">
-                  大清乾隆年间 汪氏宗族立
-                </div>
-              </div>
-            </div>
-            <!-- 右轴杆 -->
-            <div class="scroll-pole pole-right">
-              <div class="pole-cap"></div>
-              <div class="pole-base"></div>
-            </div>
-          </div>
-        </div>
-
         <!-- 贾而好儒与枕山环水 -->
         <div class="clan-module" id="merchant-fengshui">
           <h3 class="module-title">贾而好儒与枕山环水</h3>
@@ -695,7 +586,54 @@
   <script src="zongzu/js/modules/bloodline.js"></script>
   <script src="zongzu/js/modules/villageAnimation.js"></script>
   <script>
-    // 页面加载完成后初始化所有模块
+    // ── 横向滚动导航 ──────────────────────────────
+    var _currentModuleIndex = 0;
+
+    function scrollToModule(index) {
+      var container = document.querySelector('.clan-container');
+      var modules = document.querySelectorAll('.clan-module');
+      if (!container || !modules.length) return;
+      index = Math.max(0, Math.min(index, modules.length - 1));
+      _currentModuleIndex = index;
+      var target = modules[index];
+      container.scrollTo({ left: target.offsetLeft, behavior: 'smooth' });
+      document.querySelectorAll('.nav-dot').forEach(function(dot, i) {
+        dot.classList.toggle('active', i === index);
+      });
+    }
+
+    function scrollModules(dir) {
+      scrollToModule(_currentModuleIndex + dir);
+    }
+
+    // ── 模块可见性 ────────────────────────────────
+    document.addEventListener('DOMContentLoaded', function() {
+      // 立即显示所有模块（horizontal scroll — no vertical IntersectionObserver needed）
+      document.querySelectorAll('.clan-module').forEach(function(m) {
+        m.classList.add('visible');
+      });
+
+      // Sync nav dots on horizontal scroll
+      var container = document.querySelector('.clan-container');
+      if (container) {
+        container.addEventListener('scroll', function() {
+          var modules = document.querySelectorAll('.clan-module');
+          var scrollLeft = container.scrollLeft;
+          var closest = 0;
+          var minDist = Infinity;
+          modules.forEach(function(m, i) {
+            var dist = Math.abs(m.offsetLeft - scrollLeft);
+            if (dist < minDist) { minDist = dist; closest = i; }
+          });
+          _currentModuleIndex = closest;
+          document.querySelectorAll('.nav-dot').forEach(function(dot, i) {
+            dot.classList.toggle('active', i === closest);
+          });
+        });
+      }
+    });
+
+    // ── 页面加载完成后初始化所有模块 ──────────────
     window.addEventListener('load', function() {
       console.log('页面加载完成，初始化所有模块');
       // 确保血脉延绵模块初始化
@@ -1435,17 +1373,6 @@
       });
     });
 
-    // 音效控制
-    document.getElementById('soundControl').addEventListener('click', function() {
-      const icon = this.textContent;
-      if (icon === '🔊') {
-        this.textContent = '🔇';
-        // 关闭音效
-      } else {
-        this.textContent = '🔊';
-        // 开启音效
-      }
-    });
 
     // 卷轴展开/收起功能
     function toggleScroll() {
@@ -2456,6 +2383,113 @@
 
       // 初始化层级显示
       switchLayer(1);
+    });
+  </script>
+
+  <!-- ===== 弹窗（置于body层，避免clan-module的will-change创建新层叠上下文） ===== -->
+
+  <!-- 名人详情弹窗 -->
+  <div class="person-modal" id="personModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(20,15,10,0.72); backdrop-filter:blur(4px); justify-content:center; align-items:center;">
+    <div class="modal-content" style="background:linear-gradient(160deg,#fdf8f2,#f5ede0); max-width:700px; width:90%; max-height:82vh; overflow-y:auto; border-radius:14px; position:relative; box-shadow:0 20px 60px rgba(0,0,0,0.4); border:1px solid rgba(139,69,19,0.25); padding:0;">
+      <button class="close-modal" style="position:absolute; top:14px; right:16px; background:none; border:none; font-size:1.6rem; color:#8B4513; cursor:pointer; line-height:1; z-index:1; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:50%; transition:background 0.2s;">×</button>
+      <div class="modal-header" style="padding:24px 28px 16px; border-bottom:1px solid rgba(139,69,19,0.18);">
+        <h3 id="modalTitle" style="font-family:'Ma Shan Zheng',cursive; color:#4a3d2e; margin:0; font-size:1.4rem; letter-spacing:2px;">名人详情</h3>
+      </div>
+      <div class="modal-body" style="padding:20px 28px; display:flex; gap:20px; align-items:flex-start;">
+        <div class="modal-image" style="flex:0 0 160px; height:160px; border-radius:8px; overflow:hidden; border:1px solid rgba(139,69,19,0.2);">
+          <img id="modalImage" src="" alt="名人肖像" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+        <div class="modal-text" style="flex:1; min-width:0;">
+          <p id="modalText" style="font-family:'Noto Serif SC',serif; font-size:0.88rem; line-height:1.85; color:#4a3d2e; margin:0;"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 文化传承详情弹窗 -->
+  <div class="inheritance-modal" id="inheritanceModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(20,15,10,0.72); backdrop-filter:blur(4px); justify-content:center; align-items:center;">
+    <div class="modal-content" style="background:linear-gradient(160deg,#fdf8f2,#f5ede0); max-width:700px; width:90%; max-height:82vh; overflow-y:auto; border-radius:14px; position:relative; box-shadow:0 20px 60px rgba(0,0,0,0.4); border:1px solid rgba(139,69,19,0.25); padding:0;">
+      <button class="close-modal" style="position:absolute; top:14px; right:16px; background:none; border:none; font-size:1.6rem; color:#8B4513; cursor:pointer; line-height:1; z-index:1; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:50%; transition:background 0.2s;">×</button>
+      <div class="modal-header" style="padding:24px 28px 16px; border-bottom:1px solid rgba(139,69,19,0.18);">
+        <h3 id="inheritanceModalTitle" style="font-family:'Ma Shan Zheng',cursive; color:#4a3d2e; margin:0; font-size:1.4rem; letter-spacing:2px;">文化传承详情</h3>
+      </div>
+      <div class="modal-body" style="padding:20px 28px; display:flex; gap:20px; align-items:flex-start;">
+        <div class="modal-image" style="flex:0 0 160px; height:160px; border-radius:8px; overflow:hidden; border:1px solid rgba(139,69,19,0.2);">
+          <img id="inheritanceModalImage" src="" alt="文化传承" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+        <div class="modal-text" style="flex:1; min-width:0;">
+          <p id="inheritanceModalText" style="font-family:'Noto Serif SC',serif; font-size:0.88rem; line-height:1.85; color:#4a3d2e; margin:0;"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 家风族规卷轴弹窗 -->
+  <div id="scrollModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(20,15,10,0.75); backdrop-filter:blur(4px); justify-content:center; align-items:center;">
+    <div style="background:linear-gradient(to bottom,#f5f0e8,#faf6f0); width:96%; max-width:980px; max-height:96vh; overflow:hidden; border-radius:14px; position:relative; padding:28px 20px 16px; border:2px solid rgba(139,69,19,0.28); box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+      <button onclick="closeScrollModal()" style="position:absolute; top:10px; right:14px; background:rgba(139,69,19,0.08); border:1px solid rgba(139,69,19,0.2); font-size:1.4rem; color:#8B4513; cursor:pointer; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:background 0.2s; line-height:1;">×</button>
+      <h3 style="text-align:center; font-family:'Ma Shan Zheng',cursive; color:#4a3d2e; font-size:1.5rem; margin:0 0 14px; letter-spacing:4px;">家风族规卷轴</h3>
+      <div class="scroll-container" style="margin:0;">
+        <div class="scroll-pole pole-left"><div class="pole-cap"></div><div class="pole-base"></div></div>
+        <div class="scroll-paper" id="genealogyScrollPaper">
+          <div class="scroll-seal">汪氏家训</div>
+          <div class="scroll-content-inner">
+            <div class="scroll-column">
+              <p class="rule-title">第一款 孝父母</p>
+              <p>父母养育之恩，昊天罔极。为人子女者，当尽孝道，晨昏定省，冬温夏凊，使父母安享天伦之乐。父母在，不远游，游必有方。父母之年，不可不知也，一则以喜，一则以惧。</p>
+              <p class="rule-title">第二款 和兄弟</p>
+              <p>兄弟本是同根生，当和睦相处，互敬互爱，患难与共，勿因小利而伤手足之情。兄友弟恭，长幼有序，家族方能兴旺。</p>
+              <p class="rule-title">第三款 睦宗族</p>
+              <p>宗族一脉相承，当团结互助，守望相助，共荣共辱，维护宗族声誉。宗族事务，当群策群力，共同参与，共建和谐宗族。</p>
+            </div>
+            <div class="scroll-column">
+              <p class="rule-title">第四款 勤职业</p>
+              <p>业精于勤，荒于嬉。无论士农工商，当勤奋敬业，精益求精，创造家业。职业无贵贱，敬业则崇高，懒惰则可耻。</p>
+              <p class="rule-title">第五款 崇节俭</p>
+              <p>俭以养德，奢则败家。当厉行节约，反对浪费，量入为出，积累家业。一粥一饭，当思来之不易；半丝半缕，恒念物力维艰。</p>
+              <p class="rule-title">第六款 严教训</p>
+              <p>子女教育，关系家族兴衰。当严格管教，导之以正，培养良好品德。因材施教，循序渐进，不可溺爱，不可苛责，使子女成为有用之才。</p>
+            </div>
+            <div class="scroll-column">
+              <p class="rule-title">第七款 禁赌博</p>
+              <p>赌博害人害己，败家丧志。当严禁赌博，远离恶习，保持清白家风。赌博之人，轻则倾家荡产，重则家破人亡，不可不戒。</p>
+              <p class="rule-title">第八款 慎祭奠</p>
+              <p>祖先祭祀，慎终追远。当恭敬虔诚，按时祭扫，传承家族文化。祭祀之时，当心怀敬畏，至诚至敬，表达对祖先的追思之情。</p>
+              <p class="rule-title">第九款 重教育</p>
+              <p>教育为本，知识为宝。当重视子女教育，不惜重金，培养人才。万般皆下品，唯有读书高，读书则明理，明理则修身。</p>
+            </div>
+          </div>
+          <div class="scroll-footer">
+            <div class="scroll-footer-line"></div>
+            <div class="scroll-footer-text">大清乾隆年间 汪氏宗族立</div>
+          </div>
+        </div>
+        <div class="scroll-pole pole-right"><div class="pole-cap"></div><div class="pole-base"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openScrollModal() {
+      const m = document.getElementById('scrollModal');
+      m.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      const paper = document.getElementById('genealogyScrollPaper');
+      if (paper) {
+        paper.classList.remove('expanded');
+        requestAnimationFrame(() => requestAnimationFrame(() => paper.classList.add('expanded')));
+      }
+    }
+    function closeScrollModal() {
+      const m = document.getElementById('scrollModal');
+      m.style.display = 'none';
+      document.body.style.overflow = '';
+      const paper = document.getElementById('genealogyScrollPaper');
+      if (paper) paper.classList.remove('expanded');
+    }
+    document.addEventListener('click', function(e) {
+      const modal = document.getElementById('scrollModal');
+      if (e.target === modal) closeScrollModal();
     });
   </script>
 </body>
