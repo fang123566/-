@@ -37,7 +37,7 @@
 
 body {
   font-family: var(--font-body);
-  background: #1e180e;
+  background: rgba(30, 24, 14, 0.18);
   color: var(--primary-text);
   line-height: 1.8;
   overflow-x: hidden;
