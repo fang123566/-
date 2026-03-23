@@ -1270,7 +1270,20 @@ function getGridLayout(count) {
          [3,3,2,2],[5,5,2,2],
          [1,2,3,3],[3,4,3,3],[5,5,3,3] ] },
   };
-  return layouts[Math.min(count, 9)] || layouts[9];
+  if (count <= 9) return layouts[count] || layouts[9];
+
+  // 超过9张：自动均匀网格，每行约4-7列
+  const numCols = count <= 12 ? 4 : count <= 16 ? 4 : count <= 20 ? 5 : 7;
+  const numRows = Math.ceil(count / numCols);
+  const cols = Array(numCols).fill('1fr').join(' ');
+  const rows = Array(numRows).fill('1fr').join(' ');
+  const spans = [];
+  for (let i = 0; i < count; i++) {
+    const c = (i % numCols) + 1;
+    const r = Math.floor(i / numCols) + 1;
+    spans.push([c, c, r, r]);
+  }
+  return { cols, rows, spans, autoHeight: numRows };
 }
 
 let cloudHighlightActive = false;
@@ -1409,6 +1422,12 @@ function buildCloudItems(container, data, isHighlight) {
   const layout = getGridLayout(count);
   container.style.gridTemplateColumns = layout.cols;
   container.style.gridTemplateRows   = layout.rows;
+  // 超过9张时按行数动态扩高，每行约80px
+  if (layout.autoHeight) {
+    container.style.height = `${layout.autoHeight * 82 + (layout.autoHeight - 1) * 5}px`;
+  } else {
+    container.style.height = '';
+  }
   data.forEach((item, i) => {
     const span = layout.spans[i] || [1,1,1,1];
     const [colStart, colEnd, rowStart, rowEnd] = span;

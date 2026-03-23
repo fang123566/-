@@ -167,52 +167,56 @@ body{font-family:'Noto Serif SC',serif;background:#ede8dc;color:#1a1a1a;}
 .p2-header{display:flex;align-items:center;gap:16px;flex-shrink:0;}
 .p2-header-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(201,168,76,.3),transparent);}
 .p2-header-deco{font-family:'Ma Shan Zheng',cursive;font-size:2.2rem;color:rgba(201,168,76,.14);line-height:1;}
-.p2-top{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);flex:1;min-height:0;}
-.cp-card{padding:20px 22px;overflow-y:auto;display:flex;flex-direction:column;}
-.cp-flag{display:inline-flex;align-items:center;gap:6px;font-family:'Cormorant Garamond',serif;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);border-bottom:1px solid rgba(201,168,76,.3);padding-bottom:5px;margin-bottom:10px;flex-shrink:0;}
-.cp-h3{font-family:'Ma Shan Zheng',cursive;font-size:1.4rem;color:#1a1a1a;margin-bottom:2px;flex-shrink:0;}
-.cp-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:.74rem;color:#aaa;margin-bottom:12px;flex-shrink:0;}
+.p2-top{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);flex:3;min-height:0;}
+.cp-card{padding:13px 16px 10px;overflow:hidden;display:flex;flex-direction:column;}
+.cp-flag{display:inline-flex;align-items:center;gap:6px;font-family:'Cormorant Garamond',serif;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);border-bottom:1px solid rgba(201,168,76,.3);padding-bottom:4px;margin-bottom:7px;flex-shrink:0;}
+.cp-h3{font-family:'Ma Shan Zheng',cursive;font-size:1.15rem;color:#1a1a1a;margin-bottom:0;flex-shrink:0;}
+.cp-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:.68rem;color:#aaa;margin-bottom:7px;flex-shrink:0;}
 
-/* ── 图片区放大 & 真实图片 ── */
+/* ── 图片区：flex:1 动态填充，不固定高度 ── */
 .cp-vis{
-  width:100%;height:175px;border-radius:12px;overflow:hidden;
-  position:relative;margin-bottom:13px;flex-shrink:0;
+  width:100%;flex:1;min-height:140px;border-radius:10px;overflow:hidden;
+  position:relative;margin-bottom:8px;flex-shrink:1;
   box-shadow:0 4px 18px rgba(0,0,0,.14);
 }
 .cp-vfill{width:100%;height:100%;background-size:cover;background-position:center;transition:transform .55s;}
 .cp-card:hover .cp-vfill{transform:scale(1.04);}
 .cp-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.68));padding:28px 14px 10px;color:#fff;font-family:'Cormorant Garamond',serif;font-size:.76rem;font-style:italic;letter-spacing:.04em;}
 
-/* 徽派天井真实图片 */
+/* 徽派天井占位图 — 模拟天井仰视效果（深色墙框 + 天空中心）
+   请将下方 background-image 第一项替换为真实图片 url() */
 .cp-vfill-huizhou{
   background-image:
-    url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Xidi_paysage.jpg/1280px-Xidi_paysage.jpg'),
-    url('https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Anhui_Hongcun_Yuehe_tang_roof.jpg/1280px-Anhui_Hongcun_Yuehe_tang_roof.jpg'),
-    linear-gradient(135deg,#1a1a1a 0%,#3a3a3a 40%,#888 100%);
+    /* ↓ 替换为实际图片：url('your-huizhou-image.jpg') */
+    linear-gradient(to bottom,  #1c1a18 0% 20%, transparent 20% 80%, #1c1a18 80% 100%),
+    linear-gradient(to right,   #1c1a18 0% 12%, transparent 12% 88%, #1c1a18 88% 100%),
+    linear-gradient(170deg, #b0c8da 0%, #c4d8e6 35%, #dce8ef 60%, #e8ede6 100%);
   background-size:cover;background-position:center;
 }
-/* 罗马中庭真实图片 */
+/* 罗马中庭占位图 — 模拟中庭视角（天空顶部 + 暖石柱两侧 + 暖色地面）
+   请将下方 background-image 第一项替换为真实图片 url() */
 .cp-vfill-roman{
   background-image:
-    url('https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Pompeii_-_Casa_del_Fauno_-_Impluvium.jpg/1280px-Pompeii_-_Casa_del_Fauno_-_Impluvium.jpg'),
-    url('https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Pompeii_forum.jpg/1280px-Pompeii_forum.jpg'),
-    linear-gradient(135deg,#f5e6c8 0%,#c8843a 60%,#7a4a20 100%);
+    /* ↓ 替换为实际图片：url('your-roman-image.jpg') */
+    linear-gradient(to bottom,  #78b0d8 0% 22%, transparent 22% 100%),
+    linear-gradient(to right,   #c8a458 0% 13%, transparent 13% 87%, #c8a458 87% 100%),
+    linear-gradient(160deg, #f0e4c8 0%, #e8cc80 40%, #c89840 75%, #a87030 100%);
   background-size:cover;background-position:center;
 }
 
-.cp-body{font-size:.77rem;color:#444;line-height:1.82;flex:1;}
-.tag-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:11px;flex-shrink:0;}
+.cp-body{font-size:.72rem;color:#444;line-height:1.6;flex:0 0 auto;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;line-clamp:3;overflow:hidden;}
+.tag-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;flex-shrink:0;}
 .tag{padding:3px 10px;border:1px solid rgba(201,168,76,.32);border-radius:14px;font-family:'Cormorant Garamond',serif;font-size:.67rem;color:#777;}
 .deco-divider{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:.64rem;color:rgba(201,168,76,.5);letter-spacing:.3em;text-transform:uppercase;flex-shrink:0;}
 .deco-divider::before,.deco-divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.2),transparent);}
-.p2-bot{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap);flex:1;min-height:0;}
-.feat-card{padding:18px 17px;position:relative;overflow:hidden;overflow-y:auto;transition:transform .28s,box-shadow .28s;display:flex;flex-direction:column;}
+.p2-bot{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap);flex:2;min-height:0;}
+.feat-card{padding:11px 14px;position:relative;overflow:hidden;overflow-y:auto;transition:transform .28s,box-shadow .28s;display:flex;flex-direction:column;}
 .feat-card:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(0,0,0,.10);}
 .feat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:linear-gradient(90deg,var(--gold),var(--gold-lt));}
-.fc-no{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:rgba(201,168,76,.09);line-height:1;margin-bottom:4px;flex-shrink:0;}
-.fc-h4{font-family:'Ma Shan Zheng',cursive;font-size:.98rem;color:#1a1a1a;margin-bottom:2px;flex-shrink:0;}
-.fc-en{font-family:'Cormorant Garamond',serif;font-size:.66rem;color:#bbb;font-style:italic;margin-bottom:10px;display:block;flex-shrink:0;}
-.fr{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start;}
+.fc-no{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:rgba(201,168,76,.09);line-height:1;margin-bottom:1px;flex-shrink:0;}
+.fc-h4{font-family:'Ma Shan Zheng',cursive;font-size:.95rem;color:#1a1a1a;margin-bottom:1px;flex-shrink:0;}
+.fc-en{font-family:'Cormorant Garamond',serif;font-size:.64rem;color:#bbb;font-style:italic;margin-bottom:7px;display:block;flex-shrink:0;}
+.fr{display:flex;gap:8px;margin-bottom:5px;align-items:flex-start;}
 .flabel{flex-shrink:0;font-family:'Cormorant Garamond',serif;font-size:.64rem;color:#fff;background:var(--red);padding:2px 7px;border-radius:3px;margin-top:2px;letter-spacing:.04em;}
 .flabel.w{background:#2c3e50;}
 .ftext{font-size:.74rem;color:#444;line-height:1.7;}
@@ -1277,11 +1281,25 @@ function initLeafletMap() {
   });
 
   // CartoDB Voyager — elegant, low-saturation tiles
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  const baseLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
     attribution: '© <a href="https://carto.com/">CARTO</a> © <a href="https://www.openstreetmap.org/copyright">OSM</a>',
     subdomains: 'abcd',
     maxZoom: 20,
   }).addTo(leafletMap);
+
+  // 自动降级：CartoDB 瓦片失败超过阈值时切换为 OSM 备用源
+  let _tileErrCount = 0, _usingFallback = false;
+  baseLayer.on('tileerror', function() {
+    _tileErrCount++;
+    if (_tileErrCount > 5 && !_usingFallback) {
+      _usingFallback = true;
+      baseLayer.remove();
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19,
+      }).addTo(leafletMap);
+    }
+  });
 
   // Build markers
   SITES.forEach(([lat, lng, color, culture, nameZH, nameEN]) => {
