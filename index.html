@@ -5,13 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>解码徽派民居 | 宏村·空间密码与文化传承</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" />
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <link href="https://fonts.loli.net/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js" defer></script>
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
   <link rel="stylesheet" href="styles.css" />
 
   <style>
@@ -825,6 +823,21 @@
   <!-- 原版脚本 -->
   <script src="app.js"></script>
   <script src="app-knowledge.js"></script>
+
+  <script>
+  (function(){
+    /* 加载屏幕安全兜底：最多等待3秒，无论如何强制隐藏 */
+    function hideLoader(){
+      var s=document.getElementById('loadingScreen');
+      if(s&&!s.classList.contains('hidden')){
+        s.classList.add('hidden');
+        setTimeout(function(){s.style.display='none';},600);
+      }
+    }
+    window.addEventListener('load',function(){setTimeout(hideLoader,800);});
+    setTimeout(hideLoader,3000);
+  })();
+  </script>
 
   <script>
   (function(){

@@ -54,14 +54,19 @@ dirsToCopy.forEach(dir => {
   }
 });
 
-// 修复路径：将所有 HTML/JS/CSS 文件中的反斜杠路径替换为正斜杠（兼容 Linux/Vercel）
+// 修复路径：仅替换已知目录名后的反斜杠为正斜杠（兼容 Linux/Vercel）
+// 只处理 素材\ zongzu\ public\ 等实际文件路径，不触碰 \n \t 等 JS 转义字符
 function fixPathsInFile(filePath) {
   try {
     let content = fs.readFileSync(filePath, 'utf8');
-    // 将 素材\ 和 zongzu\ 开头的路径反斜杠替换为正斜杠
-    const fixed = content.replace(/(['"`])((?:[^'"`]*\\)+[^'"`]*)\1/g, (match, quote, p) => {
-      return quote + p.replace(/\\/g, '/') + quote;
-    });
+    const fixed = content
+      .replace(/素材\\/g, '素材/')
+      .replace(/zongzu\\/g, 'zongzu/')
+      .replace(/public\\/g, 'public/')
+      .replace(/三雕\\/g, '三雕/')
+      .replace(/宗族\\/g, '宗族/')
+      .replace(/天井与保护补充素材\\/g, '天井与保护补充素材/')
+      .replace(/马头墙页面\\/g, '马头墙页面/');
     if (fixed !== content) {
       fs.writeFileSync(filePath, fixed, 'utf8');
       console.log('Fixed paths in:', path.relative(distDir, filePath));
