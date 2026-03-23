@@ -1,1315 +1,1662 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>跨文化对话 | 解码徽派民居</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Ma+Shan+Zheng&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
-  <!-- ✅ 使用 unpkg 作为主 CDN，jsDelivr 作为备用，移除百度地图 -->
-<script>
-  // 动态加载 ECharts，支持多 CDN 备用
-  (function loadECharts() {
-    const cdns = [
-      'https://unpkg.com/echarts@5.5.1/dist/echarts.min.js',
-      'https://cdn.staticfile.org/echarts/5.5.1/echarts.min.js',
-      'https://cdn.bootcdn.net/ajax/libs/echarts/5.5.1/echarts.min.js'
-    ];
-    let idx = 0;
-    function tryLoad() {
-      if (idx >= cdns.length) {
-        console.error('所有 ECharts CDN 均失败');
-        return;
-      }
-      const s = document.createElement('script');
-      s.src = cdns[idx++];
-      s.onerror = tryLoad; // 失败自动换下一个
-      s.onload = () => {
-        // ECharts 加载成功后，触发自定义事件通知页面初始化图表
-        document.dispatchEvent(new Event('echartsReady'));
-      };
-      document.head.appendChild(s);
-    }
-    tryLoad();
-  })();
-</script>
-  <!-- 替换原有bmap.min.js的引入代码 -->
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>跨文化对话 | 解码徽派民居</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;700&family=Ma+Shan+Zheng&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
 
-  <style>
-    /* ==============================
-       CROSS-CULTURAL PAGE — GLOBALS
-    ============================== */
-    :root {
-      --ink: #1a1a2e;
-      --gold: #c9a84c;
-      --gold-lt: #e8cc7a;
-      --red: #8b1a1a;
-      --cream: rgba(255,252,240,0.88);
-      --glass: rgba(255,255,255,0.12);
-      --glass-border: rgba(255,255,255,0.25);
-      --panel: rgba(255,252,240,0.82);
-    }
+<!-- ── Leaflet.js ── -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
-    /* ─── Layout ─────────────────── */
-    .kw-page {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 0 30px 100px;
-      position: relative;
-      z-index: 10;
-    }
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<style>
+:root{
+  --ink:#1a1a2e; --gold:#c9a84c; --gold-lt:#e8cc7a; --red:#8b1a1a;
+  --cream:rgba(255,252,240,0.96); --panel:rgba(255,252,240,0.94);
+  --gb:rgba(201,168,76,0.18); --shadow:0 4px 20px rgba(0,0,0,0.07);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.12);
+  --th:48px; --r:14px;
+  --top-pad:76px; --side-pad:28px; --gap:13px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Noto Serif SC',serif;background:#ede8dc;color:#1a1a1a;}
 
-    /* ─── Hero ───────────────────── */
-    .kw-hero {
-      text-align: center;
-      padding: 80px 0 60px;
-      position: relative;
-    }
-    .kw-hero-tag {
-      display: inline-block;
-      letter-spacing: .35em;
-      font-size: .75rem;
-      color: var(--gold);
-      font-family: 'Cormorant Garamond', serif;
-      text-transform: uppercase;
-      border: 1px solid var(--gold);
-      padding: 4px 18px;
-      margin-bottom: 22px;
-      animation: fadeUp .8s ease both;
-    }
-    .kw-hero-zh {
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: clamp(2.4rem, 6vw, 4rem);
-      color: #1a1a1a;
-      line-height: 1.2;
-      animation: fadeUp .9s .1s ease both;
-    }
-    .kw-hero-en {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(1rem, 2.5vw, 1.55rem);
-      font-style: italic;
-      color: #555;
-      letter-spacing: .08em;
-      margin-top: 8px;
-      animation: fadeUp 1s .2s ease both;
-    }
-    .kw-hero-line {
-      width: 80px; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-      margin: 22px auto 0;
-      animation: scaleX 1s .4s ease both;
-      transform-origin: center;
-    }
+.bg-wash{position:fixed;inset:0;z-index:-1;background:linear-gradient(158deg,#f5f0e6 0%,#e8dece 100%);}
+.bg-wash::after{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(201,168,76,.05) 1px,transparent 1px);background-size:30px 30px;}
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes scaleX {
-      from { transform: scaleX(0); opacity: 0; }
-      to   { transform: scaleX(1); opacity: 1; }
-    }
+/* ── TOP-RIGHT CIRCLE NAV ── */
+#circleNav{position:fixed;top:1.1rem;right:1.4rem;display:flex;flex-direction:row;gap:.42rem;z-index:1000;}
+.circle-btn{width:50px;height:50px;border-radius:50%;background:rgba(245,240,232,0.94);backdrop-filter:blur(10px);border:1.5px solid rgba(201,168,76,0.28);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;text-decoration:none;color:#666;transition:all .22s;box-shadow:var(--shadow);}
+.circle-btn svg{width:17px;height:17px;stroke:currentColor;stroke-width:1.8;fill:none;}
+.circle-btn span{font-size:.46rem;font-family:'Noto Serif SC',serif;white-space:nowrap;color:inherit;}
+.circle-btn:hover,.circle-btn.active{background:var(--gold);color:#fff;border-color:var(--gold);box-shadow:0 4px 18px rgba(201,168,76,.45);}
 
-    /* ─── Section header ─────────── */
-    .kw-section-header {
-      display: flex;
-      align-items: flex-end;
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-    .kw-section-no {
-      font-family: 'Playfair Display', serif;
-      font-size: 4rem;
-      line-height: 1;
-      color: rgba(201,168,76,.18);
-      font-weight: 900;
-      flex-shrink: 0;
-      user-select: none;
-    }
-    .kw-section-titles { flex: 1; }
-    .kw-section-zh {
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: 1.7rem;
-      color: #222;
-      line-height: 1;
-    }
-    .kw-section-en {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: .95rem;
-      color: #888;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      margin-top: 3px;
-    }
-    .kw-section-rule {
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(90deg, rgba(201,168,76,.5), transparent);
-      margin-bottom: 10px;
-    }
+/* ── TOP-LEFT ── */
+#topLeft{position:fixed;top:1.1rem;left:1.4rem;z-index:1000;display:flex;align-items:center;gap:8px;}
+.brand-pill{background:rgba(245,240,232,0.94);backdrop-filter:blur(10px);border:1.5px solid rgba(201,168,76,0.22);border-radius:24px;padding:6px 16px 6px 10px;display:flex;align-items:center;gap:9px;box-shadow:var(--shadow);}
+.brand-icon{width:32px;height:32px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center;font-family:'Ma Shan Zheng',cursive;font-size:.82rem;color:var(--gold);}
+.brand-zh{font-family:'Ma Shan Zheng',cursive;font-size:.88rem;color:#1a1a1a;}
+.brand-en{font-family:'Cormorant Garamond',serif;font-size:.64rem;color:#aaa;font-style:italic;letter-spacing:.06em;}
+.lang-grp{display:flex;gap:4px;}
+.lang-btn{padding:6px 13px;border-radius:20px;background:rgba(245,240,232,0.94);backdrop-filter:blur(10px);border:1.5px solid rgba(201,168,76,0.26);font-family:'Cormorant Garamond',serif;font-size:.76rem;letter-spacing:.1em;color:#777;cursor:pointer;transition:all .22s;box-shadow:var(--shadow);}
+.lang-btn:hover{background:var(--gold);color:#fff;border-color:var(--gold);}
+.lang-btn.lang-active{background:var(--red);color:#fff;border-color:var(--red);}
 
-    /* ─── Glass card ─────────────── */
-    .glass-card {
-      background: var(--panel);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      box-shadow: 0 8px 40px rgba(0,0,0,.07), inset 0 1px 0 rgba(255,255,255,.6);
-    }
+/* ── TAB BAR ── */
+#tabBar{position:fixed;bottom:0;left:0;right:0;height:var(--th);background:rgba(26,26,46,0.97);backdrop-filter:blur(14px);border-top:1px solid rgba(201,168,76,.18);display:flex;align-items:center;justify-content:center;gap:0;z-index:900;}
+.tb{padding:0 26px;height:var(--th);border:none;background:transparent;font-family:'Noto Serif SC',serif;font-size:.73rem;color:rgba(245,240,232,.42);cursor:pointer;transition:all .22s;display:flex;align-items:center;gap:7px;position:relative;border-top:2.5px solid transparent;letter-spacing:.04em;}
+.tb .tno{font-family:'Playfair Display',serif;font-size:.65rem;font-weight:700;color:rgba(201,168,76,.28);transition:color .22s;}
+.tb:hover{color:rgba(245,240,232,.78);}
+.tb.active{color:var(--gold-lt);border-top-color:var(--gold);}
+.tb.active .tno{color:var(--gold);}
+.tb-sep{width:1px;height:20px;background:rgba(201,168,76,.1);}
 
-    /* ==============================
-       SECTION 1 — RADAR COMPARISON
-    ============================== */
-    .radar-grid {
-      display: grid;
-      grid-template-columns: 1fr 380px;
-      gap: 28px;
-      align-items: start;
-    }
-    #radarChart { width: 100%; height: 440px; }
+/* ── APP ── */
+#app{position:fixed;top:0;left:0;right:0;bottom:var(--th);overflow:hidden;}
 
-    .radar-legend { padding: 28px; }
-    .radar-legend h4 {
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: 1.1rem;
-      color: #333;
-      margin-bottom: 18px;
-    }
-    .legend-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 16px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid rgba(0,0,0,.06);
-      cursor: pointer;
-      transition: background .2s;
-      border-radius: 8px;
-      padding: 10px;
-    }
-    .legend-item:hover { background: rgba(201,168,76,.08); }
-    .legend-dot {
-      width: 12px; height: 12px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      margin-top: 4px;
-    }
-    .legend-item-zh {
-      font-family: 'Noto Serif SC', serif;
-      font-size: .9rem;
-      color: #222;
-      font-weight: 700;
-    }
-    .legend-item-en {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: .82rem;
-      color: #888;
-      font-style: italic;
-    }
-    .legend-item-desc {
-      font-family: 'Noto Serif SC', serif;
-      font-size: .78rem;
-      color: #666;
-      margin-top: 4px;
-      line-height: 1.6;
-    }
+/* ── PANELS ── */
+.panel{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .38s ease;overflow:hidden;padding:var(--top-pad) var(--side-pad) 14px var(--side-pad);display:flex;flex-direction:column;gap:var(--gap);}
+.panel.active{opacity:1;pointer-events:all;}
+*::-webkit-scrollbar{width:3px;height:3px;}
+*::-webkit-scrollbar-thumb{background:rgba(201,168,76,.25);border-radius:2px;}
 
-    /* ==============================
-       SECTION 2 — COMPARE SLIDER
-    ============================== */
-    .compare-wrap {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 28px;
-      margin-bottom: 28px;
-    }
-    .compare-panel { padding: 28px; }
-    .compare-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: .8rem;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      color: var(--gold);
-      border-bottom: 1px solid var(--gold);
-      padding-bottom: 4px;
-      margin-bottom: 14px;
-    }
-    .compare-panel h3 {
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: 1.6rem;
-      color: #1a1a1a;
-      margin-bottom: 4px;
-    }
-    .compare-panel .en-sub {
-      font-family: 'Playfair Display', serif;
-      font-style: italic;
-      font-size: .95rem;
-      color: #888;
-      margin-bottom: 16px;
-    }
-    .compare-panel p {
-      font-family: 'Noto Serif SC', serif;
-      font-size: .88rem;
-      color: #444;
-      line-height: 1.9;
-    }
-    .compare-visual {
-      width: 100%;
-      height: 220px;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      background: #ddd;
-      overflow: hidden;
-      position: relative;
-    }
-    .compare-visual-fill {
-      width: 100%; height: 100%;
-      background-size: cover;
-      background-position: center;
-      transition: transform .6s ease;
-    }
-    .compare-panel:hover .compare-visual-fill { transform: scale(1.04); }
-    .compare-visual-overlay {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      background: linear-gradient(transparent, rgba(0,0,0,.55));
-      padding: 24px 14px 12px;
-      color: #fff;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: .9rem;
-      font-style: italic;
-      letter-spacing: .06em;
-    }
+.card{background:var(--panel);border:1.5px solid var(--gb);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;}
+.card-dark{background:linear-gradient(160deg,rgba(22,18,42,.97),rgba(14,12,26,.98));border:1.5px solid rgba(201,168,76,.18);border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,.28);}
+.sec-eyebrow{font-family:'Cormorant Garamond',serif;font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+.sec-title-zh{font-family:'Ma Shan Zheng',cursive;font-size:1.25rem;color:#1a1a1a;line-height:1.25;}
+.sec-title-en{font-family:'Cormorant Garamond',serif;font-size:.74rem;color:#aaa;font-style:italic;letter-spacing:.1em;}
+.gold-rule{width:44px;height:2px;background:linear-gradient(90deg,var(--gold),transparent);margin:7px 0 11px;}
 
-    /* Tag pills */
-    .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-    .tag {
-      padding: 3px 12px;
-      border: 1px solid rgba(201,168,76,.5);
-      border-radius: 20px;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: .78rem;
-      color: #666;
-      letter-spacing: .05em;
-    }
+/* ═══════════════════════════════════════
+   PANEL 1 — RADAR
+═══════════════════════════════════════ */
+#p1{display:flex;flex-direction:column;gap:var(--gap);}
 
-    /* ─── Three feature cards ─────── */
-    .feature-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-    .feat-card {
-      padding: 24px 20px;
-      position: relative;
-      overflow: hidden;
-      transition: transform .3s, box-shadow .3s;
-      cursor: default;
-    }
-    .feat-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,.12); }
-    .feat-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--gold), var(--gold-lt));
-    }
-    .feat-card-no {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.5rem;
-      font-weight: 900;
-      color: rgba(201,168,76,.15);
-      line-height: 1;
-      margin-bottom: 10px;
-    }
-    .feat-card h4 {
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: 1.1rem;
-      color: #1a1a1a;
-      margin-bottom: 2px;
-    }
-    .feat-card .feat-en {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: .8rem;
-      color: #aaa;
-      font-style: italic;
-      margin-bottom: 12px;
-      display: block;
-    }
-    .feat-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 8px;
-      align-items: flex-start;
-    }
-    .feat-label {
-      flex-shrink: 0;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: .75rem;
-      letter-spacing: .1em;
-      color: #fff;
-      background: var(--red);
-      padding: 2px 8px;
-      border-radius: 3px;
-      margin-top: 2px;
-    }
-    .feat-label.west { background: #2c3e50; }
-    .feat-text {
-      font-family: 'Noto Serif SC', serif;
-      font-size: .82rem;
-      color: #444;
-      line-height: 1.7;
-    }
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);border-radius:var(--r);overflow:hidden;border:1.5px solid var(--gb);box-shadow:var(--shadow);flex-shrink:0;}
+.stat-cell{background:var(--panel);padding:14px 12px;text-align:center;border-right:1.5px solid var(--gb);position:relative;overflow:hidden;}
+.stat-cell::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 60%,rgba(201,168,76,.04));pointer-events:none;}
+.stat-cell:last-child{border-right:none;}
+.stat-n{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:900;color:var(--gold);display:block;line-height:1.1;}
+.stat-l{font-size:.63rem;color:#666;margin-top:3px;line-height:1.4;}
 
-    /* ==============================
-       SECTION 3 — WORLD MAP
-    ============================== */
-    #worldMapChart { width: 100%; height: 460px; }
+.p1-main{display:grid;grid-template-columns:290px 1fr;gap:var(--gap);flex:1;min-height:0;}
 
-    .map-legend-row {
-      display: flex;
-      justify-content: center;
-      gap: 28px;
-      margin-top: 16px;
-      flex-wrap: wrap;
-    }
-    .map-leg {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: .85rem;
-      color: #555;
-    }
-    .map-leg-dot {
-      width: 12px; height: 12px;
-      border-radius: 50%;
-    }
+.legend-card{padding:18px 16px;overflow-y:auto;display:flex;flex-direction:column;}
+.legend-card h4{font-family:'Ma Shan Zheng',cursive;font-size:1.02rem;color:#333;margin-bottom:16px;display:flex;align-items:baseline;gap:7px;flex-shrink:0;}
+.legend-card h4 em{font-family:'Cormorant Garamond',serif;font-size:.65rem;color:#bbb;font-style:italic;font-weight:400;}
+.leg-item{display:flex;align-items:flex-start;gap:10px;padding:11px 12px;border-radius:10px;cursor:pointer;transition:all .2s;margin-bottom:8px;border:1.5px solid transparent;flex-shrink:0;}
+.leg-item:hover{background:rgba(201,168,76,.08);transform:translateX(5px);}
+.leg-item.selected{background:rgba(201,168,76,.14);border-color:var(--gold);}
+.leg-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.leg-zh{font-size:.85rem;font-weight:700;color:#222;}
+.leg-loc{font-family:'Cormorant Garamond',serif;font-size:.7rem;color:#bbb;font-style:italic;}
+.leg-desc{font-size:.72rem;color:#666;margin-top:4px;line-height:1.6;}
+.leg-quote{margin-top:auto;padding:12px 14px;background:linear-gradient(135deg,rgba(201,168,76,.06),rgba(201,168,76,.02));border:1px solid var(--gb);border-radius:10px;flex-shrink:0;}
+.leg-quote-zh{font-family:'Ma Shan Zheng',cursive;font-size:.85rem;color:#555;line-height:1.7;}
+.leg-quote-en{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.68rem;color:#aaa;margin-top:3px;}
 
-    /* ==============================
-       SECTION 4 — TIMELINE
-    ============================== */
-    #timelineChart { width: 100%; height: 360px; }
+/* ── RADAR RIGHT ── */
+.p1-right{
+  display:grid;
+  grid-template-columns:1fr 0px;
+  transition:grid-template-columns .45s cubic-bezier(.4,0,.2,1);
+  gap:var(--gap);min-height:0;
+}
+.p1-right.model-open{grid-template-columns:1fr 500px;}
+.radar-card{padding:20px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;flex:1;}
+.radar-title{font-family:'Ma Shan Zheng',cursive;font-size:1.0rem;color:#555;margin-bottom:8px;letter-spacing:.06em;text-align:center;flex-shrink:0;}
+.radar-card svg{flex:1;width:100%;min-height:0;}
+.radar-hint{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.7rem;color:#aaa;margin-top:8px;text-align:center;letter-spacing:.05em;flex-shrink:0;}
+.radar-scores{display:flex;gap:12px;margin-top:10px;flex-shrink:0;justify-content:center;flex-wrap:wrap;}
+.rs-item{display:flex;align-items:center;gap:6px;font-size:.66rem;color:#777;}
+.rs-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.ra-poly{stroke-width:2;cursor:pointer;transition:opacity .3s,stroke-width .3s;}
 
-    /* ==============================
-       SECTION 5 — BAR COMPARISON
-    ============================== */
-    #barChart { width: 100%; height: 340px; }
+/* 3D面板 */
+.model-panel{
+  overflow:hidden;display:flex;flex-direction:column;
+  opacity:0;transition:opacity .3s .1s;
+  min-width:0;
+}
+.p1-right.model-open .model-panel{opacity:1;}
+.model-inner{
+  padding:8px 8px;display:flex;flex-direction:column;gap:10px;height:100%;
+  background:linear-gradient(160deg,rgba(22,18,42,.97),rgba(14,12,26,.98));
+  border:1.5px solid rgba(201,168,76,.18);border-radius:var(--r);
+  box-shadow:0 8px 32px rgba(0,0,0,.28);
+}
+.mp-row1{display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0;}
+.mp-head{font-family:'Ma Shan Zheng',cursive;font-size:1.25rem;color:var(--gold-lt);line-height:1.2;}
+.mp-en{font-family:'Cormorant Garamond',serif;font-size:.66rem;color:rgba(201,168,76,.55);font-style:italic;letter-spacing:.08em;}
+.mp-close{
+  width:26px;height:26px;border-radius:50%;flex-shrink:0;
+  border:1px solid rgba(201,168,76,.3);background:rgba(201,168,76,.08);
+  color:rgba(201,168,76,.7);font-size:.7rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;
+}
+.mp-close:hover{background:var(--red);color:#fff;border-color:var(--red);}
+#threeCanvas{
+  width:100%;flex:1;min-height:180px;border-radius:10px;
+  background:linear-gradient(135deg,#0d0c1a,#1a1628);
+  border:1px solid rgba(201,168,76,.14);cursor:grab;display:block;
+  position:relative;
+}
+#threeCanvas:active{cursor:grabbing;}
+.mp-canvas-hint{
+  position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.45);color:rgba(245,240,232,.6);
+  font-size:.6rem;padding:2px 10px;border-radius:12px;
+  pointer-events:none;white-space:nowrap;
+}
+.mp-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex-shrink:0;}
+.mp-stat{padding:7px 10px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.12);border-radius:7px;}
+.mp-stat-n{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:900;color:var(--gold);}
+.mp-stat-l{font-size:.58rem;color:rgba(245,240,232,.38);margin-top:1px;}
+.mp-desc{font-size:.69rem;color:rgba(245,240,232,.62);line-height:1.75;font-family:'Noto Serif SC',serif;flex-shrink:0;}
+.mp-tags{display:flex;flex-wrap:wrap;gap:5px;flex-shrink:0;}
+.mp-tag{padding:3px 8px;border:1px solid rgba(201,168,76,.28);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:.63rem;color:rgba(201,168,76,.82);}
+.mp-hint{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.6rem;color:rgba(245,240,232,.2);text-align:center;flex-shrink:0;}
 
-    /* ==============================
-       SECTION 6 — SPACE PHILOSOPHY
-    ============================== */
-    .philosophy-grid {
-      display: grid;
-      grid-template-columns: 1fr 60px 1fr;
-      gap: 0;
-      align-items: center;
-    }
-    .phil-side { padding: 30px; }
-    .phil-title {
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: 1.5rem;
-      color: #1a1a1a;
-      margin-bottom: 4px;
-    }
-    .phil-en {
-      font-family: 'Playfair Display', serif;
-      font-style: italic;
-      font-size: .9rem;
-      color: #999;
-      margin-bottom: 20px;
-    }
-    .phil-item {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 14px;
-      align-items: flex-start;
-    }
-    .phil-icon {
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem;
-      flex-shrink: 0;
-    }
-    .phil-icon.cn { background: rgba(139,26,26,.12); color: var(--red); }
-    .phil-icon.we { background: rgba(44,62,80,.1); color: #2c3e50; }
-    .phil-item-body {}
-    .phil-item-zh { font-family: 'Noto Serif SC', serif; font-size: .88rem; color: #222; font-weight: 700; }
-    .phil-item-en { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: .82rem; color: #888; }
-    .phil-item-desc { font-family: 'Noto Serif SC', serif; font-size: .8rem; color: #555; line-height: 1.7; margin-top: 3px; }
+/* ═══════════════════════════════════════
+   PANEL 2 — COMPARE  (图片区加大)
+═══════════════════════════════════════ */
+#p2{display:flex;flex-direction:column;gap:var(--gap);}
+.p2-header{display:flex;align-items:center;gap:16px;flex-shrink:0;}
+.p2-header-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(201,168,76,.3),transparent);}
+.p2-header-deco{font-family:'Ma Shan Zheng',cursive;font-size:2.2rem;color:rgba(201,168,76,.14);line-height:1;}
+.p2-top{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);flex:1;min-height:0;}
+.cp-card{padding:20px 22px;overflow-y:auto;display:flex;flex-direction:column;}
+.cp-flag{display:inline-flex;align-items:center;gap:6px;font-family:'Cormorant Garamond',serif;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);border-bottom:1px solid rgba(201,168,76,.3);padding-bottom:5px;margin-bottom:10px;flex-shrink:0;}
+.cp-h3{font-family:'Ma Shan Zheng',cursive;font-size:1.4rem;color:#1a1a1a;margin-bottom:2px;flex-shrink:0;}
+.cp-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:.74rem;color:#aaa;margin-bottom:12px;flex-shrink:0;}
 
-    .phil-vs {
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Playfair Display', serif;
-      font-size: 1.6rem;
-      font-weight: 900;
-      color: var(--gold);
-      position: relative;
-    }
-    .phil-vs::before, .phil-vs::after {
-      content: '';
-      position: absolute;
-      left: 50%; width: 1px;
-      background: linear-gradient(transparent, rgba(201,168,76,.4), transparent);
-    }
-    .phil-vs::before { top: -100%; bottom: 50%; transform: translateX(-50%); }
-    .phil-vs::after  { top: 50%; bottom: -100%; transform: translateX(-50%); }
+/* ── 图片区放大 & 真实图片 ── */
+.cp-vis{
+  width:100%;height:175px;border-radius:12px;overflow:hidden;
+  position:relative;margin-bottom:13px;flex-shrink:0;
+  box-shadow:0 4px 18px rgba(0,0,0,.14);
+}
+.cp-vfill{width:100%;height:100%;background-size:cover;background-position:center;transition:transform .55s;}
+.cp-card:hover .cp-vfill{transform:scale(1.04);}
+.cp-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.68));padding:28px 14px 10px;color:#fff;font-family:'Cormorant Garamond',serif;font-size:.76rem;font-style:italic;letter-spacing:.04em;}
 
-    /* ==============================
-       SECTION 7 — INSIGHTS
-    ============================== */
-    .insights-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 22px;
-    }
-    .insight-card {
-      padding: 28px;
-      position: relative;
-    }
-    .insight-card::before {
-      content: '\201C';
-      position: absolute;
-      top: 10px; left: 18px;
-      font-family: 'Playfair Display', serif;
-      font-size: 5rem;
-      color: rgba(201,168,76,.2);
-      line-height: 1;
-      pointer-events: none;
-    }
-    .insight-zh {
-      font-family: 'Noto Serif SC', serif;
-      font-size: .92rem;
-      color: #333;
-      line-height: 2;
-      margin-bottom: 10px;
-    }
-    .insight-en {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
-      font-size: .88rem;
-      color: #777;
-      line-height: 1.7;
-      border-left: 2px solid rgba(201,168,76,.5);
-      padding-left: 12px;
-      margin-bottom: 16px;
-    }
-    .insight-author {
-      text-align: right;
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: 1rem;
-      color: var(--red);
-    }
+/* 徽派天井真实图片 */
+.cp-vfill-huizhou{
+  background-image:
+    url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Xidi_paysage.jpg/1280px-Xidi_paysage.jpg'),
+    url('https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Anhui_Hongcun_Yuehe_tang_roof.jpg/1280px-Anhui_Hongcun_Yuehe_tang_roof.jpg'),
+    linear-gradient(135deg,#1a1a1a 0%,#3a3a3a 40%,#888 100%);
+  background-size:cover;background-position:center;
+}
+/* 罗马中庭真实图片 */
+.cp-vfill-roman{
+  background-image:
+    url('https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Pompeii_-_Casa_del_Fauno_-_Impluvium.jpg/1280px-Pompeii_-_Casa_del_Fauno_-_Impluvium.jpg'),
+    url('https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Pompeii_forum.jpg/1280px-Pompeii_forum.jpg'),
+    linear-gradient(135deg,#f5e6c8 0%,#c8843a 60%,#7a4a20 100%);
+  background-size:cover;background-position:center;
+}
 
-    /* ==============================
-       STAT COUNTER ROW
-    ============================== */
-    .stat-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1px;
-      background: rgba(201,168,76,.2);
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 40px;
-    }
-    .stat-cell {
-      background: var(--panel);
-      padding: 28px 20px;
-      text-align: center;
-    }
-    .stat-num {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.4rem;
-      font-weight: 900;
-      color: var(--gold);
-      line-height: 1;
-      display: block;
-    }
-    .stat-zh {
-      font-family: 'Noto Serif SC', serif;
-      font-size: .82rem;
-      color: #555;
-      margin-top: 6px;
-    }
-    .stat-en {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: .75rem;
-      color: #aaa;
-      font-style: italic;
-    }
+.cp-body{font-size:.77rem;color:#444;line-height:1.82;flex:1;}
+.tag-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:11px;flex-shrink:0;}
+.tag{padding:3px 10px;border:1px solid rgba(201,168,76,.32);border-radius:14px;font-family:'Cormorant Garamond',serif;font-size:.67rem;color:#777;}
+.deco-divider{display:flex;align-items:center;gap:10px;font-family:'Cormorant Garamond',serif;font-size:.64rem;color:rgba(201,168,76,.5);letter-spacing:.3em;text-transform:uppercase;flex-shrink:0;}
+.deco-divider::before,.deco-divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.2),transparent);}
+.p2-bot{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap);flex:1;min-height:0;}
+.feat-card{padding:18px 17px;position:relative;overflow:hidden;overflow-y:auto;transition:transform .28s,box-shadow .28s;display:flex;flex-direction:column;}
+.feat-card:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(0,0,0,.10);}
+.feat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:linear-gradient(90deg,var(--gold),var(--gold-lt));}
+.fc-no{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:rgba(201,168,76,.09);line-height:1;margin-bottom:4px;flex-shrink:0;}
+.fc-h4{font-family:'Ma Shan Zheng',cursive;font-size:.98rem;color:#1a1a1a;margin-bottom:2px;flex-shrink:0;}
+.fc-en{font-family:'Cormorant Garamond',serif;font-size:.66rem;color:#bbb;font-style:italic;margin-bottom:10px;display:block;flex-shrink:0;}
+.fr{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start;}
+.flabel{flex-shrink:0;font-family:'Cormorant Garamond',serif;font-size:.64rem;color:#fff;background:var(--red);padding:2px 7px;border-radius:3px;margin-top:2px;letter-spacing:.04em;}
+.flabel.w{background:#2c3e50;}
+.ftext{font-size:.74rem;color:#444;line-height:1.7;}
 
-    /* ==============================
-       SCROLL REVEAL
-    ============================== */
-    .reveal { opacity: 0; transform: translateY(30px); transition: opacity .7s ease, transform .7s ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
+/* ═══════════════════════════════════════
+   PANEL 3 — PARALLEL COORDS
+═══════════════════════════════════════ */
+#p3{display:flex;flex-direction:column;gap:var(--gap);}
+.p3-header{flex-shrink:0;display:flex;align-items:flex-end;justify-content:space-between;}
+.p3-header-right{font-family:'Ma Shan Zheng',cursive;font-size:3rem;color:rgba(201,168,76,.09);line-height:1;}
+.p3-main{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);flex:1;min-height:0;}
 
-    /* ==============================
-       SECTION SPACER
-    ============================== */
-    .kw-section { margin-bottom: 64px; }
+.parallel-panel{padding:22px 22px 16px;display:flex;flex-direction:column;overflow:hidden;}
+.pc-legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:14px;flex-shrink:0;}
+.pc-leg-item{display:flex;align-items:center;gap:7px;font-size:.73rem;color:#555;cursor:pointer;padding:4px 8px;border-radius:20px;transition:all .2s;border:1.5px solid transparent;}
+.pc-leg-item:hover{background:rgba(201,168,76,.06);}
+.pc-leg-item.pc-dim{background:rgba(201,168,76,.08);border-color:var(--gb);}
+.pc-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+.pc-svg-wrap{flex:1;min-height:0;position:relative;}
+#pcSvg{width:100%;height:100%;}
 
-    /* ==============================
-       RESPONSIVE
-    ============================== */
-    @media (max-width: 900px) {
-      .radar-grid { grid-template-columns: 1fr; }
-      .compare-wrap { grid-template-columns: 1fr; }
-      .feature-3 { grid-template-columns: 1fr; }
-      .philosophy-grid { grid-template-columns: 1fr; }
-      .phil-vs { display: none; }
-      .insights-grid { grid-template-columns: 1fr; }
-      .stat-row { grid-template-columns: repeat(2, 1fr); }
-    }
-  </style>
+.phil-panel{padding:0;overflow:hidden;display:grid;grid-template-columns:1fr 48px 1fr;}
+.phil-side{padding:22px 20px;overflow-y:auto;}
+.phil-hdr{margin-bottom:16px;flex-shrink:0;}
+.phil-title{font-family:'Ma Shan Zheng',cursive;font-size:1.2rem;color:#1a1a1a;}
+.phil-en{font-family:'Playfair Display',serif;font-style:italic;font-size:.72rem;color:#aaa;margin-bottom:4px;}
+.phil-vs{display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:900;color:var(--gold);background:linear-gradient(180deg,transparent,rgba(201,168,76,.05),transparent);border-left:1px solid var(--gb);border-right:1px solid var(--gb);letter-spacing:.08em;}
+.ph-item{display:flex;gap:10px;margin-bottom:14px;align-items:flex-start;}
+.ph-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.ph-icon.cn{background:rgba(139,26,26,.1);color:var(--red);}
+.ph-icon.we{background:rgba(44,62,80,.09);color:#2c3e50;}
+.ph-zh{font-size:.82rem;color:#222;font-weight:700;}
+.ph-en2{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.68rem;color:#bbb;}
+.ph-desc{font-size:.73rem;color:#555;line-height:1.7;margin-top:3px;}
+
+/* ═══════════════════════════════════════
+   PANEL 4 — MAP  (Leaflet)
+═══════════════════════════════════════ */
+#p4{display:flex;flex-direction:column;gap:var(--gap);}
+.map-header{flex-shrink:0;display:flex;align-items:flex-end;justify-content:space-between;}
+.map-header-right{display:flex;gap:10px;align-items:center;}
+.map-stat-badge{padding:5px 14px;background:var(--panel);border:1.5px solid var(--gb);border-radius:20px;font-family:'Cormorant Garamond',serif;font-size:.68rem;color:#666;box-shadow:var(--shadow);}
+.map-stat-badge strong{color:var(--gold);font-family:'Playfair Display',serif;font-size:.88rem;}
+.map-main{display:grid;grid-template-columns:1fr 260px;gap:var(--gap);flex:1;min-height:0;}
+.map-card{padding:14px;min-height:0;display:flex;flex-direction:column;gap:10px;}
+.map-canvas-wrap{width:100%;flex:1;min-height:0;position:relative;border-radius:10px;overflow:hidden;}
+
+/* ── Leaflet map container ── */
+#leafletMap{
+  position:absolute;inset:0;
+  border-radius:10px;
+  z-index:1;
+}
+
+/* ── Leaflet theme overrides ── */
+.leaflet-container{
+  font-family:'Noto Serif SC',serif !important;
+  background:#1a1914 !important;
+}
+.leaflet-tile-pane{filter:saturate(0.6) brightness(0.92) sepia(0.15);}
+.leaflet-control-zoom a{
+  background:rgba(250,247,240,.95) !important;
+  color:#666 !important;
+  border-color:rgba(201,168,76,.25) !important;
+}
+.leaflet-control-zoom a:hover{background:var(--gold) !important;color:#fff !important;}
+.leaflet-control-attribution{
+  background:rgba(250,247,240,.7) !important;
+  font-size:.5rem !important;color:#aaa !important;
+}
+.leaflet-popup-content-wrapper{
+  background:rgba(250,247,240,.97) !important;
+  border:1.5px solid rgba(201,168,76,.3) !important;
+  border-radius:10px !important;
+  box-shadow:0 4px 20px rgba(0,0,0,.15) !important;
+  font-family:'Noto Serif SC',serif !important;
+}
+.leaflet-popup-tip{background:rgba(250,247,240,.97) !important;}
+.leaflet-popup-content{
+  margin:10px 14px !important;
+  font-size:.75rem;color:#333;line-height:1.7;
+}
+.leaflet-popup-content strong{color:var(--gold);font-family:'Ma Shan Zheng',cursive;font-size:.9rem;}
+.leaflet-popup-content em{color:#888;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.68rem;}
+
+/* custom marker */
+.lf-marker{
+  width:22px;height:22px;border-radius:50%;
+  border:2.5px solid rgba(255,252,240,.85);
+  box-shadow:0 2px 8px rgba(0,0,0,.35);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:transform .2s,box-shadow .2s;
+  position:relative;
+}
+.lf-marker::after{
+  content:'';position:absolute;inset:-4px;border-radius:50%;
+  border:1.5px solid currentColor;opacity:.22;
+}
+.lf-marker:hover{transform:scale(1.25);box-shadow:0 4px 14px rgba(0,0,0,.45);}
+.lf-marker.highlighted{
+  transform:scale(1.45);
+  box-shadow:0 0 0 4px currentColor, 0 4px 18px rgba(0,0,0,.5);
+  animation:markerPulse 1.6s ease-in-out infinite;
+}
+@keyframes markerPulse{
+  0%,100%{box-shadow:0 0 0 4px currentColor,0 4px 18px rgba(0,0,0,.5);}
+  50%{box-shadow:0 0 0 8px rgba(201,168,76,.18),0 4px 18px rgba(0,0,0,.5);}
+}
+
+.map-legend-row{
+  position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+  display:flex;gap:14px;background:rgba(250,247,240,.94);
+  backdrop-filter:blur(8px);border:1px solid var(--gb);
+  border-radius:22px;padding:6px 18px;white-space:nowrap;z-index:400;
+}
+.ml{display:flex;align-items:center;gap:6px;font-size:.68rem;color:#555;}
+.ml-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.map-side{display:flex;flex-direction:column;gap:var(--gap);}
+.map-tl-card{flex:1;padding:16px 16px;overflow:hidden;display:flex;flex-direction:column;}
+.map-tl-title{font-family:'Ma Shan Zheng',cursive;font-size:.9rem;color:#333;margin-bottom:10px;flex-shrink:0;}
+.tl-inner{position:relative;flex:1;overflow-y:auto;}
+.region-card{
+  flex-shrink:0;padding:12px 14px;
+  background:var(--panel);border:1.5px solid var(--gb);
+  border-radius:10px;box-shadow:var(--shadow);
+  cursor:pointer;transition:all .22s;
+}
+.region-card:hover{background:rgba(201,168,76,.06);transform:translateX(3px);}
+.region-card.active-region{
+  background:rgba(201,168,76,.1);
+  border-color:var(--gold);
+  box-shadow:0 4px 16px rgba(201,168,76,.2);
+}
+.rc-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle;}
+.rc-title{font-family:'Ma Shan Zheng',cursive;font-size:.88rem;color:#222;}
+.rc-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.66rem;color:#aaa;margin-bottom:5px;}
+.rc-desc{font-size:.7rem;color:#555;line-height:1.6;}
+
+/* ═══════════════════════════════════════
+   PANEL 5 — 文化星图
+═══════════════════════════════════════ */
+#p5{display:flex;flex-direction:column;gap:var(--gap);}
+.p5-header{flex-shrink:0;display:flex;align-items:center;gap:16px;}
+.p5-header-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(201,168,76,.3),transparent);}
+
+.p5-body{display:grid;grid-template-columns:1fr 340px;gap:var(--gap);flex:1;min-height:0;}
+
+.star-map-card{
+  position:relative;overflow:hidden;display:flex;flex-direction:column;
+  background:linear-gradient(160deg,#0d0b18 0%,#111020 40%,#0a0d1a 70%,#120c1e 100%) !important;
+  border-color:rgba(201,168,76,.22) !important;
+}
+.star-map-title{
+  padding:14px 18px 10px;
+  font-family:'Ma Shan Zheng',cursive;font-size:.88rem;
+  color:rgba(225,210,170,.72);
+  flex-shrink:0;display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid rgba(201,168,76,.1);
+  position:relative;z-index:2;
+}
+.star-map-hint{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.66rem;color:rgba(201,168,76,.45);}
+#starMapSvg{position:relative;z-index:1;flex:1;width:100%;min-height:0;}
+
+.culture-detail{display:flex;flex-direction:column;gap:var(--gap);}
+
+.node-info-card{padding:20px 18px;display:flex;flex-direction:column;gap:8px;flex:1;overflow-y:auto;}
+.ni-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;opacity:.4;}
+.ni-icon{font-size:2.5rem;}
+.ni-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.78rem;color:#888;text-align:center;}
+.ni-header{display:flex;align-items:center;gap:10px;}
+.ni-color-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;}
+.ni-title{font-family:'Ma Shan Zheng',cursive;font-size:1.3rem;color:#1a1a1a;}
+.ni-subtitle{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.72rem;color:#aaa;}
+.ni-quote{padding:12px 14px;background:linear-gradient(135deg,rgba(201,168,76,.07),rgba(201,168,76,.02));border-left:3px solid var(--gold);border-radius:0 8px 8px 0;font-family:'Noto Serif SC',serif;font-size:.76rem;color:#444;line-height:1.85;}
+.ni-quote-en{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.7rem;color:#888;line-height:1.6;margin-top:6px;padding-left:2px;}
+.ni-author{font-family:'Ma Shan Zheng',cursive;font-size:.9rem;color:var(--red);margin-top:4px;}
+.ni-dims{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;}
+.ni-dim{padding:7px 10px;background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.12);border-radius:6px;}
+.ni-dim-label{font-size:.6rem;color:#aaa;margin-bottom:2px;}
+.ni-dim-bar{height:4px;background:rgba(0,0,0,.06);border-radius:2px;overflow:hidden;}
+.ni-dim-fill{height:100%;border-radius:2px;transition:width .8s ease;}
+.ni-dim-val{font-family:'Playfair Display',serif;font-size:.75rem;font-weight:700;color:#555;margin-top:2px;}
+
+.connection-card{padding:14px 16px;flex-shrink:0;}
+.conn-title{font-family:'Ma Shan Zheng',cursive;font-size:.84rem;color:#555;margin-bottom:8px;}
+.conn-items{display:flex;flex-direction:column;gap:6px;}
+.conn-item{display:flex;align-items:center;gap:8px;font-size:.71rem;color:#555;}
+.conn-line-seg{width:24px;height:3px;border-radius:2px;flex-shrink:0;}
+
+/* ── Animations ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+.panel.active>*{animation:fadeUp .44s ease both;}
+.panel.active>*:nth-child(1){animation-delay:.04s;}
+.panel.active>*:nth-child(2){animation-delay:.10s;}
+.panel.active>*:nth-child(3){animation-delay:.17s;}
+.panel.active>*:nth-child(4){animation-delay:.24s;}
+
+@keyframes nodeGlowPulse{0%,100%{opacity:0.12;}50%{opacity:0.22;}}
+@keyframes starTwinkle{0%,100%{opacity:0.15;}50%{opacity:0.55;}}
+@keyframes connFlow{0%{stroke-dashoffset:300;}100%{stroke-dashoffset:0;}}
+</style>
 </head>
 <body>
+<div class="bg-wash"></div>
 
-  <!-- ── Background Video ─────────────────────────── -->
-  <video id="bgVideo" class="bg-video" autoplay loop muted playsinline>
-    <source src="素材/9ba0a2e6346f2a8446c8b10f630c6071.mp4" type="video/mp4" />
-  </video>
-  <div class="paper-texture"></div>
-  <div class="ink-edge ink-edge-top"></div>
-  <div class="ink-edge ink-edge-bottom"></div>
-  <div class="ink-edge ink-edge-left"></div>
-  <div class="ink-edge ink-edge-right"></div>
+<!-- TOP-RIGHT CIRCLE NAV -->
+<nav id="circleNav">
+  <a href="index.html" class="circle-btn" title="首页">
+    <svg viewBox="0 0 32 32" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16L16 5l11 11"/><path d="M8 14v13h16V14"/></svg>
+    <span data-zh="首页" data-en="Home" data-ru="Главная">首页</span>
+  </a>
+  <a href="matouqiang.html" class="circle-btn" title="马头墙">
+    <svg viewBox="0 0 32 32" stroke-linecap="round" stroke-linejoin="round"><path d="M7 28V21h5V15h4V9h4v6h4v6h5v7"/></svg>
+    <span data-zh="马头墙" data-en="Walls" data-ru="Стены">马头墙</span>
+  </a>
+  <a href="tianjing.html" class="circle-btn" title="天井">
+    <svg viewBox="0 0 32 32"><rect x="6" y="6" width="20" height="20" rx="2"/><rect x="12" y="12" width="8" height="8" rx="1"/></svg>
+    <span data-zh="天井" data-en="Skywell" data-ru="Колодец">天井</span>
+  </a>
+  <a href="sandiao.html" class="circle-btn" title="三雕">
+    <svg viewBox="0 0 32 32" stroke-linecap="round"><path d="M8 26Q14 18 16 16T24 6"/><circle cx="24" cy="6" r="2" fill="currentColor"/></svg>
+    <span data-zh="三雕" data-en="Carvings" data-ru="Резьба">三雕</span>
+  </a>
+  <a href="zongzu.html" class="circle-btn" title="宗族">
+    <svg viewBox="0 0 32 32" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L16 6l13 12"/><path d="M6 16v12h20V16"/><path d="M13 28v-8h6v8"/></svg>
+    <span data-zh="宗族" data-en="Clan" data-ru="Клан">宗族</span>
+  </a>
+  <a href="baohu.html" class="circle-btn" title="保护">
+    <svg viewBox="0 0 32 32" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4L6 9v7c0 7 4 13 10 15 6-2 10-8 10-15V9L16 4z"/><path d="M12 16l3 3 5-6"/></svg>
+    <span data-zh="保护" data-en="Heritage" data-ru="Наследие">保护</span>
+  </a>
+  <a href="kuawenhua.html" class="circle-btn active" title="跨文化">
+    <svg viewBox="0 0 32 32" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20a2 2 0 012 2v10a2 2 0 01-2 2H16l-6 5v-5H6a2 2 0 01-2-2V10a2 2 0 012-2z"/><circle cx="12" cy="15" r="1" fill="currentColor"/><circle cx="16" cy="15" r="1" fill="currentColor"/><circle cx="20" cy="15" r="1" fill="currentColor"/></svg>
+    <span data-zh="跨文化" data-en="Cross" data-ru="Культуры">跨文化</span>
+  </a>
+</nav>
 
-  <!-- ── Navigation ──────────────────────────────── -->
-  <nav id="circleNav">
-    <a href="index.html" class="circle-btn" data-page="index">
-      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16L16 5l11 11"/><path d="M8 14v13h16V14"/></svg>
-      <span>首页</span>
-    </a>
-    <a href="matouqiang.html" class="circle-btn" data-page="matouqiang">
-      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 28V21h5V15h4V9h4v6h4v6h5v7"/></svg>
-      <span>马头墙</span>
-    </a>
-    <a href="tianjing.html" class="circle-btn" data-page="tianjing">
-      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="6" width="20" height="20" rx="2"/><rect x="12" y="12" width="8" height="8" rx="1"/><line x1="16" y1="6" x2="16" y2="12"/><line x1="16" y1="20" x2="16" y2="26"/><line x1="6" y1="16" x2="12" y2="16"/><line x1="20" y1="16" x2="26" y2="16"/></svg>
-      <span>天井</span>
-    </a>
-    <a href="sandiao.html" class="circle-btn" data-page="sandiao">
-      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 26Q14 18 16 16T24 6"/><path d="M6 22Q10 18 14 14"/><path d="M18 18Q22 14 26 10"/><circle cx="24" cy="6" r="2"/><circle cx="8" cy="26" r="2"/></svg>
-      <span>三雕</span>
-    </a>
-    <a href="zongzu.html" class="circle-btn" data-page="zongzu">
-      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L16 6l13 12"/><path d="M6 16v12h20V16"/><path d="M13 28v-8h6v8"/></svg>
-      <span>宗族</span>
-    </a>
-    <a href="baohu.html" class="circle-btn" data-page="baohu">
-      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4L6 9v7c0 7 4 13 10 15 6-2 10-8 10-15V9L16 4z"/><path d="M12 16l3 3 5-6"/></svg>
-      <span>保护</span>
-    </a>
-    <a href="kuawenhua.html" class="circle-btn active" data-page="kuawenhua">
-      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20a2 2 0 012 2v10a2 2 0 01-2 2H16l-6 5v-5H6a2 2 0 01-2-2V10a2 2 0 012-2z"/><circle cx="12" cy="15" r="1" fill="currentColor"/><circle cx="16" cy="15" r="1" fill="currentColor"/><circle cx="20" cy="15" r="1" fill="currentColor"/></svg>
-      <span>跨文化</span>
-    </a>
-  </nav>
+<!-- TOP-LEFT -->
+<div id="topLeft">
+  <div class="brand-pill">
+    <div class="brand-icon">徽</div>
+    <div>
+      <div class="brand-zh" data-zh="文化互鉴·建筑对话" data-en="Cultural Dialogue" data-ru="Диалог культур">文化互鉴·建筑对话</div>
+      <div class="brand-en">Huizhou Vernacular Meets the World</div>
+    </div>
+  </div>
+  <div class="lang-grp">
+    <button class="lang-btn lang-active" id="btnZH" onclick="setLang('zh')">中文</button>
+    <button class="lang-btn" id="btnEN" onclick="setLang('en')">English</button>
+    <button class="lang-btn" id="btnRU" onclick="setLang('ru')">Русский</button>
+  </div>
+</div>
 
-  <!-- ═══════════════════════════════════════════════
-       MAIN CONTENT
-  ══════════════════════════════════════════════════ -->
-  <div class="kw-page">
+<!-- TAB BAR -->
+<div id="tabBar">
+  <button class="tb active" onclick="goTab(0,this)"><span class="tno">01</span><span data-zh="建筑基因雷达" data-en="Architectural DNA" data-ru="ДНК-Радар">建筑基因雷达</span></button>
+  <div class="tb-sep"></div>
+  <button class="tb" onclick="goTab(1,this)"><span class="tno">02</span><span data-zh="天井·内庭·坪庭" data-en="Skywell Dialogue" data-ru="Небесный Колодец">天井·内庭·坪庭</span></button>
+  <div class="tb-sep"></div>
+  <button class="tb" onclick="goTab(2,this)"><span class="tno">03</span><span data-zh="六维文化指标" data-en="6-Dimension Index" data-ru="6 Измерений">六维文化指标</span></button>
+  <div class="tb-sep"></div>
+  <button class="tb" onclick="goTab(3,this)"><span class="tno">04</span><span data-zh="庭院全球分布" data-en="Global Courtyard Map" data-ru="Глобальная Карта">庭院全球分布</span></button>
+  <div class="tb-sep"></div>
+  <button class="tb" onclick="goTab(4,this)"><span class="tno">05</span><span data-zh="文化星图感悟" data-en="Culture Star Map" data-ru="Звёздная Карта">文化星图感悟</span></button>
+</div>
 
-    <!-- ── HERO ───────────────────────────────────── -->
-    <div class="kw-hero">
-      <div class="kw-hero-tag">Cross-Cultural Architecture Dialogue</div>
-      <h1 class="kw-hero-zh">文化互鉴 · 建筑对话</h1>
-      <p class="kw-hero-en">Where Huizhou Vernacular Meets the World</p>
-      <div class="kw-hero-line"></div>
+<!-- APP -->
+<div id="app">
+
+  <!-- ══ PANEL 1: RADAR ══ -->
+  <div class="panel active" id="p1">
+    <div class="stat-strip">
+      <div class="stat-cell"><span class="stat-n" data-target="140">0</span><div class="stat-l" data-zh="明清古建筑" data-en="Ming-Qing Structures" data-ru="Постройки">明清古建筑</div></div>
+      <div class="stat-cell"><span class="stat-n" data-target="800">0</span><div class="stat-l" data-zh="年建筑传承" data-en="Years of Heritage" data-ru="Лет">年建筑传承</div></div>
+      <div class="stat-cell"><span class="stat-n" data-target="2000">0</span><div class="stat-l" data-zh="UNESCO遗产年" data-en="UNESCO Since" data-ru="ЮНЕСКО">UNESCO遗产年</div></div>
+      <div class="stat-cell"><span class="stat-n" data-target="47">0</span><div class="stat-l" data-zh="全球文化平行体" data-en="Global Parallels" data-ru="Параллелей">全球文化平行体</div></div>
     </div>
 
-    <!-- ── STAT ROW ───────────────────────────────── -->
-    <div class="stat-row reveal">
-      <div class="stat-cell">
-        <span class="stat-num" data-target="140">0</span>
-        <div class="stat-zh">明清古建筑</div>
-        <div class="stat-en">Ming-Qing Structures</div>
+    <div class="p1-main">
+      <div class="card legend-card">
+        <h4 data-zh="四大民居建筑体系" data-en="Four Vernacular Traditions" data-ru="Четыре Традиции">四大民居建筑体系 <em>Four Global Vernacular Traditions</em></h4>
+        <div class="leg-item" onclick="selectArch(0)">
+          <div class="leg-dot" style="background:#c9a84c;"></div>
+          <div><div class="leg-zh" data-zh="徽派民居" data-en="Huizhou Vernacular" data-ru="Архитектура Хуэйчжоу">徽派民居</div>
+          <div class="leg-loc">Huizhou Vernacular · China</div>
+          <div class="leg-desc" data-zh="以天井为核心，内聚型空间，黑白美学，三雕并重，强调宗族伦理秩序与财富积聚观念。" data-en="Centred on the skywell; inward-gathering space; black-and-white aesthetics; clan ethical order." data-ru="Центр — небесный колодец; замкнутость; чёрно-белая эстетика; клановая этика.">以天井为核心，内聚型空间，黑白美学，三雕并重，强调宗族伦理秩序与财富积聚观念。</div></div>
+        </div>
+        <div class="leg-item" onclick="selectArch(1)">
+          <div class="leg-dot" style="background:#e74c3c;"></div>
+          <div><div class="leg-zh" data-zh="地中海民居" data-en="Mediterranean Vernacular" data-ru="Средиземноморская">地中海民居</div>
+          <div class="leg-loc">Mediterranean Vernacular</div>
+          <div class="leg-desc" data-zh="以中庭为中心，石灰白墙，强调光线、通风与公共交往空间；开放柱廊彰显社会活力。" data-en="Atrium-centred; lime-white walls; light, ventilation and communal exchange." data-ru="Атриум; белые стены; акцент на свет и общение.">以中庭为中心，石灰白墙，强调光线、通风与公共交往空间；开放柱廊彰显社会活力。</div></div>
+        </div>
+        <div class="leg-item" onclick="selectArch(2)">
+          <div class="leg-dot" style="background:#2ecc71;"></div>
+          <div><div class="leg-zh" data-zh="日本町家" data-en="Japanese Machiya" data-ru="Японский Матия">日本町家</div>
+          <div class="leg-loc">Japanese Machiya</div>
+          <div class="leg-desc" data-zh="纵深式布局，坪庭引入自然，极简美学，以"间"为模数，禅意空间融城市性与自然性于一体。" data-en="Deep-plan layout; tsubo-niwa garden brings nature inside; minimalist Zen aesthetics." data-ru="Глубокая планировка; садик цубо-нива; дзен-эстетика.">纵深式布局，坪庭引入自然，极简美学，以"间"为模数，禅意空间融城市性与自然性于一体。</div></div>
+        </div>
+        <div class="leg-item" onclick="selectArch(3)">
+          <div class="leg-dot" style="background:#3498db;"></div>
+          <div><div class="leg-zh" data-zh="伊斯兰庭院" data-en="Islamic Riad" data-ru="Исламский Риад">伊斯兰庭院</div>
+          <div class="leg-loc">Islamic Riad · N. Africa</div>
+          <div class="leg-desc" data-zh="十字庭院，华丽几何装饰，强调内外精神隔离；四格水池象征天堂，几何砖饰精密繁复。" data-en="Cross-shaped courtyard; ornate geometric decoration; spiritual separation. Four-part pool symbolises paradise." data-ru="Крестообразный двор; изысканная геометрия; духовное разделение.">十字庭院，华丽几何装饰，强调内外精神隔离；四格水池象征天堂，几何砖饰精密繁复。</div></div>
+        </div>
+        <div class="leg-quote">
+          <div class="leg-quote-zh" data-zh="建筑是石头写成的史书，每一处榫卯都是文明的句读。" data-en="Architecture is history written in stone; every joint is civilisation's punctuation." data-ru="Архитектура — история, написанная в камне; каждый стык — пунктуация цивилизации.">建筑是石头写成的史书，每一处榫卯都是文明的句读。</div>
+          <div class="leg-quote-en">Architecture is history written in stone</div>
+        </div>
       </div>
-      <div class="stat-cell">
-        <span class="stat-num" data-target="800">0</span>
-        <div class="stat-zh">年建筑传承</div>
-        <div class="stat-en">Years of Heritage</div>
-      </div>
-      <div class="stat-cell">
-        <span class="stat-num" data-target="2000">0</span>
-        <div class="stat-zh">年世界遗产</div>
-        <div class="stat-en">UNESCO Since</div>
-      </div>
-      <div class="stat-cell">
-        <span class="stat-num" data-target="47">0</span>
-        <div class="stat-zh">个遗产地关联文化圈</div>
-        <div class="stat-en">Global Cultural Parallels</div>
+
+      <div class="p1-right" id="p1Right">
+        <div class="card radar-card">
+          <div class="radar-title" data-zh="建筑基因六维对比雷达图" data-en="Six-Dimension Architectural DNA Radar" data-ru="Шестимерный Радар">建筑基因六维对比雷达图</div>
+          <svg viewBox="0 0 360 310" xmlns="http://www.w3.org/2000/svg" id="radarSvg" style="flex:1;width:100%;min-height:0;">
+            <defs><style>
+              .ra-axis{stroke:rgba(0,0,0,.09);stroke-width:1;}
+              .ra-grid{fill:none;stroke:rgba(0,0,0,.06);stroke-width:1;}
+              .ra-label{font-family:'Noto Serif SC',serif;font-size:11px;fill:#555;}
+            </style></defs>
+            <polygon class="ra-grid" id="g1"/><polygon class="ra-grid" id="g2"/>
+            <polygon class="ra-grid" id="g3"/>
+            <polygon class="ra-grid" id="g4" style="stroke:rgba(201,168,76,.22);"/>
+            <line class="ra-axis" id="ax0"/><line class="ra-axis" id="ax1"/>
+            <line class="ra-axis" id="ax2"/><line class="ra-axis" id="ax3"/>
+            <line class="ra-axis" id="ax4"/><line class="ra-axis" id="ax5"/>
+            <text class="ra-label" id="lb0" text-anchor="middle"/>
+            <text class="ra-label" id="lb1" text-anchor="start"/>
+            <text class="ra-label" id="lb2" text-anchor="start"/>
+            <text class="ra-label" id="lb3" text-anchor="middle"/>
+            <text class="ra-label" id="lb4" text-anchor="end"/>
+            <text class="ra-label" id="lb5" text-anchor="end"/>
+            <polygon class="ra-poly" id="rp0" fill="rgba(201,168,76,.16)" stroke="#c9a84c"/>
+            <polygon class="ra-poly" id="rp1" fill="rgba(231,76,60,.11)" stroke="#e74c3c"/>
+            <polygon class="ra-poly" id="rp2" fill="rgba(46,204,113,.11)" stroke="#2ecc71"/>
+            <polygon class="ra-poly" id="rp3" fill="rgba(52,152,219,.11)" stroke="#3498db"/>
+          </svg>
+          <div class="radar-scores" id="radarScores"></div>
+          <div class="radar-hint" data-zh="点击图例或雷达多边形查看3D模型" data-en="Click legend or polygon to view 3D model" data-ru="Нажмите на легенду для 3D-модели">点击图例或雷达多边形查看3D模型</div>
+        </div>
+        <div class="model-panel card-dark" id="modelPanel">
+          <div class="model-inner">
+            <div class="mp-row1">
+              <div><div class="mp-head" id="mpHead">徽派民居</div><div class="mp-en" id="mpEn">Huizhou Vernacular · China</div></div>
+              <button class="mp-close" onclick="closeModel()">✕</button>
+            </div>
+            <div id="threeCanvas" style="position:relative;">
+              <div class="mp-canvas-hint" id="mpCanvasHint">拖拽旋转 · 滚轮缩放</div>
+            </div>
+            <div class="mp-stats" id="mpStats"></div>
+            <div class="mp-desc" id="mpDesc">以天井为核心，内聚型空间，黑白美学。</div>
+            <div class="mp-tags" id="mpTags"></div>
+            <div class="mp-hint">拖动旋转 · 滚轮缩放</div>
+          </div>
+        </div>
       </div>
     </div>
+  </div>
 
-    <!-- ─────────────────────────────────────────────
-         §1  ARCHITECTURAL DNA RADAR
-    ───────────────────────────────────────────────── -->
-    <section class="kw-section reveal">
-      <div class="kw-section-header">
-        <div class="kw-section-no">01</div>
-        <div class="kw-section-titles">
-          <div class="kw-section-zh">建筑基因雷达</div>
-          <div class="kw-section-en">Architectural DNA Comparison</div>
-        </div>
-        <div class="kw-section-rule"></div>
+  <!-- ══ PANEL 2: COMPARE ══ -->
+  <div class="panel" id="p2">
+    <div class="p2-header">
+      <div>
+        <div class="sec-eyebrow">Skywell Dialogue</div>
+        <div class="sec-title-zh" data-zh="天井·中庭·坪庭——庭院的跨文化对话" data-en="Skywell · Atrium · Tsubo-niwa — A Cross-Cultural Dialogue" data-ru="Небесный Колодец · Атриум · Цубо-нива">天井·中庭·坪庭——庭院的跨文化对话</div>
       </div>
-
-      <div class="glass-card" style="padding: 28px;">
-        <div class="radar-grid">
-          <div id="radarChart"></div>
-          <div class="glass-card radar-legend">
-            <h4>四大民居建筑体系对比 <br><span style="font-family:'Cormorant Garamond',serif;font-size:.82rem;font-style:italic;color:#aaa;">Four Global Vernacular Traditions</span></h4>
-
-            <div class="legend-item" onclick="highlightRadar(0)">
-              <div class="legend-dot" style="background:#c9a84c;"></div>
-              <div>
-                <div class="legend-item-zh">徽派民居</div>
-                <div class="legend-item-en">Huizhou Vernacular · China</div>
-                <div class="legend-item-desc">以天井为核心，内聚型空间，黑白水墨美学，砖木石三雕并重，强调宗族伦理秩序。</div>
-              </div>
-            </div>
-
-            <div class="legend-item" onclick="highlightRadar(1)">
-              <div class="legend-dot" style="background:#e74c3c;"></div>
-              <div>
-                <div class="legend-item-zh">地中海民居</div>
-                <div class="legend-item-en">Mediterranean Vernacular</div>
-                <div class="legend-item-desc">以中庭（Atrium）为中心，石灰白墙，强调光线、通风与公共交往空间。</div>
-              </div>
-            </div>
-
-            <div class="legend-item" onclick="highlightRadar(2)">
-              <div class="legend-dot" style="background:#2ecc71;"></div>
-              <div>
-                <div class="legend-item-zh">日本町家</div>
-                <div class="legend-item-en">Japanese Machiya</div>
-                <div class="legend-item-desc">纵深式平面布局，坪庭引入自然，极简美学，以"间"为模数，禅意空间。</div>
-              </div>
-            </div>
-
-            <div class="legend-item" onclick="highlightRadar(3)">
-              <div class="legend-dot" style="background:#3498db;"></div>
-              <div>
-                <div class="legend-item-zh">伊斯兰庭院</div>
-                <div class="legend-item-en">Islamic Riad · N. Africa</div>
-                <div class="legend-item-desc">以喷泉为中心的十字庭院，华丽几何装饰，强调内与外的精神隔离。</div>
-              </div>
-            </div>
-          </div>
+      <div class="p2-header-line"></div>
+      <div class="p2-header-deco">院</div>
+    </div>
+    <div class="p2-top">
+      <!-- 徽派天井 -->
+      <div class="card cp-card">
+        <div class="cp-flag"><svg width="6" height="6" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#c9a84c"/></svg> China · Huizhou</div>
+        <h3 class="cp-h3" data-zh="徽派天井" data-en="Huizhou Skywell" data-ru="Небесный Колодец">徽派天井</h3>
+        <div class="cp-sub">The Huizhou Skywell — "Tian Jing"</div>
+        <div class="cp-vis">
+          <div class="cp-vfill cp-vfill-huizhou"></div>
+          <div class="cp-overlay">天光下泻，四水归堂 · Light descends, four waters return home</div>
         </div>
+        <p class="cp-body" data-zh='天井是徽派民居的"呼吸之孔"——四面高墙围合，仅留中央一方天空。极度内聚的空间哲学源于"聚族而居"的宗族文化：高墙隔绝外界，天井将雨水与光线引入宅院，象征"肥水不流外人田"的财富积聚观念。天井不仅调节采光通风，更是家族仪礼举行的神圣场所——婚丧嫁娶、祭祀祖先，皆于此天地交汇之处完成。' data-en='The skywell is the "breathing pore" of Huizhou dwellings — four high walls enclose a single patch of sky. This inward philosophy stems from clan culture: walls block the outside while the skywell channels rain and light inward, symbolising wealth retention. Beyond regulating light and ventilation, the skywell is the sacred stage for family ceremonies.' data-ru='Небесный колодец — «дыхательная пора» жилища: четыре высокие стены окружают небо. Клановая культура замкнутости и накопления богатства. Помимо регулирования света и вентиляции, колодец — священная сцена семейных церемоний.'>天井是徽派民居的"呼吸之孔"——四面高墙围合，仅留中央一方天空。极度内聚的空间哲学源于"聚族而居"的宗族文化，天井不仅调节采光通风，更是家族仪礼举行的神圣场所——婚丧嫁娶、祭祀祖先，皆于此天地交汇之处完成。</p>
+        <div class="tag-row"><span class="tag">四水归堂</span><span class="tag">阴翳美学</span><span class="tag">风水格局</span><span class="tag">内向聚合</span><span class="tag">宗族记忆</span></div>
       </div>
-    </section>
-
-    <!-- ─────────────────────────────────────────────
-         §2  SKYWELL vs ATRIUM
-    ───────────────────────────────────────────────── -->
-    <section class="kw-section reveal">
-      <div class="kw-section-header">
-        <div class="kw-section-no">02</div>
-        <div class="kw-section-titles">
-          <div class="kw-section-zh">天井 · 内庭 · 坪庭</div>
-          <div class="kw-section-en">Skywell · Atrium · Tsuboniwa — Light from Above</div>
+      <!-- 罗马中庭 -->
+      <div class="card cp-card">
+        <div class="cp-flag"><svg width="6" height="6" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#2c3e50"/></svg> Mediterranean · Roman</div>
+        <h3 class="cp-h3" data-zh="罗马中庭" data-en="Roman Atrium" data-ru="Римский Атриум">罗马中庭</h3>
+        <div class="cp-sub">The Roman Atrium — "Compluvium"</div>
+        <div class="cp-vis">
+          <div class="cp-vfill cp-vfill-roman"></div>
+          <div class="cp-overlay">Compluvium opens to the sky · light, rain, and life converge</div>
         </div>
-        <div class="kw-section-rule"></div>
+        <p class="cp-body" data-zh="罗马中庭以天光孔（Compluvium）与地面蓄水盆（Impluvium）构成天地对话。与徽派天井相比，中庭更具公共性——它是会客、祭祀与社交的核心舞台，彰显主人社会地位，是权力的开放展示，体现人本主义对社会秩序的外向建构。" data-en="The Roman atrium pairs the Compluvium sky-opening with the Impluvium water basin. Unlike the Huizhou skywell, the atrium is fundamentally public — a stage for receiving guests, ritual, and social display of status, embodying humanist outward construction of social order." data-ru="Атриум соединяет compluvium с бассейном impluvium. В отличие от китайского аналога, публичен — сцена для гостей и демонстрации статуса.">罗马中庭以天光孔（Compluvium）与地面蓄水盆（Impluvium）构成天地对话。它是会客、祭祀与社交的核心舞台，是权力的开放展示，体现人本主义对社会秩序的外向建构。</p>
+        <div class="tag-row"><span class="tag">Compluvium</span><span class="tag">Impluvium</span><span class="tag">Public Display</span><span class="tag">Social Hierarchy</span><span class="tag">Power</span></div>
       </div>
+    </div>
+    <div class="deco-divider" data-zh="材料 · 空间 · 装饰" data-en="Material · Space · Ornament" data-ru="Материал · Пространство · Орнамент">材料 · 空间 · 装饰</div>
+    <div class="p2-bot">
+      <div class="card feat-card">
+        <div class="fc-no">I</div>
+        <div class="fc-h4" data-zh="建筑材质语言" data-en="Material Language" data-ru="Язык Материалов">建筑材质语言</div><span class="fc-en">Material Language · 材料即表达</span>
+        <div class="fr"><span class="flabel">徽</span><span class="ftext" data-zh="青砖、灰瓦、白墙、马头墙。黑白水墨的克制美学，材料服从礼制秩序，以素色隐喻谦逊与内敛的儒家精神。" data-en="Grey brick, dark tiles, white walls, horse-head gables. Restrained ink-wash aesthetic where materials submit to ritual order." data-ru="Серый кирпич, тёмная черепица, белые стены. Сдержанная эстетика туши.">青砖、灰瓦、白墙、马头墙。黑白水墨的克制美学，材料服从礼制秩序，以素色隐喻谦逊与内敛的儒家精神。</span></div>
+        <div class="fr"><span class="flabel w">西</span><span class="ftext" data-zh="石灰岩、大理石、赤陶砖。材质肌理本身即装饰，雕凿纹理彰显工艺征服自然之力，以丰盛感宣示人类主体性。" data-en="Limestone, marble, terracotta. Texture itself is decoration; carved patterns proclaim craft's mastery over nature." data-ru="Известняк, мрамор, терракота. Сама текстура — украшение.">石灰岩、大理石、赤陶砖。材质肌理本身即装饰，雕凿纹理彰显工艺征服自然之力，以丰盛感宣示人类主体性。</span></div>
+      </div>
+      <div class="card feat-card">
+        <div class="fc-no">II</div>
+        <div class="fc-h4" data-zh="空间哲学根基" data-en="Philosophy of Space" data-ru="Философия Пространства">空间哲学根基</div><span class="fc-en">Philosophy of Space · 内聚 vs 外展</span>
+        <div class="fr"><span class="flabel">徽</span><span class="ftext" data-zh="内向型聚合——高墙封闭，庭院凝视天空，体现儒家"内敛自守"伦理。每一道门槛都是礼制等级的物化界碑。" data-en="Inward gathering — high walls enclose, the courtyard gazes at sky, embodying Confucian self-restraint." data-ru="Внутренняя замкнутость — конфуцианская самодисциплина.">内向型聚合——高墙封闭，庭院凝视天空，体现儒家"内敛自守"伦理。每一道门槛都是礼制等级的物化界碑。</span></div>
+        <div class="fr"><span class="flabel w">西</span><span class="ftext" data-zh="外向型开放——柱廊向外伸展，立面彰显主体，体现人本主义"征服与展示"。空间的扩张是主体性的实现。" data-en="Outward openness — colonnades extend outward, façades display the subject, embodying humanist conquest." data-ru="Открытость вовне — колоннады и площади выражают гуманистическое завоевание.">外向型开放——柱廊向外伸展，立面彰显主体，体现人本主义"征服与展示"。空间的扩张是主体性的实现。</span></div>
+      </div>
+      <div class="card feat-card">
+        <div class="fc-no">III</div>
+        <div class="fc-h4" data-zh="装饰符号体系" data-en="Symbolic Ornament" data-ru="Символический Орнамент">装饰符号体系</div><span class="fc-en">Symbolic Ornament · 暗语 vs 宣言</span>
+        <div class="fr"><span class="flabel">徽</span><span class="ftext" data-zh='砖木石三雕以暗语传情：蝙蝠寓"福"，鹿寓"禄"，仙桃寓"寿"——吉祥图语是无声祈愿，装饰意义藏匿在文化密码中。' data-en='Carvings speak in code: bats mean fortune, deer mean prosperity, peaches mean longevity — auspicious imagery as silent prayer.' data-ru="Резьба говорит кодом: летучая мышь = удача, олень = процветание, персик = долголетие.">砖木石三雕以暗语传情：蝙蝠寓"福"，鹿寓"禄"，仙桃寓"寿"——吉祥图语是无声祈愿，装饰意义藏匿在文化密码中。</span></div>
+        <div class="fr"><span class="flabel w">西</span><span class="ftext" data-zh="神话雕刻直白表达：胜利女神、月桂冠、英雄浮雕——图像即权力的直接宣言，凯旋门上的历史无需密码即可读解。" data-en="Mythological sculpture speaks plainly: Nike, laurel crowns, heroic reliefs — imagery as direct declaration of power." data-ru="Мифологическая скульптура прямолинейна: Ника, лавровые венки — прямое заявление власти.">神话雕刻直白表达：胜利女神、月桂冠、英雄浮雕——图像即权力的直接宣言，凯旋门上的历史无需密码即可读解。</span></div>
+      </div>
+    </div>
+  </div>
 
-      <div class="compare-wrap">
-        <div class="glass-card compare-panel">
-          <div class="compare-badge">
-            <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#c9a84c"/></svg>
-            China · Huizhou
-          </div>
-          <h3>徽派天井</h3>
-          <div class="en-sub">The Huizhou Skywell — "Tian Jing"</div>
-          <div class="compare-visual">
-            <div class="compare-visual-fill" style="background: linear-gradient(135deg, #2c2c2c 0%, #4a4a4a 40%, #888 70%, #ccc 100%);"></div>
-            <div class="compare-visual-overlay">天光下泻，四水归堂 · Light descends, four waters return home</div>
-          </div>
-          <p>天井是徽派民居的"呼吸之孔"——四面高墙围合，仅留中央一方天空。这种极度内聚的空间哲学源于徽州"聚族而居"的宗族文化：高墙隔绝外界纷扰，天井则将雨水、光线与气流引入宅院，象征着"肥水不流外人田"的财富积聚观念。</p>
-          <div class="tag-row">
-            <span class="tag">四水归堂</span>
-            <span class="tag">阴翳美学</span>
-            <span class="tag">风水格局</span>
-            <span class="tag">内向聚合</span>
-          </div>
-        </div>
-
-        <div class="glass-card compare-panel">
-          <div class="compare-badge">
-            <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#2c3e50"/></svg>
-            Mediterranean · Roman
-          </div>
-          <h3>罗马中庭</h3>
-          <div class="en-sub">The Roman Atrium — "Compluvium"</div>
-          <div class="compare-visual">
-            <div class="compare-visual-fill" style="background: linear-gradient(135deg, #f5e6c8 0%, #d4a96a 40%, #c8843a 70%, #8b5a2b 100%);"></div>
-            <div class="compare-visual-overlay">Compluvium opens to the sky · light, rain, and life converge</div>
-          </div>
-          <p>罗马中庭（Atrium）以"天光孔"（Compluvium）与地面蓄水盆（Impluvium）构成古典的天地对话。与徽派天井相比，中庭更具公共性与展示性——它是会客、祭祀与家族社交的核心舞台，彰显主人的社会地位。</p>
-          <div class="tag-row">
-            <span class="tag">Compluvium</span>
-            <span class="tag">Impluvium</span>
-            <span class="tag">Public Display</span>
-            <span class="tag">Social Hierarchy</span>
-          </div>
+  <!-- ══ PANEL 3: PARALLEL COORDS + PHILOSOPHY ══ -->
+  <div class="panel" id="p3">
+    <div class="p3-header">
+      <div>
+        <div class="sec-eyebrow">Cultural Dimensions</div>
+        <div class="sec-title-zh" data-zh="六维文化指标 · 平行坐标可视化" data-en="Six-Dimensional Cultural Index · Parallel Coordinates" data-ru="Шестимерный Культурный Индекс">六维文化指标 · 平行坐标可视化</div>
+        <div class="gold-rule"></div>
+      </div>
+      <div class="p3-header-right">度</div>
+    </div>
+    <div class="p3-main">
+      <div class="card parallel-panel">
+        <div class="pc-legend" id="pcLegend"></div>
+        <div class="pc-svg-wrap">
+          <svg id="pcSvg" xmlns="http://www.w3.org/2000/svg"></svg>
         </div>
       </div>
-
-      <!-- Three comparison dimensions -->
-      <div class="feature-3">
-        <div class="glass-card feat-card">
-          <div class="feat-card-no">I</div>
-          <h4>建筑材质</h4>
-          <span class="feat-en">Material Language</span>
-          <div class="feat-row">
-            <span class="feat-label">徽</span>
-            <span class="feat-text">青砖、灰瓦、白墙、马头墙。以砖木石呈现黑白水墨的克制美学，材料服从于礼制秩序。</span>
-          </div>
-          <div class="feat-row">
-            <span class="feat-label west">西</span>
-            <span class="feat-text">石灰岩、大理石、赤陶砖。材质本身的厚重与肌理即是装饰，彰显财富与工艺征服自然的力量。</span>
-          </div>
-        </div>
-        <div class="glass-card feat-card">
-          <div class="feat-card-no">II</div>
-          <h4>空间哲学</h4>
-          <span class="feat-en">Philosophy of Space</span>
-          <div class="feat-row">
-            <span class="feat-label">徽</span>
-            <span class="feat-text">内向型聚合——高墙封闭外界，庭院向内凝视天空，体现"内敛自守"的儒家空间伦理。</span>
-          </div>
-          <div class="feat-row">
-            <span class="feat-label west">西</span>
-            <span class="feat-text">外向型开放——柱廊向外伸展，立面彰显主体，体现"征服与展示"的人本主义空间观。</span>
-          </div>
-        </div>
-        <div class="glass-card feat-card">
-          <div class="feat-card-no">III</div>
-          <h4>装饰寓意</h4>
-          <span class="feat-en">Symbolic Ornament</span>
-          <div class="feat-row">
-            <span class="feat-label">徽</span>
-            <span class="feat-text">砖木石三雕以暗语传情：蝙蝠寓"福"，鹿寓"禄"，仙桃寓"寿"——吉祥图语是无声的祈愿。</span>
-          </div>
-          <div class="feat-row">
-            <span class="feat-label west">西</span>
-            <span class="feat-text">神话雕刻直白表达：胜利女神、月桂冠、鹰纹——图像即权力的直接宣言，叙事性强。</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ─────────────────────────────────────────────
-         §3  WORLD MAP — Courtyard Architecture
-    ───────────────────────────────────────────────── -->
-    <section class="kw-section reveal">
-      <div class="kw-section-header">
-        <div class="kw-section-no">03</div>
-        <div class="kw-section-titles">
-          <div class="kw-section-zh">庭院建筑的全球分布</div>
-          <div class="kw-section-en">Courtyard Architecture — A Global Phenomenon</div>
-        </div>
-        <div class="kw-section-rule"></div>
-      </div>
-
-      <div class="glass-card" style="padding: 28px;">
-        <div id="worldMapChart"></div>
-        <div class="map-legend-row">
-          <div class="map-leg"><div class="map-leg-dot" style="background:#c9a84c;"></div>东亚天井系 East Asian Skywell</div>
-          <div class="map-leg"><div class="map-leg-dot" style="background:#e74c3c;"></div>地中海中庭系 Mediterranean Atrium</div>
-          <div class="map-leg"><div class="map-leg-dot" style="background:#9b59b6;"></div>伊斯兰里亚德 Islamic Riad</div>
-          <div class="map-leg"><div class="map-leg-dot" style="background:#2ecc71;"></div>南亚廊院系 South Asian Haveli</div>
-          <div class="map-leg"><div class="map-leg-dot" style="background:#3498db;"></div>拉美殖民庭院 Colonial Patio</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ─────────────────────────────────────────────
-         §4  BAR CHART — Dimension Scores
-    ───────────────────────────────────────────────── -->
-    <section class="kw-section reveal">
-      <div class="kw-section-header">
-        <div class="kw-section-no">04</div>
-        <div class="kw-section-titles">
-          <div class="kw-section-zh">六维文化指标对比</div>
-          <div class="kw-section-en">Six-Dimensional Cultural Index</div>
-        </div>
-        <div class="kw-section-rule"></div>
-      </div>
-
-      <div class="glass-card" style="padding: 28px;">
-        <div id="barChart"></div>
-      </div>
-    </section>
-
-    <!-- ─────────────────────────────────────────────
-         §5  PHILOSOPHY SIDE BY SIDE
-    ───────────────────────────────────────────────── -->
-    <section class="kw-section reveal">
-      <div class="kw-section-header">
-        <div class="kw-section-no">05</div>
-        <div class="kw-section-titles">
-          <div class="kw-section-zh">空间哲学的东西方对话</div>
-          <div class="kw-section-en">Spatial Philosophy — East Meets West</div>
-        </div>
-        <div class="kw-section-rule"></div>
-      </div>
-
-      <div class="glass-card" style="overflow: hidden;">
-        <div class="philosophy-grid">
-          <div class="phil-side" style="background: linear-gradient(135deg, rgba(201,168,76,.06), transparent);">
-            <div class="phil-title">东方·内聚</div>
+      <div class="card phil-panel">
+        <div class="phil-side">
+          <div class="phil-hdr">
+            <div class="sec-eyebrow">Oriental</div>
+            <div class="phil-title" data-zh="东方·内聚" data-en="Oriental · Inward" data-ru="Восточный">东方·内聚</div>
             <div class="phil-en">Oriental · Inward Convergence</div>
-
-            <div class="phil-item">
-              <div class="phil-icon cn">☯</div>
-              <div class="phil-item-body">
-                <div class="phil-item-zh">天人合一</div>
-                <div class="phil-item-en">Heaven-Human Unity</div>
-                <div class="phil-item-desc">天井将天空框入建筑，宇宙秩序内化于居所，自然在建筑内部显现。</div>
-              </div>
-            </div>
-
-            <div class="phil-item">
-              <div class="phil-icon cn">⛩</div>
-              <div class="phil-item-body">
-                <div class="phil-item-zh">礼制空间序列</div>
-                <div class="phil-item-en">Ritual Spatial Hierarchy</div>
-                <div class="phil-item-desc">门楼→天井→正厅→后堂，轴线严格，每一进都是礼制等级的物化呈现。</div>
-              </div>
-            </div>
-
-            <div class="phil-item">
-              <div class="phil-icon cn">🪷</div>
-              <div class="phil-item-body">
-                <div class="phil-item-zh">阴翳礼赞</div>
-                <div class="phil-item-en">In Praise of Shadows</div>
-                <div class="phil-item-desc">幽暗与明亮的对比成就意境之美，如徽州天井的"一线天"——有节制的光才是艺术。</div>
-              </div>
-            </div>
-
-            <div class="phil-item">
-              <div class="phil-icon cn">🏛</div>
-              <div class="phil-item-body">
-                <div class="phil-item-zh">宗族记忆的容器</div>
-                <div class="phil-item-en">Vessel of Clan Memory</div>
-                <div class="phil-item-desc">每一处三雕、每一块砖都铭刻家族故事，建筑是宗族历史的有形档案。</div>
-              </div>
-            </div>
+            <div class="gold-rule"></div>
           </div>
-
-          <div class="phil-vs">VS</div>
-
-          <div class="phil-side" style="background: linear-gradient(225deg, rgba(44,62,80,.06), transparent);">
-            <div class="phil-title">西方·外扩</div>
+          <div class="ph-item"><div class="ph-icon cn">☯</div><div>
+            <div class="ph-zh" data-zh="天人合一" data-en="Heaven-Human Unity" data-ru="Единство Неба">天人合一</div>
+            <div class="ph-en2">Heaven-Human Unity</div>
+            <div class="ph-desc" data-zh="天井将天空框入建筑，宇宙秩序内化于居所，自然在建筑内部静默显现。" data-en="The skywell frames sky within architecture; cosmic order internalised in the dwelling." data-ru="Небесный колодец вносит небо в дом; космический порядок внутри жилища.">天井将天空框入建筑，宇宙秩序内化于居所，自然在建筑内部静默显现。</div>
+          </div></div>
+          <div class="ph-item"><div class="ph-icon cn">⛩</div><div>
+            <div class="ph-zh" data-zh="礼制空间序列" data-en="Ritual Spatial Hierarchy" data-ru="Ритуальная Иерархия">礼制空间序列</div>
+            <div class="ph-en2">Ritual Spatial Hierarchy</div>
+            <div class="ph-desc" data-zh="门楼→天井→正厅→后堂，轴线严格，每一进都是礼制等级的物化呈现。" data-en="Gate → skywell → main hall → rear chamber: strict axis materialising ritual rank." data-ru="Ворота → колодец → зал: строгая ось ритуальной иерархии.">门楼→天井→正厅→后堂，轴线严格，每一进都是礼制等级的物化呈现。</div>
+          </div></div>
+          <div class="ph-item"><div class="ph-icon cn">🪷</div><div>
+            <div class="ph-zh" data-zh="阴翳礼赞" data-en="In Praise of Shadows" data-ru="Похвала Тени">阴翳礼赞</div>
+            <div class="ph-en2">In Praise of Shadows (Tanizaki)</div>
+            <div class="ph-desc" data-zh="幽暗与明亮对比成就意境之美——有节制的光才是艺术，暗影是空间叙事的主角。" data-en="Shadow and light contrast achieves aesthetic depth — restrained light is art." data-ru="Контраст тени и света создаёт красоту — сдержанный свет есть искусство.">幽暗与明亮对比成就意境之美——有节制的光才是艺术，暗影是空间叙事的主角。</div>
+          </div></div>
+          <div class="ph-item"><div class="ph-icon cn">🏛</div><div>
+            <div class="ph-zh" data-zh="宗族记忆的容器" data-en="Vessel of Clan Memory" data-ru="Сосуд Памяти">宗族记忆的容器</div>
+            <div class="ph-en2">Vessel of Clan Memory</div>
+            <div class="ph-desc" data-zh="每一处三雕、每一块砖都铭刻家族故事，建筑是宗族历史的有形档案。" data-en="Every carving and brick records family history; architecture is the clan's tangible archive." data-ru="Каждая резьба хранит историю семьи; архитектура — осязаемый архив клана.">每一处三雕、每一块砖都铭刻家族故事，建筑是宗族历史的有形档案，砖缝中藏着世代的悲欢。</div>
+          </div></div>
+        </div>
+        <div class="phil-vs">VS</div>
+        <div class="phil-side">
+          <div class="phil-hdr">
+            <div class="sec-eyebrow">Western</div>
+            <div class="phil-title" data-zh="西方·外扩" data-en="Western · Outward" data-ru="Западный">西方·外扩</div>
             <div class="phil-en">Western · Outward Expansion</div>
+            <div class="gold-rule"></div>
+          </div>
+          <div class="ph-item"><div class="ph-icon we">⚡</div><div>
+            <div class="ph-zh" data-zh="征服自然" data-en="Conquest of Nature" data-ru="Завоевание Природы">征服自然</div>
+            <div class="ph-en2">Conquest of Nature</div>
+            <div class="ph-desc" data-zh="建筑以雄壮形式宣示人对自然的主宰，宫殿立面是权力的最大化展示，石柱即征服的里程碑。" data-en="Architecture proclaims human mastery over nature; palace façades maximise display of power." data-ru="Архитектура провозглашает власть человека; фасады — максимум власти.">建筑以雄壮形式宣示人对自然的主宰，宫殿立面是权力的最大化展示，石柱即征服的里程碑。</div>
+          </div></div>
+          <div class="ph-item"><div class="ph-icon we">🏛</div><div>
+            <div class="ph-zh" data-zh="古典比例系统" data-en="Classical Orders" data-ru="Классические Ордера">古典比例系统</div>
+            <div class="ph-en2">Classical Orders &amp; Golden Proportion</div>
+            <div class="ph-desc" data-zh="多立克、爱奥尼、科林斯柱式，黄金比例构建了理性几何美学——数学秩序是神性的映射。" data-en="Doric, Ionic, Corinthian — the golden ratio builds rational geometric aesthetics." data-ru="Дорический, ионический, коринфский — золотое сечение как рациональная эстетика.">多立克、爱奥尼、科林斯柱式，黄金比例构建了理性几何美学——数学秩序是神性的映射。</div>
+          </div></div>
+          <div class="ph-item"><div class="ph-icon we">☀</div><div>
+            <div class="ph-zh" data-zh="光的神学" data-en="Theology of Light" data-ru="Теология Света">光的神学</div>
+            <div class="ph-en2">Theology of Light (Lux Nova)</div>
+            <div class="ph-desc" data-zh="哥特式大窗追求最大采光，光即神圣，彩色玻璃将光转化为神学叙事——上帝通过光进入人间。" data-en="Gothic windows maximise light; light is sacred; stained glass transforms it into theological narrative." data-ru="Готические окна максимизируют свет; витражи превращают свет в богословский нарратив.">哥特式大窗追求最大采光，光即神圣，彩色玻璃将光转化为神学叙事——上帝通过光进入人间。</div>
+          </div></div>
+          <div class="ph-item"><div class="ph-icon we">🗽</div><div>
+            <div class="ph-zh" data-zh="个体与公共的平衡" data-en="Individual vs. Civic Space" data-ru="Личное и Общественное">个体与公共的平衡</div>
+            <div class="ph-en2">Individual vs. Civic Space</div>
+            <div class="ph-desc" data-zh="广场、柱廊与市政厅构建公共领域，私宅对外开放立面——空间的社会性被视为文明的根本。" data-en="Piazzas, colonnades and town halls build the public realm; social space is fundamental to civilisation." data-ru="Площади и ратуши строят общественное пространство; социальность — основа цивилизации.">广场、柱廊与市政厅构建公共领域，私宅对外开放立面——空间的社会性被视为文明的根本。</div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-            <div class="phil-item">
-              <div class="phil-icon we">⚡</div>
-              <div class="phil-item-body">
-                <div class="phil-item-zh">征服自然</div>
-                <div class="phil-item-en">Conquest of Nature</div>
-                <div class="phil-item-desc">建筑以雄壮形式宣示人对自然的主宰地位，宫殿与教堂立面是权力的最大化展示。</div>
-              </div>
-            </div>
+  <!-- ══ PANEL 4: WORLD MAP (Leaflet) ══ -->
+  <div class="panel" id="p4">
+    <div class="map-header">
+      <div>
+        <div class="sec-eyebrow">Global Distribution</div>
+        <div class="sec-title-zh" data-zh="庭院建筑的全球分布图谱" data-en="Global Courtyard Architecture Distribution" data-ru="Глобальное Распределение Дворовой Архитектуры">庭院建筑的全球分布图谱</div>
+        <div class="gold-rule"></div>
+      </div>
+      <div class="map-header-right">
+        <div class="map-stat-badge"><strong>17</strong> 遗址标注</div>
+        <div class="map-stat-badge"><strong>5</strong> 文化系统</div>
+        <div class="map-stat-badge"><strong>3</strong> 大洲覆盖</div>
+      </div>
+    </div>
+    <div class="map-main">
+      <div class="card map-card">
+        <div class="map-canvas-wrap">
+          <!-- Real Leaflet map replaces canvas -->
+          <div id="leafletMap"></div>
+          <div class="map-legend-row">
+            <div class="ml"><div class="ml-dot" style="background:#c9a84c;"></div><span data-zh="东亚天井系" data-en="East Asian Skywell" data-ru="Восточноазиатский">东亚天井系</span></div>
+            <div class="ml"><div class="ml-dot" style="background:#e74c3c;"></div><span data-zh="地中海中庭系" data-en="Mediterranean Atrium" data-ru="Средиземноморский">地中海中庭系</span></div>
+            <div class="ml"><div class="ml-dot" style="background:#9b59b6;"></div><span data-zh="伊斯兰里亚德" data-en="Islamic Riad" data-ru="Исламский Риад">伊斯兰里亚德</span></div>
+            <div class="ml"><div class="ml-dot" style="background:#2ecc71;"></div><span data-zh="南亚廊院系" data-en="South Asian" data-ru="Южноазиатский">南亚廊院系</span></div>
+            <div class="ml"><div class="ml-dot" style="background:#3498db;"></div><span data-zh="拉美殖民庭院" data-en="Latin American" data-ru="Латиноамериканский">拉美殖民庭院</span></div>
+          </div>
+        </div>
+        <div style="flex-shrink:0;height:80px;position:relative;overflow:hidden;" id="tlWrap">
+          <div id="tlInner" style="position:absolute;inset:0;"></div>
+        </div>
+      </div>
+      <div class="map-side">
+        <div class="region-card" onclick="zoomToRegion('eastasia',32,115,5,this)">
+          <div class="rc-title"><span class="rc-dot" style="background:#c9a84c;"></span><span data-zh="东亚天井系" data-en="East Asian Skywell" data-ru="Восточноазиатский">东亚天井系</span></div>
+          <div class="rc-sub">China · Japan · Korea</div>
+          <div class="rc-desc" data-zh="从徽州到京都，天井哲学贯穿东亚——内聚式空间，以自然为师，天光是最高贵的装饰。" data-en="From Huizhou to Kyoto, the skywell philosophy unifies East Asia — inward space, nature as teacher." data-ru="От Хуэйчжоу до Киото — небесный колодец объединяет Восточную Азию.">从徽州到京都，天井哲学贯穿东亚——内聚式空间，以自然为师，天光是最高贵的装饰。</div>
+        </div>
+        <div class="region-card" onclick="zoomToRegion('mediterranean',38,14,5,this)">
+          <div class="rc-title"><span class="rc-dot" style="background:#e74c3c;"></span><span data-zh="地中海中庭系" data-en="Mediterranean Atrium" data-ru="Средиземноморский">地中海中庭系</span></div>
+          <div class="rc-sub">Italy · Greece · Spain</div>
+          <div class="rc-desc" data-zh="从庞贝到塞维利亚，地中海文明以开放中庭展演社会地位，阳光是荣耀的媒介而非秘密。" data-en="From Pompeii to Seville, Mediterranean civilisations used the open atrium to perform social status." data-ru="От Помпей до Севильи — открытый атриум как сцена социального статуса.">从庞贝到塞维利亚，地中海文明以开放中庭展演社会地位，阳光是荣耀的媒介而非秘密。</div>
+        </div>
+        <div class="region-card" onclick="zoomToRegion('islamic',30,18,4,this)">
+          <div class="rc-title"><span class="rc-dot" style="background:#9b59b6;"></span><span data-zh="伊斯兰里亚德" data-en="Islamic Riad" data-ru="Исламский Риад">伊斯兰里亚德</span></div>
+          <div class="rc-sub">Morocco · Egypt · Iran</div>
+          <div class="rc-desc" data-zh="几何图案如同凝固的祷告，十字水池映照天堂蓝穹，每一块马赛克都是信仰的数学证明。" data-en="Geometric patterns as frozen prayers; cross-shaped pools mirror the heavenly dome." data-ru="Геометрические паттерны — замёрзшие молитвы; каждая плитка — математическое доказательство веры.">几何图案如同凝固的祷告，十字水池映照天堂蓝穹，每一块马赛克都是信仰的数学证明。</div>
+        </div>
+        <div class="region-card" onclick="zoomToRegion('southasia',10,-60,3,this)">
+          <div class="rc-title"><span class="rc-dot" style="background:#2ecc71;"></span><span data-zh="南亚·拉美系" data-en="South Asia · Latin America" data-ru="Южная Азия · Латинская Америка">南亚·拉美系</span></div>
+          <div class="rc-sub">India · Colombia · Mexico</div>
+          <div class="rc-desc" data-zh="廊院融合殖民痕迹与本土智慧，热带气候催生了遮阴廊道与水景庭院的共生美学。" data-en="Courtyard forms fuse colonial traces with indigenous wisdom; tropical climates birthed shaded arcades." data-ru="Смесь колониального и местного; тропический климат породил аркады и водные сады.">廊院融合殖民痕迹与本土智慧，热带气候催生了遮阴廊道与水景庭院的共生美学。</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-            <div class="phil-item">
-              <div class="phil-icon we">🏛</div>
-              <div class="phil-item-body">
-                <div class="phil-item-zh">古典比例系统</div>
-                <div class="phil-item-en">Classical Orders & Proportion</div>
-                <div class="phil-item-desc">多立克、爱奥尼、科林斯柱式，黄金比例的普遍适用，构建了理性几何美学体系。</div>
-              </div>
-            </div>
-
-            <div class="phil-item">
-              <div class="phil-icon we">☀</div>
-              <div class="phil-item-body">
-                <div class="phil-item-zh">光的神学</div>
-                <div class="phil-item-en">Theology of Light</div>
-                <div class="phil-item-desc">哥特式大窗追求最大采光，光即神圣，彩色玻璃将光转化为神学叙事。</div>
-              </div>
-            </div>
-
-            <div class="phil-item">
-              <div class="phil-icon we">🗽</div>
-              <div class="phil-item-body">
-                <div class="phil-item-zh">个体与公共的平衡</div>
-                <div class="phil-item-en">Individual vs. Civic Space</div>
-                <div class="phil-item-desc">广场、柱廊与市政厅构建了公共领域，私宅对外开放立面，社会性优先于私密性。</div>
-              </div>
-            </div>
+  <!-- ══ PANEL 5: 文化星图 ══ -->
+  <div class="panel" id="p5">
+    <div class="p5-header">
+      <div>
+        <div class="sec-eyebrow">Cross-Cultural Star Map</div>
+        <div class="sec-title-zh" data-zh="文明星图 · 跨越边界的建筑感悟" data-en="Civilisation Star Map · Architectural Reflections Across Borders" data-ru="Звёздная карта цивилизаций">文明星图 · 跨越边界的建筑感悟</div>
+        <div class="gold-rule"></div>
+      </div>
+      <div class="p5-header-line"></div>
+      <div style="font-family:'Ma Shan Zheng',cursive;font-size:2.8rem;color:rgba(201,168,76,.13);line-height:1;flex-shrink:0;">星 · 图</div>
+    </div>
+    <div class="p5-body">
+      <div class="card star-map-card">
+        <div class="star-map-title">
+          <span data-zh="点击文化节点，探索跨文化共鸣" data-en="Click a culture node to explore cross-cultural resonance" data-ru="Нажмите на узел для исследования">点击文化节点，探索跨文化共鸣</span>
+          <span class="star-map-hint" data-zh="连线粗细表示共鸣强度" data-en="Line weight = resonance strength" data-ru="Толщина линий — сила резонанса">连线粗细表示共鸣强度</span>
+        </div>
+        <svg id="starMapSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div class="culture-detail">
+        <div class="card node-info-card" id="nodeInfoCard">
+          <div class="ni-placeholder">
+            <div class="ni-icon">✦</div>
+            <div class="ni-text" data-zh="点击左侧星图中的文化节点，读取田野感悟与文化共鸣数据" data-en="Click a cultural node in the star map to explore field reflections and resonance data" data-ru="Нажмите на узел звёздной карты для изучения данных">点击左侧星图中的文化节点，读取田野感悟与文化共鸣数据</div>
+          </div>
+        </div>
+        <div class="card connection-card">
+          <div class="conn-title" data-zh="跨文化共鸣图例" data-en="Cross-Cultural Resonance Legend" data-ru="Легенда резонанса">跨文化共鸣图例</div>
+          <div class="conn-items">
+            <div class="conn-item"><div class="conn-line-seg" style="background:rgba(201,168,76,.8);"></div><span data-zh="强共鸣 · 深层文化平行" data-en="Strong resonance · deep cultural parallel" data-ru="Сильный резонанс">强共鸣 · 深层文化平行</span></div>
+            <div class="conn-item"><div class="conn-line-seg" style="background:rgba(201,168,76,.35);border-top:2px dashed rgba(201,168,76,.5);height:0;"></div><span data-zh="弱共鸣 · 表层形式呼应" data-en="Weak resonance · surface formal echo" data-ru="Слабый резонанс">弱共鸣 · 表层形式呼应</span></div>
+            <div class="conn-item"><div class="conn-line-seg" style="background:rgba(139,26,26,.5);"></div><span data-zh="文化张力 · 相互对照的差异" data-en="Cultural tension · contrasting difference" data-ru="Культурное напряжение">文化张力 · 相互对照的差异</span></div>
           </div>
         </div>
       </div>
-    </section>
-
-    <!-- ─────────────────────────────────────────────
-         §6  CULTURAL EXCHANGE TIMELINE
-    ───────────────────────────────────────────────── -->
-    <section class="kw-section reveal">
-      <div class="kw-section-header">
-        <div class="kw-section-no">06</div>
-        <div class="kw-section-titles">
-          <div class="kw-section-zh">徽商与文化交流时间轴</div>
-          <div class="kw-section-en">Huizhou Merchants & Cultural Exchange Timeline</div>
-        </div>
-        <div class="kw-section-rule"></div>
-      </div>
-
-      <div class="glass-card" style="padding: 28px;">
-        <div id="timelineChart"></div>
-      </div>
-    </section>
-
-    <!-- ─────────────────────────────────────────────
-         §7  TEAM INSIGHTS
-    ───────────────────────────────────────────────── -->
-    <section class="kw-section reveal">
-      <div class="kw-section-header">
-        <div class="kw-section-no">07</div>
-        <div class="kw-section-titles">
-          <div class="kw-section-zh">跨文化田野感悟</div>
-          <div class="kw-section-en">Field Reflections on Cultural Encounter</div>
-        </div>
-        <div class="kw-section-rule"></div>
-      </div>
-
-      <div class="insights-grid">
-        <div class="glass-card insight-card">
-          <div class="insight-zh">天井的光，是被建筑驯化的自然。站在承志堂中央仰望那片天空，我忽然理解了中国人对"内"的执念——那不是封闭，而是对宇宙最深情的凝视方式。</div>
-          <div class="insight-en">"The light of the skywell is nature domesticated by architecture. Standing at the center of Chengzhi Hall, gazing up at that framed sky, I finally understood the Chinese devotion to 'inwardness' — not enclosure, but the most intimate way of contemplating the cosmos."</div>
-          <div class="insight-author">—— 成员一</div>
-        </div>
-
-        <div class="glass-card insight-card">
-          <div class="insight-zh">当我把徽州的砖雕与伊斯兰里亚德的瓷砖马赛克并排比较，震惊地发现：相距万里的两种文明，都不约而同地选择用几何图案来表达无限与永恒。文化的平行进化令人敬畏。</div>
-          <div class="insight-en">"Placing Huizhou brick carvings beside Islamic riad tile mosaics, I was struck: two civilizations worlds apart had independently chosen geometric patterns to express infinity. The parallel evolution of cultures is humbling."</div>
-          <div class="insight-author">—— 成员二</div>
-        </div>
-
-        <div class="glass-card insight-card">
-          <div class="insight-zh">马头墙是徽州妇女守候的地平线，也是徽商离家时最后回望的轮廓。当我在威尼斯看到相似的天际线时，意识到：所有的乡愁，都在屋顶上凝固成了诗。</div>
-          <div class="insight-en">"The horse-head walls were the skyline Huizhou women watched, and the last silhouette merchants saw when leaving home. Seeing a similar roofscape in Venice, I realized: all nostalgia eventually crystallizes into rooftops."</div>
-          <div class="insight-author">—— 成员三</div>
-        </div>
-
-        <div class="glass-card insight-card">
-          <div class="insight-zh">宏村的水系设计让我想起荷兰运河城市。不同文明面对相同的自然挑战，却发展出截然不同的诗意回应——这正是人类文明多样性最动人的证明。</div>
-          <div class="insight-en">"Hongcun's water system reminded me of Dutch canal cities. Facing similar natural challenges, different civilizations developed entirely distinct poetic responses — this is the most moving proof of human cultural diversity."</div>
-          <div class="insight-author">—— 成员四</div>
-        </div>
-      </div>
-    </section>
-
-  </div><!-- /kw-page -->
-
-  <!-- ── Footer ──────────────────────────────────── -->
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-location">安徽省黄山市黟县宏村 · UNESCO World Heritage Site Since 2000</div>
     </div>
-  </footer>
+  </div>
 
-  <!-- ══════════════════════════════════════════════
-       SCRIPTS
-  ══════════════════════════════════════════════════ -->
-  <script>
+</div>
 
-  /* ── Scroll Reveal ──────────────────────────── */
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
-  }, { threshold: 0.08 });
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-  /* ── Counter ────────────────────────────────── */
-  function animateCounter(el) {
-    const target = +el.dataset.target;
-    const suffix = el.dataset.suffix || '';
-    let current = 0;
-    const step = Math.ceil(target / 60);
-    const timer = setInterval(() => {
-      current = Math.min(current + step, target);
-      el.textContent = current.toLocaleString() + suffix;
-      if (current >= target) clearInterval(timer);
-    }, 20);
+/* ═══ TAB ═══ */
+window.goTab = function(idx, btn) {
+  document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('active',i===idx));
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(idx===3){setTimeout(()=>{initLeafletMap();drawTimeline();},80);}
+  if(idx===2){setTimeout(()=>{buildParallelCoords();},80);}
+  if(idx===4){setTimeout(()=>{buildStarMap();},80);}
+};
+
+/* ═══ LANG ═══ */
+let lang='zh';
+window.setLang=function(l){
+  lang=l;
+  document.querySelectorAll('[data-zh]').forEach(el=>{
+    const t=el.getAttribute('data-'+l)||el.getAttribute('data-zh');
+    if(el.tagName==='INPUT'||el.tagName==='TEXTAREA') el.placeholder=t;
+    else el.textContent=t;
+  });
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('lang-active'));
+  document.getElementById('btn'+l.toUpperCase()).classList.add('lang-active');
+  const lm={zh:labZH,en:labEN,ru:labRU}[l]||labZH;
+  lm.forEach((t,i)=>document.getElementById('lb'+i).textContent=t);
+  buildParallelCoordsLabels();
+};
+
+/* ═══ COUNTERS ═══ */
+document.querySelectorAll('.stat-n[data-target]').forEach(el=>{
+  const t=+el.dataset.target;let c=0,step=Math.ceil(t/48);
+  setTimeout(()=>{const iv=setInterval(()=>{c=Math.min(c+step,t);el.textContent=c.toLocaleString();if(c>=t)clearInterval(iv);},18);},400);
+});
+
+/* ═══ RADAR ═══ */
+const cx=180,cy=155,R=108,N=6;
+const angs=Array.from({length:N},(_,i)=>i*2*Math.PI/N-Math.PI/2);
+const labZH=['自然融合','装饰丰富度','社会开放性','精神象征性','垂直空间感','工艺精湛度'];
+const labEN=['Nature','Decoration','Social','Spiritual','Vertical','Craft'];
+const labRU=['Природа','Декор','Открытость','Духовность','Вертикаль','Мастерство'];
+const series=[
+  {id:'rp0',vals:[82,88,38,90,72,95],color:'#c9a84c'},
+  {id:'rp1',vals:[60,72,88,70,55,78],color:'#e74c3c'},
+  {id:'rp2',vals:[90,55,45,85,40,88],color:'#2ecc71'},
+  {id:'rp3',vals:[55,98,60,96,48,92],color:'#3498db'},
+];
+function pts(v){return v.map((vv,i)=>{const r=R*vv/100;return[cx+r*Math.cos(angs[i]),cy+r*Math.sin(angs[i])];}).map(p=>p.join(',')).join(' ');}
+function gpts(p){return angs.map(a=>[cx+R*p*Math.cos(a),cy+R*p*Math.sin(a)]).map(p=>p.join(',')).join(' ');}
+[.25,.5,.75,1].forEach((p,i)=>document.getElementById('g'+(i+1)).setAttribute('points',gpts(p)));
+angs.forEach((a,i)=>{
+  const ax=document.getElementById('ax'+i);
+  ax.setAttribute('x1',cx);ax.setAttribute('y1',cy);
+  ax.setAttribute('x2',cx+R*Math.cos(a));ax.setAttribute('y2',cy+R*Math.sin(a));
+  const lb=document.getElementById('lb'+i);
+  lb.setAttribute('x',cx+(R+20)*Math.cos(a));lb.setAttribute('y',cy+(R+20)*Math.sin(a));
+  lb.textContent=labZH[i];
+  if(i===0||i===3) lb.setAttribute('text-anchor','middle');
+  else if(i===1||i===2) lb.setAttribute('text-anchor','start');
+  else lb.setAttribute('text-anchor','end');
+});
+series.forEach(s=>document.getElementById(s.id).setAttribute('points',pts(s.vals)));
+[0,1,2,3].forEach(i=>document.getElementById('rp'+i).addEventListener('click',()=>selectArch(i)));
+
+const archNames={zh:['徽派','地中海','町家','伊斯兰'],en:['Huizhou','Med.','Machiya','Riad'],ru:['Хуэй','Средиз.','Матия','Риад']};
+function buildRadarScores(){
+  const c=document.getElementById('radarScores');c.innerHTML='';
+  const names=(archNames[lang]||archNames.zh);
+  series.forEach((s,i)=>{
+    const avg=Math.round(s.vals.reduce((a,b)=>a+b,0)/s.vals.length);
+    const el=document.createElement('div');el.className='rs-item';
+    el.innerHTML=`<span class="rs-dot" style="background:${s.color};"></span>${names[i]} <strong style="color:${s.color};font-family:'Playfair Display',serif;">${avg}</strong>`;
+    c.appendChild(el);
+  });
+}
+buildRadarScores();
+
+/* ═══════════════════════════════════════
+   3D MODEL
+═══════════════════════════════════════ */
+let sc3, ca3, re3, co3, gp3, init3 = false;
+const MODEL_PATHS = [
+  'public/models/model_0.glb','public/models/model_1.glb',
+  'public/models/model_2.glb','public/models/model_3.glb',
+];
+const ARCH=[
+  {nameZH:'徽派民居',nameEN:'Huizhou Vernacular · China',descZH:'以天井为核心，内聚型空间，黑白美学，三雕并重，强调宗族伦理秩序。高墙封院、四水归堂，是徽商家族凝固的精神家园。',descEN:'Centred on the skywell; inward-gathering space; black-and-white aesthetics; clan ethical order.',descRU:'Центр — небесный колодец; замкнутое пространство; чёрно-белая эстетика; клановая этика.',tags:['天井','马头墙','三雕','宗族'],stats:[{n:'800+',l:'年历史'},{n:'140',l:'明清建筑'},{n:'95',l:'工艺指数'},{n:'90',l:'精神象征'}],color:0xc9a84c},
+  {nameZH:'地中海民居',nameEN:'Mediterranean Vernacular',descZH:'以中庭为中心，石灰白墙，强调光线、通风与公共交往空间。开放的柱廊与外向立面彰显主人社会地位与活力，阳光是荣耀的媒介。',descEN:'Atrium-centred; lime-white walls; emphasises light, ventilation and communal exchange.',descRU:'Атриум в центре; белые стены; акцент на свет, вентиляцию и общение.',tags:['Compluvium','石灰墙','柱廊','公共性'],stats:[{n:'2500+',l:'年历史'},{n:'88',l:'社会开放'},{n:'78',l:'工艺精湛'},{n:'70',l:'精神象征'}],color:0xe74c3c},
+  {nameZH:'日本町家',nameEN:'Japanese Machiya',descZH:'纵深式布局，坪庭引入自然，极简美学，以"间"为模数，禅意空间将城市性与自然性完美融合。侘寂美学贯穿每一处细节。',descEN:'Deep-plan layout; tsubo-niwa garden; minimalist Zen aesthetics using the ma module.',descRU:'Глубокая планировка; садик цубо-нива; дзен-эстетика модуля «ма».',tags:['坪庭','間','禅','极简'],stats:[{n:'400+',l:'年历史'},{n:'90',l:'自然融合'},{n:'88',l:'工艺精湛'},{n:'85',l:'精神象征'}],color:0x2ecc71},
+  {nameZH:'伊斯兰庭院',nameEN:'Islamic Riad · N. Africa',descZH:'十字庭院，华丽几何装饰，强调内外精神隔离；四格水池象征天堂，几何砖饰精密繁复，体现伊斯兰艺术最高精髓。',descEN:'Cross-shaped courtyard; ornate geometric decoration; spiritual separation. Four-part pool symbolises paradise.',descRU:'Крестообразный двор; изысканная геометрия; духовное разделение.',tags:['十字庭','几何纹','里亚德','神圣'],stats:[{n:'1200+',l:'年历史'},{n:'98',l:'装饰丰富'},{n:'96',l:'精神象征'},{n:'92',l:'工艺精湛'}],color:0x3498db},
+];
+
+function initThreeJS() {
+  const container = document.getElementById('threeCanvas');
+  const w = Math.max(container.clientWidth, 300);
+  const h = Math.max(container.clientHeight, 200);
+  sc3 = new THREE.Scene(); sc3.background = new THREE.Color(0x0a0816);
+  ca3 = new THREE.PerspectiveCamera(45, w / h, 0.1, 200);
+  ca3.position.set(0, 1.5, 8);
+  re3 = new THREE.WebGLRenderer({ antialias: true });
+  re3.setSize(w, h); re3.setPixelRatio(Math.min(devicePixelRatio, 2));
+  re3.shadowMap.enabled = true;
+  container.insertBefore(re3.domElement, container.firstChild);
+  re3.domElement.style.borderRadius = '10px'; re3.domElement.style.display = 'block';
+  re3.domElement.style.width = '100%'; re3.domElement.style.height = '100%';
+  co3 = new OrbitControls(ca3, re3.domElement);
+  co3.enableDamping = true; co3.dampingFactor = 0.08;
+  co3.minDistance = 3; co3.maxDistance = 18; co3.target.set(0, 0, 0);
+  sc3.add(new THREE.AmbientLight(0xfdf0d0, 0.8));
+  const dl = new THREE.DirectionalLight(0xfff5e0, 1.2);
+  dl.position.set(5, 9, 5); dl.castShadow = true; sc3.add(dl);
+  const pl = new THREE.PointLight(0xc9a84c, 0.4, 20); pl.position.set(-4, 2, -3); sc3.add(pl);
+  const pl2 = new THREE.PointLight(0x4488ff, 0.12, 14); pl2.position.set(4, -1, 3); sc3.add(pl2);
+  const sp = [];
+  for (let i = 0; i < 200; i++) sp.push((Math.random() - .5) * 30, (Math.random() - .5) * 30, (Math.random() - .5) * 30);
+  const sg = new THREE.BufferGeometry();
+  sg.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3));
+  sc3.add(new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xd4a017, size: .07, transparent: true, opacity: .18 })));
+  const gnd = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.MeshStandardMaterial({ color: 0x070614, roughness: .95 }));
+  gnd.rotation.x = -Math.PI / 2; gnd.position.y = -2.2; gnd.receiveShadow = true; sc3.add(gnd);
+  (function loop() { requestAnimationFrame(loop); co3.update(); if (gp3) gp3.rotation.y += .004; re3.render(sc3, ca3); })();
+  init3 = true;
+}
+
+function loadDemoModel(idx) {
+  if (gp3) {
+    sc3.remove(gp3);
+    gp3.traverse(ch => { if (ch.geometry) ch.geometry.dispose(); if (ch.material) { if (Array.isArray(ch.material)) ch.material.forEach(m => m.dispose()); else ch.material.dispose(); } });
+    gp3 = null;
   }
-  const statObs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.querySelectorAll('.stat-num').forEach(animateCounter);
-        statObs.unobserve(e.target);
+  const hint = document.getElementById('mpCanvasHint');
+  hint.textContent = '模型加载中...';
+  const loader = new GLTFLoader();
+  const path = MODEL_PATHS[idx] || MODEL_PATHS[0];
+  loader.load(path, gltf => {
+    gp3 = gltf.scene;
+    const box = new THREE.Box3().setFromObject(gp3);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    const scale = 3 / Math.max(size.x, size.y, size.z);
+    gp3.scale.setScalar(scale);
+    gp3.position.sub(center.multiplyScalar(scale));
+    gp3.traverse(ch => { if (ch.isMesh) { ch.castShadow = true; ch.receiveShadow = true; } });
+    sc3.add(gp3);
+    ca3.position.set(0, 1.5, 8); co3.target.set(0, 0, 0); co3.update();
+    hint.textContent = '🖱️ 拖拽旋转 · 滚轮缩放';
+  }, xhr => { if (xhr.total > 0) hint.textContent = `加载中 ${Math.round(xhr.loaded / xhr.total * 100)}%`; },
+  err => { console.warn('GLB加载失败，使用备用几何模型', err); hint.textContent = '🖱️ 拖拽旋转 · 滚轮缩放'; loadFallbackModel(idx); });
+}
+
+function loadFallbackModel(idx) {
+  if (gp3) { sc3.remove(gp3); gp3 = null; }
+  gp3 = new THREE.Group();
+  const matWood  = new THREE.MeshStandardMaterial({ color: 0x8d6e63, roughness: 0.75, metalness: 0.05 });
+  const matBrick = new THREE.MeshStandardMaterial({ color: 0x4a6fa5, roughness: 0.85, metalness: 0.02 });
+  const matStone = new THREE.MeshStandardMaterial({ color: 0x4e7c60, roughness: 0.90, metalness: 0.00 });
+  switch (idx) {
+    case 0: {
+      const mat = matWood;
+      [-1.5, 1.5].forEach(x => { const w = new THREE.Mesh(new THREE.BoxGeometry(.2, 2.6, 3.0), mat); w.position.set(x, 0, 0); gp3.add(w); });
+      gp3.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(3.2, .2, 3.0), mat), { position: new THREE.Vector3(0, 1.2, 0) }));
+      const rm = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.8 });
+      gp3.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(3.4, .2, 3.2), rm), { position: new THREE.Vector3(0, 1.32, 0) }));
+      [-1.6, 1.6].forEach(x => [0, .5, 1].forEach((yo, i) => {
+        const s = new THREE.Mesh(new THREE.BoxGeometry(.22, .24 - i * .04, 3.0 - .3 * i), rm);
+        s.position.set(x, 1.42 + yo * .28, 0); gp3.add(s);
+      }));
+      gp3.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(1.0, .06, 1.0), new THREE.MeshStandardMaterial({ color: 0x111 })), { position: new THREE.Vector3(0, -1.3, 0) }));
+      break;
+    }
+    case 1: {
+      gp3.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(3.4, .3, 3.4), matBrick), { position: new THREE.Vector3(0, -1.6, 0) }));
+      [[0, 1.5, 0, 3.0], [0, -1.5, 0, 3.0], [1.5, 0, 3.0, 0], [-1.5, 0, 3.0, 0]].forEach(([x, z, w, d]) => {
+        const wall = new THREE.Mesh(new THREE.BoxGeometry(w || .22, 1.6, d || .22), new THREE.MeshStandardMaterial({ color: 0xf5f0e8, roughness: 0.85 }));
+        wall.position.set(x, 0, z); gp3.add(wall);
+      });
+      [[-1.1, 0, -1.1], [-1.1, 0, 1.1], [1.1, 0, -1.1], [1.1, 0, 1.1]].forEach(([x, y, z]) => {
+        const cl = new THREE.Mesh(new THREE.CylinderGeometry(.13, .15, 1.7, 12), new THREE.MeshStandardMaterial({ color: 0xddd8cc, roughness: 0.7 }));
+        cl.position.set(x, -.1, z); gp3.add(cl);
+      });
+      gp3.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(3.6, .15, 3.6), new THREE.MeshStandardMaterial({ color: 0xc8a05a })), { position: new THREE.Vector3(0, .92, 0) }));
+      const acc = new THREE.Mesh(new THREE.TorusGeometry(.6, .045, 8, 28), matBrick);
+      acc.rotation.x = Math.PI / 2; acc.position.set(0, -1.5, 0); gp3.add(acc);
+      break;
+    }
+    case 2: {
+      gp3.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(1.3, 2.0, 3.8), new THREE.MeshStandardMaterial({ color: 0xd4b896, roughness: 0.8 })), { position: new THREE.Vector3(0, -.1, 0) }));
+      for (let i = 0; i < 3; i++) { const b = new THREE.Mesh(new THREE.BoxGeometry(1.32, .05, .05), new THREE.MeshStandardMaterial({ color: 0x2d1f0f })); b.position.set(0, .7 - i * .45, 1.92); gp3.add(b); }
+      for (let i = 0; i < 4; i++) { const b = new THREE.Mesh(new THREE.BoxGeometry(.05, 1.5, .05), new THREE.MeshStandardMaterial({ color: 0x2d1f0f })); b.position.set(-.48 + i * .32, .08, 1.92); gp3.add(b); }
+      gp3.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(1.7, .14, 4.2), new THREE.MeshStandardMaterial({ color: 0x1a1a1a })), { position: new THREE.Vector3(0, 1.05, 0) }));
+      gp3.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(.65, .07, .85), new THREE.MeshStandardMaterial({ color: 0x3a5e34 })), { position: new THREE.Vector3(0, -1.45, -1.3) }));
+      break;
+    }
+    case 3: {
+      [[0, 1.7, 3.4, .22], [0, -1.7, 3.4, .22], [1.7, 0, .22, 3.4], [-1.7, 0, .22, 3.4]].forEach(([x, z, w, d]) => {
+        const wall = new THREE.Mesh(new THREE.BoxGeometry(w, 2.4, d), new THREE.MeshStandardMaterial({ color: 0xe8e0d4, roughness: 0.85 }));
+        wall.position.set(x, 0, z); gp3.add(wall);
+      });
+      [[0, 0, 2.8, .45], [0, 0, .45, 2.8]].forEach(([x, z, w, d]) => {
+        const cn = new THREE.Mesh(new THREE.BoxGeometry(w, .09, d), matStone);
+        cn.position.set(x, -1.15, z); gp3.add(cn);
+      });
+      gp3.add(Object.assign(new THREE.Mesh(new THREE.CylinderGeometry(.24, .24, .13, 16), matStone), { position: new THREE.Vector3(0, -1.1, 0) }));
+      for (let i = 0; i < 4; i++) {
+        const a = i / 4 * Math.PI * 2;
+        const ar = new THREE.Mesh(new THREE.TorusGeometry(.42, .045, 6, 14, Math.PI), matBrick);
+        ar.position.set(Math.cos(a) * 1.1, -.25, Math.sin(a) * 1.1); ar.rotation.y = -a; gp3.add(ar);
+      }
+      break;
+    }
+  }
+  gp3.traverse(ch => { if (ch.isMesh) { ch.castShadow = true; ch.receiveShadow = true; } });
+  sc3.add(gp3); ca3.position.set(0, 1.5, 8); co3.target.set(0, 0, 0); co3.update();
+}
+
+let selIdx = -1;
+window.selectArch = function(idx) {
+  if (selIdx === idx) { closeModel(); return; }
+  selIdx = idx;
+  document.querySelectorAll('.leg-item').forEach((el, i) => el.classList.toggle('selected', i === idx));
+  series.forEach((s, i) => {
+    const p = document.getElementById(s.id);
+    p.style.opacity = (i === idx) ? '1' : '0.15';
+    p.style.strokeWidth = (i === idx) ? '3' : '1.5';
+  });
+  const d = ARCH[idx];
+  document.getElementById('mpHead').textContent = d.nameZH;
+  document.getElementById('mpEn').textContent = d.nameEN;
+  document.getElementById('mpDesc').textContent = d['desc' + lang.toUpperCase()] || d.descZH;
+  const ts = document.getElementById('mpStats'); ts.innerHTML = '';
+  d.stats.forEach(s => { ts.innerHTML += `<div class="mp-stat"><div class="mp-stat-n">${s.n}</div><div class="mp-stat-l">${s.l}</div></div>`; });
+  const te = document.getElementById('mpTags'); te.innerHTML = '';
+  d.tags.forEach(t => { te.innerHTML += `<span class="mp-tag">${t}</span>`; });
+  document.getElementById('p1Right').classList.add('model-open');
+  setTimeout(() => {
+    const container = document.getElementById('threeCanvas');
+    const w = Math.max(container.clientWidth, 300);
+    const h = Math.max(container.clientHeight, 200);
+    if (!init3) { initThreeJS(); setTimeout(() => loadDemoModel(idx), 80); }
+    else { re3.setSize(w, h); ca3.aspect = w / h; ca3.updateProjectionMatrix(); loadDemoModel(idx); }
+  }, 500);
+};
+
+window.closeModel = function() {
+  selIdx = -1;
+  document.getElementById('p1Right').classList.remove('model-open');
+  document.querySelectorAll('.leg-item').forEach(el => el.classList.remove('selected'));
+  series.forEach(s => { const p = document.getElementById(s.id); p.style.opacity = '1'; p.style.strokeWidth = '2'; });
+};
+
+/* ═══════════════════════════════════════
+   PARALLEL COORDINATES
+═══════════════════════════════════════ */
+const dimZH=['自然融合','装饰丰富度','社会开放性','精神象征性','垂直空间感','工艺精湛度'];
+const dimEN=['Nature','Ornamentation','Social Open.','Spiritual','Vertical','Craft'];
+const dimRU=['Природа','Декор','Открытость','Духовность','Вертикаль','Мастерство'];
+const pcData=[
+  {name:'徽派民居',nameEN:'Huizhou',nameRU:'Хуэйчжоу',color:'#c9a84c',vals:[82,88,38,90,72,95]},
+  {name:'地中海',nameEN:'Mediterranean',nameRU:'Средиземноморье',color:'#e74c3c',vals:[60,72,88,70,55,78]},
+  {name:'日本町家',nameEN:'Machiya',nameRU:'Матия',color:'#2ecc71',vals:[90,55,45,85,40,88]},
+  {name:'伊斯兰庭院',nameEN:'Islamic Riad',nameRU:'Риад',color:'#3498db',vals:[55,98,60,96,48,92]},
+];
+let pcHighlight=-1;
+
+function buildParallelCoords(){
+  const svg=document.getElementById('pcSvg');
+  const rect=svg.getBoundingClientRect();
+  const W=rect.width||500,H=rect.height||320;
+  const pad={l:32,r:14,t:52,b:28};
+  const nAxes=6;
+  const axXs=Array.from({length:nAxes},(_,i)=>pad.l+(W-pad.l-pad.r)*i/(nAxes-1));
+  const scale=v=>pad.t+(H-pad.t-pad.b)*(1-v/100);
+  svg.innerHTML='';
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const defs=document.createElementNS('http://www.w3.org/2000/svg','defs');
+  pcData.forEach((s,i)=>{
+    const lg=document.createElementNS('http://www.w3.org/2000/svg','linearGradient');
+    lg.setAttribute('id',`pcGrad${i}`);lg.setAttribute('x1','0%');lg.setAttribute('y1','0%');lg.setAttribute('x2','100%');lg.setAttribute('y2','0%');
+    const s1=document.createElementNS('http://www.w3.org/2000/svg','stop');s1.setAttribute('offset','0%');s1.setAttribute('stop-color',s.color);s1.setAttribute('stop-opacity','0.18');
+    const s2=document.createElementNS('http://www.w3.org/2000/svg','stop');s2.setAttribute('offset','100%');s2.setAttribute('stop-color',s.color);s2.setAttribute('stop-opacity','0.04');
+    lg.appendChild(s1);lg.appendChild(s2);defs.appendChild(lg);
+    const filt=document.createElementNS('http://www.w3.org/2000/svg','filter');
+    filt.setAttribute('id',`glow${i}`);filt.setAttribute('x','-20%');filt.setAttribute('y','-20%');filt.setAttribute('width','140%');filt.setAttribute('height','140%');
+    const blur=document.createElementNS('http://www.w3.org/2000/svg','feGaussianBlur');blur.setAttribute('stdDeviation','2.5');blur.setAttribute('result','coloredBlur');
+    const feMerge=document.createElementNS('http://www.w3.org/2000/svg','feMerge');
+    const n1=document.createElementNS('http://www.w3.org/2000/svg','feMergeNode');n1.setAttribute('in','coloredBlur');
+    const n2=document.createElementNS('http://www.w3.org/2000/svg','feMergeNode');n2.setAttribute('in','SourceGraphic');
+    feMerge.appendChild(n1);feMerge.appendChild(n2);
+    filt.appendChild(blur);filt.appendChild(feMerge);defs.appendChild(filt);
+  });
+  svg.appendChild(defs);
+  axXs.forEach((x,i)=>{
+    if(i<nAxes-1){
+      const stripe=document.createElementNS('http://www.w3.org/2000/svg','rect');
+      stripe.setAttribute('x',x);stripe.setAttribute('y',pad.t-12);
+      stripe.setAttribute('width',axXs[i+1]-x);stripe.setAttribute('height',H-pad.t-pad.b+20);
+      stripe.setAttribute('fill',i%2===0?'rgba(201,168,76,.025)':'transparent');
+      svg.appendChild(stripe);
+    }
+  });
+  [0,25,50,75,100].forEach(v=>{
+    const y=scale(v);
+    const gl=document.createElementNS('http://www.w3.org/2000/svg','line');
+    gl.setAttribute('x1',axXs[0]-10);gl.setAttribute('y1',y);gl.setAttribute('x2',axXs[axXs.length-1]);gl.setAttribute('y2',y);
+    gl.setAttribute('stroke',v===50?'rgba(201,168,76,.15)':'rgba(201,168,76,.07)');
+    gl.setAttribute('stroke-width',v===50?'1.5':'1');gl.setAttribute('stroke-dasharray',v===50?'':'3,8');svg.appendChild(gl);
+    const vl=document.createElementNS('http://www.w3.org/2000/svg','text');
+    vl.setAttribute('x',pad.l-14);vl.setAttribute('y',y+3.5);vl.setAttribute('text-anchor','end');vl.setAttribute('font-size','8');
+    vl.setAttribute('fill','rgba(0,0,0,.22)');vl.setAttribute('font-family','Playfair Display,serif');
+    vl.textContent=v;svg.appendChild(vl);
+  });
+  const dims={zh:dimZH,en:dimEN,ru:dimRU}[lang]||dimZH;
+  const drawOrder=pcHighlight===-1?[0,1,2,3]:[...Array(4).keys()].filter(i=>i!==pcHighlight).concat([pcHighlight]);
+  drawOrder.forEach(si=>{
+    const s=pcData[si];
+    const isHL=pcHighlight===si;
+    const isFade=pcHighlight!==-1&&!isHL;
+    const pts2=s.vals.map((v,i)=>({x:axXs[i],y:scale(v)}));
+    if(!isFade){
+      let areaD=`M${pts2[0].x},${H-pad.b}`;
+      pts2.forEach(p=>areaD+=` L${p.x},${p.y}`);
+      areaD+=` L${pts2[pts2.length-1].x},${H-pad.b} Z`;
+      const area=document.createElementNS('http://www.w3.org/2000/svg','path');
+      area.setAttribute('d',areaD);area.setAttribute('fill',`url(#pcGrad${si})`);
+      area.setAttribute('opacity',isHL?'1':'0.55');svg.appendChild(area);
+    }
+    let d=`M${pts2[0].x},${pts2[0].y}`;
+    for(let i=1;i<pts2.length;i++){
+      const cp=(pts2[i].x-pts2[i-1].x)*.38;
+      d+=` C${pts2[i-1].x+cp},${pts2[i-1].y} ${pts2[i].x-cp},${pts2[i].y} ${pts2[i].x},${pts2[i].y}`;
+    }
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',d);path.setAttribute('fill','none');path.setAttribute('stroke',s.color);
+    path.setAttribute('stroke-width',isHL?'3.5':isFade?'1':'2');path.setAttribute('stroke-opacity',isFade?'0.2':'0.9');
+    path.setAttribute('stroke-linecap','round');
+    if(isHL) path.setAttribute('filter',`url(#glow${si})`);
+    const pathLen=800;
+    path.style.strokeDasharray=pathLen;path.style.strokeDashoffset=pathLen;
+    path.style.transition=`stroke-dashoffset 1.1s cubic-bezier(.25,.46,.45,.94) ${si*0.12}s`;
+    svg.appendChild(path);
+    setTimeout(()=>path.style.strokeDashoffset='0',60);
+    pts2.forEach((p,i)=>{
+      const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('cx',p.x);dot.setAttribute('cy',p.y);dot.setAttribute('r',isHL?'6':isFade?'3':'4');
+      dot.setAttribute('fill',isFade?'rgba(150,150,150,.3)':s.color);dot.setAttribute('stroke',isFade?'transparent':'white');dot.setAttribute('stroke-width','1.8');
+      svg.appendChild(dot);
+      if(isHL){
+        const pill=document.createElementNS('http://www.w3.org/2000/svg','rect');
+        pill.setAttribute('x',p.x-14);pill.setAttribute('y',p.y-22);pill.setAttribute('width',28);pill.setAttribute('height',14);
+        pill.setAttribute('rx',7);pill.setAttribute('fill',s.color);pill.setAttribute('opacity','0.9');svg.appendChild(pill);
+        const vt=document.createElementNS('http://www.w3.org/2000/svg','text');
+        vt.setAttribute('x',p.x);vt.setAttribute('y',p.y-12);vt.setAttribute('text-anchor','middle');vt.setAttribute('font-size','8.5');
+        vt.setAttribute('fill','white');vt.setAttribute('font-weight','700');vt.setAttribute('font-family','Playfair Display,serif');
+        vt.textContent=s.vals[i];svg.appendChild(vt);
+      } else if(!isFade){
+        const vt=document.createElementNS('http://www.w3.org/2000/svg','text');
+        vt.setAttribute('x',p.x);vt.setAttribute('y',p.y-8);vt.setAttribute('text-anchor','middle');vt.setAttribute('font-size','7');
+        vt.setAttribute('fill',s.color);vt.setAttribute('opacity','0.65');vt.setAttribute('font-family','Playfair Display,serif');
+        vt.textContent=s.vals[i];svg.appendChild(vt);
       }
     });
-  }, { threshold: 0.3 });
-  document.querySelectorAll('.stat-row').forEach(el => statObs.observe(el));
+    if(!isFade){
+      const avg=Math.round(s.vals.reduce((a,b)=>a+b,0)/s.vals.length);
+      const bx=axXs[nAxes-1]+10,by=scale(avg);
+      const rb=document.createElementNS('http://www.w3.org/2000/svg','rect');
+      rb.setAttribute('x',bx);rb.setAttribute('y',by-9);rb.setAttribute('width',28);rb.setAttribute('height',18);
+      rb.setAttribute('rx',9);rb.setAttribute('fill',s.color);rb.setAttribute('opacity',isHL?'1':'0.5');svg.appendChild(rb);
+      const rt=document.createElementNS('http://www.w3.org/2000/svg','text');
+      rt.setAttribute('x',bx+14);rt.setAttribute('y',by+4);rt.setAttribute('text-anchor','middle');rt.setAttribute('font-size','9');
+      rt.setAttribute('fill','white');rt.setAttribute('font-weight','700');rt.setAttribute('font-family','Playfair Display,serif');
+      rt.textContent=avg;svg.appendChild(rt);
+    }
+  });
+  axXs.forEach((x,i)=>{
+    const axis=document.createElementNS('http://www.w3.org/2000/svg','line');
+    axis.setAttribute('x1',x);axis.setAttribute('y1',pad.t-12);axis.setAttribute('x2',x);axis.setAttribute('y2',H-pad.b+6);
+    axis.setAttribute('stroke','rgba(201,168,76,.45)');axis.setAttribute('stroke-width','1.8');svg.appendChild(axis);
+    [0,25,50,75,100].forEach(v=>{
+      const tk=document.createElementNS('http://www.w3.org/2000/svg','line');
+      tk.setAttribute('x1',x-5);tk.setAttribute('y1',scale(v));tk.setAttribute('x2',x+5);tk.setAttribute('y2',scale(v));
+      tk.setAttribute('stroke','rgba(201,168,76,.5)');tk.setAttribute('stroke-width','1.2');svg.appendChild(tk);
+    });
+    const diam=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    const dy=pad.t-18;
+    diam.setAttribute('points',`${x},${dy-5} ${x+4},${dy} ${x},${dy+5} ${x-4},${dy}`);
+    diam.setAttribute('fill','rgba(201,168,76,.45)');svg.appendChild(diam);
+    const label=document.createElementNS('http://www.w3.org/2000/svg','text');
+    label.setAttribute('x',x);label.setAttribute('y',pad.t-26);label.setAttribute('text-anchor','middle');label.setAttribute('font-size','10');
+    label.setAttribute('fill','#444');label.setAttribute('font-family','Noto Serif SC,serif');label.setAttribute('font-weight','700');
+    label.textContent=dims[i];svg.appendChild(label);
+  });
+  const stripY=H-14;
+  pcData.forEach((s,si)=>{
+    if(pcHighlight!==-1&&si!==pcHighlight) return;
+    const avg=Math.round(s.vals.reduce((a,b)=>a+b,0)/s.vals.length);
+    const tx=pad.l+(W-pad.l-pad.r)*si/(pcData.length);
+    const nm={zh:s.name,en:s.nameEN,ru:s.nameRU}[lang]||s.name;
+    const st=document.createElementNS('http://www.w3.org/2000/svg','text');
+    st.setAttribute('x',tx);st.setAttribute('y',stripY);st.setAttribute('text-anchor','middle');st.setAttribute('font-size','8');
+    st.setAttribute('fill',s.color);st.setAttribute('opacity','0.7');st.setAttribute('font-family','Noto Serif SC,serif');
+    st.textContent=`${nm} · avg ${avg}`;svg.appendChild(st);
+  });
+}
 
-  /* ── ECharts Color Palette ──────────────────── */
-  const C = { gold: '#c9a84c', red: '#8b1a1a', blue: '#2c3e50', green: '#2ecc71', purple: '#9b59b6' };
+function buildParallelCoordsLabels(){
+  if(document.getElementById('p3').classList.contains('active')) buildParallelCoords();
+}
 
-  /* ══════════════════════
-     RADAR CHART
-  ══════════════════════ */
-  const radarChart = echarts.init(document.getElementById('radarChart'), null, { renderer: 'canvas' });
-  const radarIndicators = [
-    { name: '自然融合\nNature Integration', max: 100 },
-    { name: '装饰丰富度\nDecorativenes', max: 100 },
-    { name: '公共社交性\nSocial Openness', max: 100 },
-    { name: '精神象征性\nSpiritual Symbolism', max: 100 },
-    { name: '垂直空间感\nVertical Drama', max: 100 },
-    { name: '工艺精湛度\nCraftsmanship', max: 100 },
-  ];
-  radarChart.setOption({
-    backgroundColor: 'transparent',
-    tooltip: { trigger: 'item', textStyle: { fontFamily: 'Noto Serif SC' } },
-    legend: { show: false },
-    radar: {
-      shape: 'polygon',
-      indicator: radarIndicators,
-      splitNumber: 4,
-      axisName: { color: '#555', fontSize: 11, fontFamily: 'Noto Serif SC' },
-      splitLine: { lineStyle: { color: 'rgba(0,0,0,.08)' } },
-      splitArea: { areaStyle: { color: ['rgba(255,255,255,.04)', 'rgba(201,168,76,.03)'] } },
-      axisLine: { lineStyle: { color: 'rgba(0,0,0,.12)' } },
-    },
-    series: [{
-      type: 'radar',
-      data: [
-        {
-          name: '徽派民居',
-          value: [82, 88, 38, 90, 72, 95],
-          lineStyle: { color: C.gold, width: 2 },
-          areaStyle: { color: 'rgba(201,168,76,.18)' },
-          itemStyle: { color: C.gold }
-        },
-        {
-          name: '地中海民居',
-          value: [60, 72, 88, 70, 55, 78],
-          lineStyle: { color: C.red, width: 2 },
-          areaStyle: { color: 'rgba(139,26,26,.12)' },
-          itemStyle: { color: C.red }
-        },
-        {
-          name: '日本町家',
-          value: [90, 55, 45, 85, 40, 88],
-          lineStyle: { color: '#2ecc71', width: 2 },
-          areaStyle: { color: 'rgba(46,204,113,.12)' },
-          itemStyle: { color: '#2ecc71' }
-        },
-        {
-          name: '伊斯兰庭院',
-          value: [55, 98, 60, 96, 48, 92],
-          lineStyle: { color: '#3498db', width: 2 },
-          areaStyle: { color: 'rgba(52,152,219,.12)' },
-          itemStyle: { color: '#3498db' }
-        },
-      ]
-    }]
+(function buildPcLegend(){
+  const c=document.getElementById('pcLegend');c.innerHTML='';
+  pcData.forEach((s,i)=>{
+    const el=document.createElement('div');el.className='pc-leg-item';
+    el.innerHTML=`<div class="pc-dot" style="background:${s.color};border-radius:50%;"></div><span>${s.name}</span>`;
+    el.addEventListener('click',()=>{ pcHighlight=(pcHighlight===i)?-1:i; document.querySelectorAll('.pc-leg-item').forEach((li,j)=>li.classList.toggle('pc-dim',j===pcHighlight)); buildParallelCoords(); });
+    c.appendChild(el);
+  });
+})();
+
+/* ═══════════════════════════════════════
+   LEAFLET MAP
+═══════════════════════════════════════ */
+
+// Site data: [lat, lng, color, culture, nameZH, nameEN]
+const SITES = [
+  [29.9,117.6,'#c9a84c','eastasia','宏村','Hongcun'],
+  [29.7,117.9,'#c9a84c','eastasia','西递','Xidi'],
+  [37.1,112.0,'#c9a84c','eastasia','平遥','Pingyao'],
+  [35.0,135.8,'#c9a84c','eastasia','京都町家','Kyoto Machiya'],
+  [37.6,126.9,'#c9a84c','eastasia','首尔韩屋','Seoul Hanok'],
+  [40.7,14.5,'#e74c3c','mediterranean','庞贝中庭','Pompeii Atrium'],
+  [36.4,25.4,'#e74c3c','mediterranean','圣托里尼','Santorini'],
+  [37.4,-5.9,'#e74c3c','mediterranean','塞维利亚王宫','Alcázar of Seville'],
+  [31.6,-8.0,'#9b59b6','islamic','马拉喀什里亚德','Marrakesh Riad'],
+  [34.0,-5.0,'#9b59b6','islamic','菲斯麦地那','Fes Medina'],
+  [30.1,31.2,'#9b59b6','islamic','开罗伊斯兰区','Cairo Islamic Quarter'],
+  [32.6,51.7,'#9b59b6','islamic','伊斯法罕','Isfahan'],
+  [26.9,75.8,'#2ecc71','southasia','斋浦尔风之宫','Jaipur Hawa Mahal'],
+  [27.7,85.3,'#2ecc71','southasia','加德满都庭院','Kathmandu Courtyard'],
+  [10.4,-75.5,'#3498db','latinam','卡塔赫纳','Cartagena'],
+  [17.1,-96.7,'#3498db','latinam','瓦哈卡','Oaxaca'],
+  [23.1,-82.4,'#3498db','latinam','哈瓦那','Havana'],
+];
+
+// Culture meta for popup labels
+const CULTURE_META = {
+  eastasia:      {label:'东亚天井系',  en:'East Asian Skywell',   color:'#c9a84c'},
+  mediterranean: {label:'地中海中庭系',en:'Mediterranean Atrium', color:'#e74c3c'},
+  islamic:       {label:'伊斯兰里亚德',en:'Islamic Riad',          color:'#9b59b6'},
+  southasia:     {label:'南亚廊院系',  en:'South Asian',           color:'#2ecc71'},
+  latinam:       {label:'拉美殖民庭院',en:'Latin American',        color:'#3498db'},
+};
+
+let leafletMap = null;
+let leafletMarkers = [];   // {marker, culture, el}
+let activeRegion = null;
+
+function initLeafletMap() {
+  if (leafletMap) { leafletMap.invalidateSize(); return; }
+
+  leafletMap = L.map('leafletMap', {
+    center: [22, 18],
+    zoom: 2,
+    zoomControl: true,
+    attributionControl: true,
+    minZoom: 1,
+    maxZoom: 10,
   });
 
-  window.highlightRadar = function(idx) {
-    radarChart.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: idx });
-    setTimeout(() => radarChart.dispatchAction({ type: 'downplay', seriesIndex: 0, dataIndex: idx }), 1200);
-  };
+  // CartoDB Voyager — elegant, low-saturation tiles
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '© <a href="https://carto.com/">CARTO</a> © <a href="https://www.openstreetmap.org/copyright">OSM</a>',
+    subdomains: 'abcd',
+    maxZoom: 20,
+  }).addTo(leafletMap);
 
-  /* ══════════════════════
-     WORLD MAP CHART
-  ══════════════════════ */
-  const mapData = [
-    // East Asian Skywell — gold
-    { name: '宏村, 中国', value: [117.6, 29.9, 90], itemStyle: { color: C.gold } },
-    { name: '西递, 中国', value: [117.9, 29.8, 85], itemStyle: { color: C.gold } },
-    { name: '平遥, 中国', value: [112.0, 37.1, 75], itemStyle: { color: C.gold } },
-    { name: '丽江, 中国', value: [100.2, 26.9, 70], itemStyle: { color: C.gold } },
-    { name: '京都町家, 日本', value: [135.8, 35.0, 80], itemStyle: { color: C.gold } },
-    { name: '首尔韩屋, 韩国', value: [126.9, 37.6, 68], itemStyle: { color: C.gold } },
-    // Mediterranean — red
-    { name: '庞贝, 意大利', value: [14.5, 40.7, 85], itemStyle: { color: '#e74c3c' } },
-    { name: '圣托里尼, 希腊', value: [25.4, 36.4, 80], itemStyle: { color: '#e74c3c' } },
-    { name: '塞维利亚, 西班牙', value: [-5.9, 37.4, 88], itemStyle: { color: '#e74c3c' } },
-    { name: '杜布罗夫尼克, 克罗地亚', value: [18.1, 42.6, 72], itemStyle: { color: '#e74c3c' } },
-    // Islamic Riad — purple
-    { name: '马拉喀什, 摩洛哥', value: [-8.0, 31.6, 92], itemStyle: { color: C.purple } },
-    { name: '菲斯, 摩洛哥', value: [-5.0, 34.0, 88], itemStyle: { color: C.purple } },
-    { name: '开罗, 埃及', value: [31.2, 30.1, 75], itemStyle: { color: C.purple } },
-    { name: '伊斯法罕, 伊朗', value: [51.7, 32.6, 85], itemStyle: { color: C.purple } },
-    // South Asian Haveli — green
-    { name: '斋浦尔, 印度', value: [75.8, 26.9, 80], itemStyle: { color: '#2ecc71' } },
-    { name: '加德满都, 尼泊尔', value: [85.3, 27.7, 70], itemStyle: { color: '#2ecc71' } },
-    // Colonial Patio — blue
-    { name: '卡塔赫纳, 哥伦比亚', value: [-75.5, 10.4, 78], itemStyle: { color: '#3498db' } },
-    { name: '瓦哈卡, 墨西哥', value: [-96.7, 17.1, 75], itemStyle: { color: '#3498db' } },
-    { name: '哈瓦那, 古巴', value: [-82.4, 23.1, 72], itemStyle: { color: '#3498db' } },
-  ];
+  // Build markers
+  SITES.forEach(([lat, lng, color, culture, nameZH, nameEN]) => {
+    const el = document.createElement('div');
+    el.className = 'lf-marker';
+    el.style.background = color;
+    el.style.color = color;
+    el.title = nameZH;
 
-  fetch('https://cdn.jsdelivr.net/npm/echarts@5.5.1/map/json/world.json')
-    .then(r => r.json())
-    .then(worldJson => {
-      echarts.registerMap('world', worldJson);
-      const worldChart = echarts.init(document.getElementById('worldMapChart'));
-      worldChart.setOption({
-        backgroundColor: 'transparent',
-        tooltip: {
-          trigger: 'item',
-          formatter: p => `<b style="font-family:Noto Serif SC">${p.name}</b><br/>庭院建筑影响力指数: ${p.value ? p.value[2] : ''}`,
-        },
-        geo: {
-          map: 'world',
-          roam: true,
-          zoom: 1.2,
-          label: { show: false },
-          itemStyle: {
-            areaColor: 'rgba(245,237,210,.5)',
-            borderColor: 'rgba(201,168,76,.2)',
-            borderWidth: .5,
-          },
-          emphasis: {
-            itemStyle: { areaColor: 'rgba(201,168,76,.2)' },
-            label: { show: false },
-          },
-        },
-        series: [{
-          type: 'scatter',
-          coordinateSystem: 'geo',
-          data: mapData,
-          symbolSize: val => Math.sqrt(val[2]) * 1.8,
-          encode: { value: 2 },
-          label: {
-            show: false,
-          },
-          emphasis: {
-            label: { show: true, formatter: p => p.name, fontFamily: 'Noto Serif SC', fontSize: 11 },
-          },
-          zlevel: 2,
-        }]
-      });
-      window.addEventListener('resize', () => worldChart.resize());
-    })
-    .catch(() => {
-      // Fallback if map JSON unavailable
-      document.getElementById('worldMapChart').innerHTML =
-        '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-family:Noto Serif SC;color:#888;font-size:.9rem;">地图数据加载中，请确认网络连接</div>';
+    const icon = L.divIcon({
+      html: el,
+      className: '',
+      iconSize: [22, 22],
+      iconAnchor: [11, 11],
     });
 
-  /* ══════════════════════
-     BAR CHART
-  ══════════════════════ */
-  const barChart = echarts.init(document.getElementById('barChart'));
-  barChart.setOption({
-    backgroundColor: 'transparent',
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, textStyle: { fontFamily: 'Noto Serif SC' } },
-    legend: {
-      data: ['徽派民居', '地中海民居', '日本町家', '伊斯兰庭院'],
-      bottom: 0,
-      textStyle: { fontFamily: 'Noto Serif SC', fontSize: 12, color: '#555' },
-    },
-    grid: { left: '3%', right: '4%', bottom: '12%', top: '4%', containLabel: true },
-    xAxis: {
-      type: 'category',
-      data: ['自然融合', '装饰丰富', '社会开放', '精神象征', '垂直空间', '工艺精湛'],
-      axisLabel: { fontFamily: 'Noto Serif SC', fontSize: 11, color: '#555' },
-      axisLine: { lineStyle: { color: 'rgba(0,0,0,.12)' } },
-    },
-    yAxis: {
-      type: 'value',
-      max: 100,
-      splitLine: { lineStyle: { color: 'rgba(0,0,0,.06)' } },
-      axisLabel: { color: '#999' },
-    },
-    series: [
-      {
-        name: '徽派民居',
-        type: 'bar',
-        barGap: '10%',
-        data: [82, 88, 38, 90, 72, 95],
-        itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#e8cc7a' }, { offset: 1, color: '#c9a84c' }]), borderRadius: [4,4,0,0] },
-      },
-      {
-        name: '地中海民居',
-        type: 'bar',
-        data: [60, 72, 88, 70, 55, 78],
-        itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#e74c3c' }, { offset: 1, color: '#8b1a1a' }]), borderRadius: [4,4,0,0] },
-      },
-      {
-        name: '日本町家',
-        type: 'bar',
-        data: [90, 55, 45, 85, 40, 88],
-        itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#58d68d' }, { offset: 1, color: '#2ecc71' }]), borderRadius: [4,4,0,0] },
-      },
-      {
-        name: '伊斯兰庭院',
-        type: 'bar',
-        data: [55, 98, 60, 96, 48, 92],
-        itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#5dade2' }, { offset: 1, color: '#3498db' }]), borderRadius: [4,4,0,0] },
-      },
-    ]
-  });
+    const marker = L.marker([lat, lng], { icon })
+      .addTo(leafletMap)
+      .bindPopup(`
+        <strong>${nameZH}</strong><br>
+        <em>${nameEN}</em><br>
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};margin-right:4px;vertical-align:middle;"></span>
+        <span style="font-size:.65rem;color:#888;">${CULTURE_META[culture].label}</span>
+      `, { maxWidth: 180 });
 
-  /* ══════════════════════
-     TIMELINE CHART
-  ══════════════════════ */
-  const timelineChart = echarts.init(document.getElementById('timelineChart'));
-  timelineChart.setOption({
-    backgroundColor: 'transparent',
-    tooltip: {
-      trigger: 'item',
-      formatter: p => `<b style="font-family:Noto Serif SC">${p.name}</b><br/><span style="font-family:Noto Serif SC;font-size:12px">${p.data.desc || ''}</span>`,
-      textStyle: { fontFamily: 'Noto Serif SC' },
-    },
-    xAxis: {
-      type: 'value',
-      min: 900,
-      max: 2025,
-      axisLabel: {
-        formatter: v => v > 0 ? `${v}年` : `公元前${-v}年`,
-        fontFamily: 'Noto Serif SC',
-        color: '#555',
-      },
-      axisLine: { lineStyle: { color: 'rgba(201,168,76,.5)' } },
-      splitLine: { lineStyle: { color: 'rgba(0,0,0,.05)' } },
-    },
-    yAxis: {
-      type: 'category',
-      data: ['建筑技艺', '文化传播', '徽商贸易', '遗产保护'],
-      axisLabel: { fontFamily: 'Noto Serif SC', color: '#555', fontSize: 12 },
-      axisLine: { show: false },
-      axisTick: { show: false },
-    },
-    grid: { left: 90, right: 30, top: 20, bottom: 50 },
-    series: [{
-      type: 'scatter',
-      data: [
-        { name: '宏村始建 (南宋1131年)', value: [1131, '建筑技艺'], symbolSize: 18, itemStyle: { color: C.gold }, desc: '汪氏家族始建宏村，奠定牛形水系格局' },
-        { name: '马头墙兴盛 (明代)', value: [1450, '建筑技艺'], symbolSize: 16, itemStyle: { color: C.gold }, desc: '马头墙作为防火墙与美学符号在徽州成熟' },
-        { name: '徽商鼎盛 (明中期)', value: [1550, '徽商贸易'], symbolSize: 20, itemStyle: { color: '#e74c3c' }, desc: '徽商称雄中国商界，"无徽不成镇"' },
-        { name: '承志堂建造 (1855年)', value: [1855, '建筑技艺'], symbolSize: 18, itemStyle: { color: C.gold }, desc: '盐商汪定贵建承志堂，被誉为"民间故宫"' },
-        { name: '马可·波罗记载中国庭院 (1298年)', value: [1298, '文化传播'], symbolSize: 14, itemStyle: { color: '#9b59b6' }, desc: '马可·波罗游记将中国庭院建筑传至欧洲' },
-        { name: '耶稣会士传中国建筑图样至欧 (17世纪)', value: [1680, '文化传播'], symbolSize: 14, itemStyle: { color: '#9b59b6' }, desc: '中国风（Chinoiserie）在欧洲风行' },
-        { name: '《营造法式》影响传播 (1100年)', value: [1100, '文化传播'], symbolSize: 13, itemStyle: { color: '#9b59b6' }, desc: '中国官式建筑法则东传日本、朝鲜' },
-        { name: '扬州盐运 (清康乾盛世)', value: [1720, '徽商贸易'], symbolSize: 16, itemStyle: { color: '#e74c3c' }, desc: '扬州成为徽商文化集散地，两淮盐业之都' },
-        { name: '近代破坏与保护争议 (1950s)', value: [1960, '遗产保护'], symbolSize: 14, itemStyle: { color: '#2ecc71' }, desc: '部分古建遭破坏，保护意识开始觉醒' },
-        { name: 'UNESCO世界遗产 (2000年)', value: [2000, '遗产保护'], symbolSize: 22, itemStyle: { color: '#2ecc71' }, desc: '宏村与西递被列入世界文化遗产名录' },
-        { name: '国际研究热潮 (2010年代)', value: [2012, '文化传播'], symbolSize: 15, itemStyle: { color: '#9b59b6' }, desc: '徽派建筑成为跨文化比较研究热点' },
-      ],
-    }]
+    leafletMarkers.push({ marker, culture, el, lat, lng });
   });
+}
 
-  /* ── Resize ───────────────────────────────────── */
-  window.addEventListener('resize', () => {
-    radarChart.resize();
-    barChart.resize();
-    timelineChart.resize();
+// Called by region card clicks
+window.zoomToRegion = function(culture, lat, lng, zoom, cardEl) {
+  if (!leafletMap) return;
+
+  // Toggle: second click on same card resets
+  if (activeRegion === culture) {
+    activeRegion = null;
+    document.querySelectorAll('.region-card').forEach(c => c.classList.remove('active-region'));
+    leafletMap.flyTo([22, 18], 2, { duration: 1.1 });
+    leafletMarkers.forEach(({ marker, el }) => {
+      el.classList.remove('highlighted');
+      el.style.opacity = '1';
+    });
+    return;
+  }
+
+  activeRegion = culture;
+  document.querySelectorAll('.region-card').forEach(c => c.classList.remove('active-region'));
+  if (cardEl) cardEl.classList.add('active-region');
+
+  // Fly to region
+  leafletMap.flyTo([lat, lng], zoom, { duration: 1.2 });
+
+  // Highlight matching markers, fade others
+  leafletMarkers.forEach(({ marker, culture: mc, el }) => {
+    if (mc === culture) {
+      el.classList.add('highlighted');
+      el.style.opacity = '1';
+      marker.setZIndexOffset(1000);
+    } else {
+      el.classList.remove('highlighted');
+      el.style.opacity = '0.22';
+      marker.setZIndexOffset(0);
+    }
   });
+};
 
-  </script>
+/* ═══════════════════════════════════════
+   STAR MAP
+═══════════════════════════════════════ */
+const CULTURES=[
+  {id:0,label:'徽派民居',en:'Huizhou',ru:'Хуэйчжоу',x:0.38,y:0.42,r:26,color:'#c9a84c',hex:0xc9a84c,glyph:'徽',quote:{zh:'天井的光，是被建筑驯化的自然。站在承志堂中央仰望那片天空，我忽然理解了中国人对"内"的执念——那不是封闭，而是对宇宙最深情的凝视方式。方寸天光之下，时间在此凝结，四代人的喜怒哀乐都曾被这同一片天空见证。',en:'The light of the skywell is nature tamed by architecture. Standing at Chengzhi Hall, I finally understood the Chinese devotion to "inwardness" — not enclosure, but the most intimate way of contemplating the cosmos.',ru:'Свет небесного колодца — природа, укрощённая архитектурой. Стоя в центре зала Чэнчжи, я понял преданность китайцев «внутреннему» — это не замкнутость, а созерцание космоса.'},author:{zh:'—— 成员一',en:'— Member One',ru:'— Участник один'},dims:{zh:['自然融合','工艺精湛','精神象征','内聚程度'],vals:[82,95,90,96]}},
+  {id:1,label:'地中海民居',en:'Mediterranean',ru:'Средиземноморье',x:0.65,y:0.22,r:22,color:'#e74c3c',hex:0xe74c3c,glyph:'地',quote:{zh:'当罗马中庭的阳光洒满整个空间，我才明白"开放"本身也是一种哲学——不是对安全感的放弃，而是对人类社会性的信仰。空间的展演是文明自信的体现，权力通过光线而非高墙来表达。',en:'When sunlight fills the Roman atrium, I understood that "openness" is itself a philosophy — not abandoning security but believing in human sociality. Power is expressed through light, not high walls.',ru:'Когда солнечный свет заполнил римский атриум, я понял: «открытость» — это философия веры в человеческую общительность.'},author:{zh:'—— 成员二',en:'— Member Two',ru:'— Участник два'},dims:{zh:['社会开放','自然融合','工艺精湛','外展程度'],vals:[88,60,78,90]}},
+  {id:2,label:'日本町家',en:'Machiya',ru:'Матия',x:0.73,y:0.60,r:20,color:'#2ecc71',hex:0x2ecc71,glyph:'町',quote:{zh:'町家坪庭的那一抹绿，是城市中最克制的自然宣言。极简不是贫乏，而是经过精心删减后的丰盛。禅意并非虚无，而是在最小的空间里容纳了最大的宇宙意识——一粒砂，一片苔，即整个世界。',en:'The patch of green in the machiya tsubo-niwa is the most restrained declaration of nature in the city. Minimalism is not poverty but abundance after careful subtraction. One grain of sand, one patch of moss — the entire cosmos.',ru:'Зелень садика цубо-нива — сдержанная декларация природы в городе. Минимализм — это изобилие после тщательного вычитания.'},author:{zh:'—— 成员三',en:'— Member Three',ru:'— Участник три'},dims:{zh:['自然融合','工艺精湛','精神象征','极简程度'],vals:[90,88,85,95]}},
+  {id:3,label:'伊斯兰庭院',en:'Islamic Riad',ru:'Риад',x:0.26,y:0.70,r:22,color:'#3498db',hex:0x3498db,glyph:'伊',quote:{zh:'当我把徽州砖雕与伊斯兰里亚德的瓷砖马赛克并排比较，震惊地发现：相距万里的两种文明，都选择用几何图案来表达无限与永恒。也许几何是上天赋予人类的普世语法，信仰的数学证明穿越了地理与文化的隔阂。',en:'Placing Huizhou carvings beside Islamic tile mosaics, two civilisations worlds apart had independently chosen geometric patterns to express infinity. Perhaps geometry is the universal grammar given to humanity by heaven.',ru:'Сравнивая резьбу Хуэйчжоу с мозаикой риадов: две цивилизации независимо выбрали геометрию для выражения бесконечности.'},author:{zh:'—— 成员四',en:'— Member Four',ru:'— Участник четыре'},dims:{zh:['装饰丰富','精神象征','工艺精湛','几何美学'],vals:[98,96,92,99]}},
+  {id:4,label:'俄罗斯木屋',en:'Russian Izba',ru:'Русская Изба',x:0.55,y:0.80,r:18,color:'#9b59b6',hex:0x9b59b6,glyph:'俄',quote:{zh:'作为俄罗斯同学，我最初以为徽州与我的故乡毫无关联。然而当我看到宏村的雪景，那黑瓦白墙与俄罗斯木屋在大雪中的轮廓如此相似——寒冷让人类发展出共同的内聚智慧，气候书写了另一种语言。',en:'As a Russian student, I thought Huizhou had nothing in common with my homeland. But seeing Hongcun under snow — those black-tiled white walls mirroring the silhouette of a Russian izba — cold climates inspire the same inward wisdom.',ru:'Как российский студент, я думал иначе. Но увидев Хунцунь под снегом — стены напомнили русскую избу. Холодный климат рождает одинаковую мудрость.'},author:{zh:'—— 俄罗斯成员',en:'— Russian Member',ru:'— Российский участник'},dims:{zh:['自然融合','工艺精湛','内聚程度','气候适应'],vals:[75,82,88,94]}},
+  {id:5,label:'荷兰水城',en:'Dutch Canal City',ru:'Голландский Канал',x:0.18,y:0.28,r:18,color:'#f39c12',hex:0xf39c12,glyph:'荷',quote:{zh:'宏村的水系设计让我想起荷兰运河城市——月沼与南湖是凝固在地面的哲学。不同文明面对相同的自然挑战，却发展出截然不同的诗意回应：荷兰人用运河征服大海，徽州人用水系参悟天道。这正是人类文明多样性最动人的证明。',en:"Hongcun's water system reminded me of Dutch canal cities. Facing similar natural challenges, different civilisations developed distinct poetic responses: the Dutch conquered the sea with canals; Huizhou contemplated the way of heaven with waterways.",ru:'Водная система Хунцуня напомнила голландские каналы. Перед одинаковыми вызовами — разные поэтические ответы.'},author:{zh:'—— 成员五',en:'— Member Five',ru:'— Участник пять'},dims:{zh:['自然融合','工艺精湛','社会开放','水系智慧'],vals:[85,80,75,92]}},
+];
+
+const CONNECTIONS=[
+  {a:0,b:2,s:.85,t:'strong'},{a:0,b:3,s:.7,t:'strong'},{a:0,b:4,s:.65,t:'strong'},{a:0,b:5,s:.6,t:'strong'},
+  {a:1,b:2,s:.35,t:'weak'},{a:1,b:3,s:.4,t:'weak'},{a:0,b:1,s:.55,t:'tension'},
+  {a:2,b:3,s:.5,t:'weak'},{a:3,b:5,s:.45,t:'weak'},{a:4,b:5,s:.55,t:'strong'},
+];
+
+let selectedNode=-1;
+let starSvg=null,starW=0,starH=0;
+
+function buildStarMap(){
+  const svg=document.getElementById('starMapSvg');
+  const rect=svg.getBoundingClientRect();
+  starW=rect.width||680;starH=rect.height||380;
+  starSvg=svg;
+  svg.innerHTML='';
+  svg.setAttribute('viewBox',`0 0 ${starW} ${starH}`);
+  const defs=document.createElementNS('http://www.w3.org/2000/svg','defs');
+  const bgGrad=document.createElementNS('http://www.w3.org/2000/svg','radialGradient');
+  bgGrad.setAttribute('id','smBg');bgGrad.setAttribute('cx','42%');bgGrad.setAttribute('cy','45%');bgGrad.setAttribute('r','65%');
+  [{o:'0%',c:'rgba(201,168,76,.05)'},{o:'55%',c:'rgba(201,168,76,.015)'},{o:'100%',c:'transparent'}].forEach(s=>{
+    const stop=document.createElementNS('http://www.w3.org/2000/svg','stop');stop.setAttribute('offset',s.o);stop.setAttribute('stop-color',s.c);bgGrad.appendChild(stop);
+  });
+  defs.appendChild(bgGrad);
+  CULTURES.forEach((c,i)=>{
+    const rg=document.createElementNS('http://www.w3.org/2000/svg','radialGradient');
+    rg.setAttribute('id',`nHalo${i}`);rg.setAttribute('cx','50%');rg.setAttribute('cy','50%');rg.setAttribute('r','50%');
+    [{o:'0%',op:'0.28'},{o:'50%',op:'0.10'},{o:'100%',op:'0'}].forEach(s=>{
+      const stop=document.createElementNS('http://www.w3.org/2000/svg','stop');stop.setAttribute('offset',s.o);stop.setAttribute('stop-color',c.color);stop.setAttribute('stop-opacity',s.op);rg.appendChild(stop);
+    });
+    defs.appendChild(rg);
+  });
+  CONNECTIONS.forEach((conn,ci)=>{
+    const ca=CULTURES[conn.a],cb=CULTURES[conn.b];
+    const x1=ca.x*starW,y1=ca.y*starH,x2=cb.x*starW,y2=cb.y*starH;
+    const lg=document.createElementNS('http://www.w3.org/2000/svg','linearGradient');
+    lg.setAttribute('id',`connGrad${ci}`);lg.setAttribute('gradientUnits','userSpaceOnUse');
+    lg.setAttribute('x1',x1);lg.setAttribute('y1',y1);lg.setAttribute('x2',x2);lg.setAttribute('y2',y2);
+    const goldA=conn.t==='tension'?'#8b1a1a':ca.color;
+    const goldB=conn.t==='tension'?'#8b1a1a':cb.color;
+    const op=conn.t==='strong'?(conn.s*.85):(conn.t==='weak'?conn.s*.35:conn.s*.5);
+    [{o:'0%',c:goldA,opa:op},{o:'50%',c:conn.t==='tension'?'#c0392b':'#c9a84c',opa:op*1.15},{o:'100%',c:goldB,opa:op}].forEach(s=>{
+      const stop=document.createElementNS('http://www.w3.org/2000/svg','stop');stop.setAttribute('offset',s.o);stop.setAttribute('stop-color',s.c);stop.setAttribute('stop-opacity',Math.min(s.opa,1));lg.appendChild(stop);
+    });
+    defs.appendChild(lg);
+  });
+  const nebulaColors=[
+    {id:'nb0',cx:'30%',cy:'60%',r:'38%',c0:'rgba(201,168,76,.07)',c1:'transparent'},
+    {id:'nb1',cx:'72%',cy:'28%',r:'32%',c0:'rgba(52,152,219,.06)',c1:'transparent'},
+    {id:'nb2',cx:'55%',cy:'78%',r:'28%',c0:'rgba(155,89,182,.055)',c1:'transparent'},
+    {id:'nb3',cx:'18%',cy:'22%',r:'24%',c0:'rgba(243,156,18,.05)',c1:'transparent'},
+    {id:'nb4',cx:'82%',cy:'65%',r:'22%',c0:'rgba(46,204,113,.045)',c1:'transparent'},
+  ];
+  nebulaColors.forEach(nb=>{
+    const rg=document.createElementNS('http://www.w3.org/2000/svg','radialGradient');
+    rg.setAttribute('id',nb.id);rg.setAttribute('cx',nb.cx);rg.setAttribute('cy',nb.cy);rg.setAttribute('r',nb.r);
+    [{o:'0%',c:nb.c0},{o:'55%',c:nb.c0.replace(/[\d.]+\)$/,'.025)')},{o:'100%',c:nb.c1}].forEach(s=>{
+      const stop=document.createElementNS('http://www.w3.org/2000/svg','stop');stop.setAttribute('offset',s.o);stop.setAttribute('stop-color',s.c);rg.appendChild(stop);
+    });
+    defs.appendChild(rg);
+  });
+  const mwGrad=document.createElementNS('http://www.w3.org/2000/svg','linearGradient');
+  mwGrad.setAttribute('id','mwGrad');mwGrad.setAttribute('x1','0%');mwGrad.setAttribute('y1','0%');mwGrad.setAttribute('x2','100%');mwGrad.setAttribute('y2','100%');
+  [{o:'0%',c:'transparent'},{o:'25%',c:'rgba(201,168,76,.032)'},{o:'48%',c:'rgba(220,195,130,.055)'},{o:'52%',c:'rgba(220,195,130,.055)'},{o:'75%',c:'rgba(201,168,76,.032)'},{o:'100%',c:'transparent'}].forEach(s=>{
+    const stop=document.createElementNS('http://www.w3.org/2000/svg','stop');stop.setAttribute('offset',s.o);stop.setAttribute('stop-color',s.c);mwGrad.appendChild(stop);
+  });
+  defs.appendChild(mwGrad);
+  svg.appendChild(defs);
+  const mwEll=document.createElementNS('http://www.w3.org/2000/svg','rect');
+  mwEll.setAttribute('x','0');mwEll.setAttribute('y','0');mwEll.setAttribute('width',starW);mwEll.setAttribute('height',starH);
+  mwEll.setAttribute('fill','url(#mwGrad)');svg.appendChild(mwEll);
+  nebulaColors.forEach(nb=>{
+    const el=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    el.setAttribute('width',starW);el.setAttribute('height',starH);el.setAttribute('fill',`url(#${nb.id})`);svg.appendChild(el);
+  });
+  const rng=(seed)=>{let s=seed;return()=>{s=(s*16807+0)%2147483647;return(s-1)/2147483646;};};
+  const rand=rng(42);
+  for(let i=0;i<220;i++){
+    const x=rand()*starW,y=rand()*starH,r=rand()*.7+.12,op=(rand()*.12+0.04).toFixed(2);
+    const st=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    st.setAttribute('cx',x.toFixed(1));st.setAttribute('cy',y.toFixed(1));st.setAttribute('r',r.toFixed(2));
+    st.setAttribute('fill',`rgba(220,210,185,${op})`);svg.appendChild(st);
+  }
+  const starTints=['rgba(220,200,150','rgba(180,210,240','rgba(255,245,220','rgba(200,220,255'];
+  for(let i=0;i<90;i++){
+    const x=rand()*starW,y=rand()*starH,r=rand()*1.1+.3,op=(rand()*.22+0.08).toFixed(2);
+    const tint=starTints[Math.floor(rand()*starTints.length)];
+    const st=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    st.setAttribute('cx',x.toFixed(1));st.setAttribute('cy',y.toFixed(1));st.setAttribute('r',r.toFixed(2));
+    st.setAttribute('fill',`${tint},${op})`);svg.appendChild(st);
+  }
+  [[0.07,0.10],[0.87,0.07],[0.04,0.86],[0.91,0.76],[0.49,0.04],[0.14,0.54],[0.78,0.88],[0.96,0.32]].forEach(([fx,fy],si)=>{
+    const sx=fx*starW,sy=fy*starH,sz=si<4?8:5.5;
+    const colors=['rgba(255,240,180','rgba(180,220,255','rgba(255,255,230','rgba(200,240,200'];
+    const cc=colors[si%colors.length];
+    [[sz,0],[-sz,0],[0,sz],[0,-sz],[sz*.6,sz*.6],[-sz*.6,sz*.6],[sz*.6,-sz*.6],[-sz*.6,-sz*.6]].forEach(([dx,dy],ai)=>{
+      if(si>=4&&ai>=4) return;
+      const arm=document.createElementNS('http://www.w3.org/2000/svg','line');
+      arm.setAttribute('x1',sx);arm.setAttribute('y1',sy);arm.setAttribute('x2',sx+dx);arm.setAttribute('y2',sy+dy);
+      arm.setAttribute('stroke',`${cc},.45)`);arm.setAttribute('stroke-width',ai<4?'.7':'.4');arm.setAttribute('stroke-linecap','round');svg.appendChild(arm);
+    });
+    const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx',sx);dot.setAttribute('cy',sy);dot.setAttribute('r','2');dot.setAttribute('fill',`${cc},.88)`);svg.appendChild(dot);
+  });
+  const rcx=starW*.42,rcy=starH*.47;
+  [80,150,230].forEach((r,ri)=>{
+    const ring=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    ring.setAttribute('cx',rcx);ring.setAttribute('cy',rcy);ring.setAttribute('r',r);ring.setAttribute('fill','none');
+    ring.setAttribute('stroke','rgba(201,168,76,.035)');ring.setAttribute('stroke-width','1');
+    ring.setAttribute('stroke-dasharray',ri===1?'1 8':'2 14');svg.appendChild(ring);
+  });
+  const CX=c=>c.x*starW, CY=c=>c.y*starH;
+  const connGroup=document.createElementNS('http://www.w3.org/2000/svg','g');
+  connGroup.setAttribute('id','connGroup');
+  CONNECTIONS.forEach((conn,ci)=>{
+    const ca=CULTURES[conn.a],cb=CULTURES[conn.b];
+    const x1=CX(ca),y1=CY(ca),x2=CX(cb),y2=CY(cb);
+    const mx=(x1+x2)/2,my=(y1+y2)/2;
+    const dx=x2-x1,dy=y2-y1;
+    const len=Math.sqrt(dx*dx+dy*dy);
+    const bend=len*0.22*(Math.random()>.5?1:-1);
+    const cpx=mx-dy/len*bend,cpy=my+dx/len*bend;
+    const connG=document.createElementNS('http://www.w3.org/2000/svg','g');
+    connG.setAttribute('data-conn',`${conn.a}-${conn.b}`);
+    if(conn.t==='strong'&&conn.s>.65){
+      const glow=document.createElementNS('http://www.w3.org/2000/svg','path');
+      glow.setAttribute('d',`M${x1},${y1} Q${cpx},${cpy} ${x2},${y2}`);glow.setAttribute('fill','none');
+      glow.setAttribute('stroke',`url(#connGrad${ci})`);glow.setAttribute('stroke-width',conn.s*10);
+      glow.setAttribute('stroke-linecap','round');glow.setAttribute('opacity','0.15');connG.appendChild(glow);
+    }
+    const line=document.createElementNS('http://www.w3.org/2000/svg','path');
+    line.setAttribute('d',`M${x1},${y1} Q${cpx},${cpy} ${x2},${y2}`);line.setAttribute('fill','none');
+    line.setAttribute('stroke',`url(#connGrad${ci})`);
+    if(conn.t==='strong'){line.setAttribute('stroke-width',(conn.s*3.2).toFixed(1));line.setAttribute('stroke-linecap','round');}
+    else if(conn.t==='weak'){line.setAttribute('stroke-width',(conn.s*1.6).toFixed(1));line.setAttribute('stroke-dasharray',`${4+conn.s*2} ${6+conn.s*2}`);line.setAttribute('stroke-linecap','round');}
+    else{line.setAttribute('stroke-width',(conn.s*2.2).toFixed(1));line.setAttribute('stroke-dasharray','3 5');line.setAttribute('stroke-linecap','round');}
+    connG.appendChild(line);
+    if(conn.s>.58&&conn.t!=='tension'){
+      const t=0.5;
+      const qx=(1-t)*(1-t)*x1+2*(1-t)*t*cpx+t*t*x2;
+      const qy=(1-t)*(1-t)*y1+2*(1-t)*t*cpy+t*t*y2;
+      const badge=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      badge.setAttribute('cx',qx);badge.setAttribute('cy',qy);badge.setAttribute('r',10);
+      badge.setAttribute('fill','rgba(201,168,76,0.75)');badge.setAttribute('stroke','rgba(255,252,240,0.6)');badge.setAttribute('stroke-width','1');connG.appendChild(badge);
+      const btext=document.createElementNS('http://www.w3.org/2000/svg','text');
+      btext.setAttribute('x',qx);btext.setAttribute('y',qy+3.5);btext.setAttribute('text-anchor','middle');btext.setAttribute('font-size','7.5');
+      btext.setAttribute('fill','rgba(255,252,240,.9)');btext.setAttribute('font-weight','700');btext.setAttribute('font-family','Playfair Display,serif');
+      btext.textContent=`${Math.round(conn.s*100)}%`;connG.appendChild(btext);
+    }
+    connGroup.appendChild(connG);
+  });
+  svg.appendChild(connGroup);
+  const nodeGroup=document.createElementNS('http://www.w3.org/2000/svg','g');
+  CULTURES.forEach((c,i)=>{
+    const x=CX(c),y=CY(c);
+    const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('cursor','pointer');g.setAttribute('data-id',i);g.setAttribute('style','transition:opacity .28s ease;');
+    [3.8,2.8,2.0].forEach((mult,li)=>{
+      const halo=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      halo.setAttribute('cx',x);halo.setAttribute('cy',y);halo.setAttribute('r',c.r*mult);
+      halo.setAttribute('fill',`url(#nHalo${i})`);halo.setAttribute('opacity',(0.6-li*0.18).toFixed(2));g.appendChild(halo);
+    });
+    const orb=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    orb.setAttribute('cx',x);orb.setAttribute('cy',y);orb.setAttribute('r',c.r+8);orb.setAttribute('fill','none');
+    orb.setAttribute('stroke',c.color);orb.setAttribute('stroke-width','0.7');orb.setAttribute('stroke-opacity','0.18');orb.setAttribute('stroke-dasharray','2,5');g.appendChild(orb);
+    const mainCircle=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    mainCircle.setAttribute('cx',x);mainCircle.setAttribute('cy',y);mainCircle.setAttribute('r',c.r);
+    mainCircle.setAttribute('fill',c.color);mainCircle.setAttribute('fill-opacity','0.15');mainCircle.setAttribute('stroke',c.color);mainCircle.setAttribute('stroke-width','2');mainCircle.setAttribute('stroke-opacity','0.8');g.appendChild(mainCircle);
+    const core=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    core.setAttribute('cx',x);core.setAttribute('cy',y);core.setAttribute('r',c.r*.48);core.setAttribute('fill',c.color);core.setAttribute('opacity','0.9');g.appendChild(core);
+    const spec=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    spec.setAttribute('cx',x-c.r*.18);spec.setAttribute('cy',y-c.r*.2);spec.setAttribute('r',c.r*.14);spec.setAttribute('fill','rgba(255,255,255,.38)');g.appendChild(spec);
+    const glyph=document.createElementNS('http://www.w3.org/2000/svg','text');
+    glyph.setAttribute('x',x);glyph.setAttribute('y',y+5.5);glyph.setAttribute('text-anchor','middle');glyph.setAttribute('font-size','14');
+    glyph.setAttribute('font-family','Ma Shan Zheng,cursive');glyph.setAttribute('fill','white');glyph.setAttribute('pointer-events','none');glyph.textContent=c.glyph;g.appendChild(glyph);
+    const labelText=lang==='zh'?c.label:lang==='en'?c.en:c.ru;
+    const lbgW=labelText.length*(lang==='zh'?13:7)+16;
+    const lbg=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    lbg.setAttribute('x',x-lbgW/2);lbg.setAttribute('y',y+c.r+8);lbg.setAttribute('width',lbgW);lbg.setAttribute('height',18);lbg.setAttribute('rx',9);
+    lbg.setAttribute('fill',c.color);lbg.setAttribute('fill-opacity','0.22');lbg.setAttribute('stroke',c.color);lbg.setAttribute('stroke-opacity','0.45');lbg.setAttribute('stroke-width','1');g.appendChild(lbg);
+    const lbl=document.createElementNS('http://www.w3.org/2000/svg','text');
+    lbl.setAttribute('x',x);lbl.setAttribute('y',y+c.r+21);lbl.setAttribute('text-anchor','middle');lbl.setAttribute('font-size','10');
+    lbl.setAttribute('font-family','Noto Serif SC,serif');lbl.setAttribute('fill','rgba(255,245,215,.92)');lbl.setAttribute('font-weight','700');lbl.textContent=labelText;g.appendChild(lbl);
+    const avg=Math.round(c.dims.vals.reduce((a,b)=>a+b,0)/c.dims.vals.length);
+    const bx=x+c.r*.75,by=y-c.r*.75;
+    const badgeOuter=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    badgeOuter.setAttribute('cx',bx);badgeOuter.setAttribute('cy',by);badgeOuter.setAttribute('r',10.5);badgeOuter.setAttribute('fill',c.color);badgeOuter.setAttribute('opacity','0.15');g.appendChild(badgeOuter);
+    const badge=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    badge.setAttribute('cx',bx);badge.setAttribute('cy',by);badge.setAttribute('r',8.5);badge.setAttribute('fill',c.color);badge.setAttribute('stroke','rgba(255,252,240,.7)');badge.setAttribute('stroke-width','1.2');g.appendChild(badge);
+    const bnum=document.createElementNS('http://www.w3.org/2000/svg','text');
+    bnum.setAttribute('x',bx);bnum.setAttribute('y',by+3.5);bnum.setAttribute('text-anchor','middle');bnum.setAttribute('font-size','7');bnum.setAttribute('fill','white');bnum.setAttribute('font-weight','700');bnum.setAttribute('font-family','Playfair Display,serif');bnum.textContent=avg;g.appendChild(bnum);
+    g.addEventListener('click',()=>selectNode(i));
+    g.addEventListener('mouseenter',()=>{if(selectedNode!==i){mainCircle.setAttribute('fill-opacity','0.32');mainCircle.setAttribute('stroke-width','3');}});
+    g.addEventListener('mouseleave',()=>{if(selectedNode!==i){mainCircle.setAttribute('fill-opacity','0.15');mainCircle.setAttribute('stroke-width','2');}});
+    nodeGroup.appendChild(g);
+  });
+  svg.appendChild(nodeGroup);
+  const clabel=document.createElementNS('http://www.w3.org/2000/svg','text');
+  clabel.setAttribute('x',starW*.42);clabel.setAttribute('y',starH*.47);clabel.setAttribute('text-anchor','middle');clabel.setAttribute('font-size','9');
+  clabel.setAttribute('fill','rgba(201,168,76,.28)');clabel.setAttribute('font-family','Cormorant Garamond,serif');clabel.setAttribute('font-style','italic');
+  clabel.textContent='Cultural Resonance Field';svg.appendChild(clabel);
+}
+
+function selectNode(i){
+  selectedNode=(selectedNode===i)?-1:i;
+  if(selectedNode===-1){showNodePlaceholder();return;}
+  const c=CULTURES[i];
+  buildStarMap();
+  document.querySelectorAll('[data-conn]').forEach(el=>{
+    const [a,b]=el.getAttribute('data-conn').split('-').map(Number);
+    el.setAttribute('opacity',(a===i||b===i)?'1':'0.08');
+  });
+  document.querySelectorAll('[data-id]').forEach(g=>{
+    const nid=+g.getAttribute('data-id');
+    const connected=CONNECTIONS.some(conn=>(conn.a===i||conn.b===i)&&(conn.a===nid||conn.b===nid));
+    g.setAttribute('opacity',(nid===i||connected)?'1':'0.18');
+  });
+  const card=document.getElementById('nodeInfoCard');
+  const q=c.quote[lang]||c.quote.zh;
+  const auth=c.author[lang]||c.author.zh;
+  const dimLabels=c.dims.zh;
+  const connectedTo=CONNECTIONS
+    .filter(conn=>conn.a===i||conn.b===i)
+    .map(conn=>({idx:conn.a===i?conn.b:conn.a,strength:conn.s,type:conn.t}))
+    .sort((a,b)=>b.strength-a.strength);
+  let connHtml='';
+  connectedTo.forEach(ct=>{
+    const cc=CULTURES[ct.idx];
+    const typeLabel={strong:'强共鸣',weak:'弱共鸣',tension:'文化张力'}[ct.type];
+    const typeLabelEN={strong:'Strong',weak:'Weak',tension:'Tension'}[ct.type];
+    connHtml+=`<div style="display:flex;align-items:center;gap:6px;font-size:.68rem;color:#555;margin-bottom:4px;">
+      <span style="width:8px;height:8px;border-radius:50%;background:${cc.color};flex-shrink:0;display:inline-block;"></span>
+      <span style="font-weight:700;color:${cc.color};">${cc.label}</span>
+      <span style="color:#aaa;">·</span>
+      <span>${lang==='zh'?typeLabel:typeLabelEN}</span>
+      <span style="margin-left:auto;font-family:'Playfair Display',serif;font-weight:700;color:${ct.type==='tension'?'#8b1a1a':cc.color};">${Math.round(ct.strength*100)}%</span>
+    </div>`;
+  });
+  let dimHtml='';
+  c.dims.vals.forEach((v,di)=>{
+    dimHtml+=`<div class="ni-dim">
+      <div class="ni-dim-label">${dimLabels[di]}</div>
+      <div class="ni-dim-bar"><div class="ni-dim-fill" style="width:${v}%;background:${c.color};"></div></div>
+      <div class="ni-dim-val">${v}</div>
+    </div>`;
+  });
+  card.innerHTML=`
+    <div class="ni-header"><div class="ni-color-dot" style="background:${c.color};"></div>
+    <div><div class="ni-title">${c.label}</div><div class="ni-subtitle">${c.en}</div></div></div>
+    <div class="ni-quote">${q}<div class="ni-author">${auth}</div></div>
+    <div class="ni-dims">${dimHtml}</div>
+    ${connectedTo.length?`<div style="margin-top:8px;border-top:1px solid rgba(201,168,76,.12);padding-top:8px;"><div style="font-family:'Ma Shan Zheng',cursive;font-size:.8rem;color:#888;margin-bottom:6px;">文化共鸣网络</div>${connHtml}</div>`:''}
+  `;
+}
+
+function showNodePlaceholder(){
+  buildStarMap();
+  document.getElementById('nodeInfoCard').innerHTML=`<div class="ni-placeholder"><div class="ni-icon">✦</div><div class="ni-text">点击左侧星图中的文化节点，读取田野感悟与文化共鸣数据</div></div>`;
+}
+
+/* ═══ TIMELINE ═══ */
+function drawTimeline(){
+  const events=[
+    {year:1131,label:'宏村始建\n(南宋)',color:'#c9a84c',up:true},
+    {year:1298,label:'马可·波罗\n游记记载',color:'#9b59b6',up:false},
+    {year:1450,label:'马头墙\n风格成熟',color:'#c9a84c',up:true},
+    {year:1550,label:'徽商鼎盛\n无徽不成镇',color:'#e74c3c',up:false},
+    {year:1680,label:'中国风\n传至欧洲',color:'#9b59b6',up:true},
+    {year:1720,label:'扬州盐运\n两淮鼎盛',color:'#e74c3c',up:false},
+    {year:1855,label:'承志堂\n建造完成',color:'#c9a84c',up:true},
+    {year:2000,label:'UNESCO\n世界遗产',color:'#2ecc71',up:false},
+    {year:2012,label:'国际研究\n热潮兴起',color:'#9b59b6',up:true},
+  ];
+  const mn=1100,mx=2025,pad=32;
+  const wrap=document.getElementById('tlInner');
+  const tw=wrap.parentElement.clientWidth||700;
+  wrap.style.width=tw+'px';
+  function xp(y){return pad+(y-mn)/(mx-mn)*(tw-2*pad);}
+  const mid=36;
+  wrap.innerHTML=`<div style="position:absolute;left:0;right:0;top:${mid}px;height:2px;background:linear-gradient(90deg,rgba(201,168,76,.18),#c9a84c,rgba(201,168,76,.18));"></div>`;
+  events.forEach(ev=>{
+    const x=xp(ev.year);const el=document.createElement('div');
+    el.style.cssText=`position:absolute;left:${x}px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;`;
+    if(ev.up){
+      el.style.bottom=(80-mid+4)+'px';
+      el.innerHTML=`<div style="font-size:.55rem;color:#555;text-align:center;max-width:60px;line-height:1.3;margin-bottom:3px;white-space:pre-line;">${ev.label}</div><div style="width:8px;height:8px;border-radius:50%;background:${ev.color};border:2px solid #fff;box-shadow:0 0 0 2px ${ev.color};"></div><div style="width:1px;height:10px;background:${ev.color};opacity:.35;"></div>`;
+    } else {
+      el.style.top=(mid+4)+'px';
+      el.innerHTML=`<div style="width:1px;height:10px;background:${ev.color};opacity:.35;"></div><div style="width:8px;height:8px;border-radius:50%;background:${ev.color};border:2px solid #fff;box-shadow:0 0 0 2px ${ev.color};"></div><div style="font-size:.55rem;color:#555;text-align:center;max-width:60px;line-height:1.3;margin-top:3px;white-space:pre-line;">${ev.label}</div>`;
+    }
+    wrap.appendChild(el);
+  });
+  [1200,1400,1600,1800,2000].forEach(y=>{
+    const yr=document.createElement('span');
+    yr.style.cssText=`position:absolute;left:${xp(y)}px;bottom:2px;transform:translateX(-50%);font-family:'Cormorant Garamond',serif;font-size:.58rem;color:#bbb;`;
+    yr.textContent=y;wrap.appendChild(yr);
+  });
+}
+</script>
 </body>
 </html>
