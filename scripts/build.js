@@ -5,11 +5,6 @@ const path = require('path');
 const rootDir = path.join(__dirname, '..');
 const distDir = path.join(rootDir, 'dist');
 
-// 跳过的文件（原始未压缩大文件，已有压缩版本替代）
-const SKIP_FILES = new Set([
-  'e971504be80224f0287265f3ce4a7533.glb'
-]);
-
 // 递归复制函数
 function copyDir(src, dest) {
   if (!fs.existsSync(dest)) {
@@ -19,10 +14,6 @@ function copyDir(src, dest) {
   const entries = fs.readdirSync(src, { withFileTypes: true });
   
   for (const entry of entries) {
-    if (SKIP_FILES.has(entry.name)) {
-      console.log('Skipped large file:', entry.name);
-      continue;
-    }
     const srcPath = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
     
@@ -46,7 +37,7 @@ htmlFiles.forEach(file => {
 });
 
 // 复制CSS和JS文件
-const staticFiles = ['styles.css', 'app.js', 'i18n.js', 'app-knowledge.js'];
+const staticFiles = ['styles.css', 'app.js'];
 staticFiles.forEach(file => {
   const src = path.join(rootDir, file);
   if (fs.existsSync(src)) {
