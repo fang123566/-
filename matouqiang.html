@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>马头墙 | 解码徽派民居</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+
+  <style>
+    :root {
+      --ink-black: #1a1410;
+      --ink-deep: #2d2519;
+      --ink-medium: #4a3d2e;
+      --ink-light: #8c7a60;
+      --ink-faint: #c4b49a;
+      --paper: #f5f0e8;
+      --paper-warm: #faf6ee;
+      --cinnabar: #c0392b;
+      --gold: #b8860b;
+      --jade: #2e6b4f;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; overflow-x: hidden; font-size: 18px; }
+    body { background-color: var(--paper); color: var(--ink-black); font-family: 'Noto Serif SC','SimSun',serif; min-height: 100vh; overflow-x: hidden; position: relative; }
+    body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events:none; z-index:0; opacity:0.6; }
+    body::after { content:''; position:fixed; top:0; left:0; width:100%; height:100%; background: radial-gradient(ellipse 300px 200px at 0% 0%,rgba(26,20,16,.08) 0%,transparent 70%), radial-gradient(ellipse 300px 200px at 100% 0%,rgba(26,20,16,.06) 0%,transparent 70%), radial-gradient(ellipse 300px 200px at 0% 100%,rgba(26,20,16,.06) 0%,transparent 70%), radial-gradient(ellipse 300px 200px at 100% 100%,rgba(26,20,16,.08) 0%,transparent 70%); pointer-events:none; z-index:0; }
+
+    /* ── 固定导航改为嵌入 hero ── */
+    #circleNav {
+      display: none; /* 隐藏原固定导航，改由 hero-nav 承担 */
+    }
+
+    /* 圆形按钮基础样式（hero 内使用）*/
+    .circle-btn {
+      width: 50px; height: 50px; border-radius: 50%;
+      background: rgba(245,240,232,.92); backdrop-filter: blur(8px);
+      border: 1px solid rgba(184,134,11,.25);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+      text-decoration: none; color: var(--ink-medium);
+      box-shadow: 0 2px 10px rgba(26,20,16,.1);
+      transition: all .28s ease; cursor: pointer;
+    }
+    .circle-btn svg { width: 18px; height: 18px; stroke: currentColor; }
+    .circle-btn span { font-size: .48rem; font-weight: 500; letter-spacing: .04em; white-space: nowrap; font-family: 'Noto Serif SC', serif; }
+    .circle-btn:hover { background: rgba(245,240,232,1); border-color: rgba(192,57,43,.45); color: var(--cinnabar); transform: translateY(-2px); box-shadow: 0 5px 16px rgba(192,57,43,.15); }
+    .circle-btn.active { background: var(--ink-deep); border-color: var(--ink-deep); color: rgba(245,240,232,.95); box-shadow: 0 3px 12px rgba(26,20,16,.25); }
+
+    .page-wrapper { position:relative; z-index:1; }
+
+    /* ── ENTRANCE ANIMATIONS ── */
+    @keyframes fadeSlideDown  { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeSlideUp    { from{opacity:0;transform:translateY(18px)}  to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeSlideRight { from{opacity:0;transform:translateX(-20px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes fadeSlideLeft  { from{opacity:0;transform:translateX(20px)}  to{opacity:1;transform:translateX(0)} }
+    @keyframes scaleIn        { from{opacity:0;transform:scale(.94)}         to{opacity:1;transform:scale(1)} }
+    @keyframes pulseDot       { 0%,100%{transform:scale(1);opacity:.7} 50%{transform:scale(1.5);opacity:1} }
+    @keyframes floatY         { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+    @keyframes inkReveal      { from{opacity:0;clip-path:inset(0 100% 0 0)} to{opacity:1;clip-path:inset(0 0% 0 0)} }
+    @keyframes badgePulse     { 0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,.0)} 50%{box-shadow:0 0 0 4px rgba(192,57,43,.12)} }
+    @keyframes sectionSlide   { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes cardReveal     { from{opacity:0;transform:translateY(16px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+    @keyframes dividerDraw    { from{opacity:0;transform:scaleX(0)} to{opacity:1;transform:scaleX(1)} }
+    @keyframes numGlow        { 0%,100%{text-shadow:none} 50%{text-shadow:0 0 18px rgba(192,57,43,.35)} }
+
+    .hero-header {
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(184,134,11,.2);
+      background: linear-gradient(to right, var(--paper) 0%, var(--paper-warm) 60%, rgba(196,184,160,.18) 100%);
+    }
+    /* 右侧水墨晕渲 */
+    .hero-header::before {
+      content:'';position:absolute;top:0;right:0;width:55%;height:100%;
+      background: radial-gradient(ellipse 70% 90% at 85% 50%, rgba(184,134,11,.07) 0%, transparent 70%),
+                  radial-gradient(ellipse 40% 60% at 100% 30%, rgba(26,20,16,.04) 0%, transparent 60%);
+      pointer-events:none;z-index:0;
+    }
+    /* 竖向水墨大字装饰 */
+    .hero-header::after {
+      content:'馬頭牆';position:absolute;top:-4px;right:310px;
+      font-family:'Ma Shan Zheng',cursive;font-size:9rem;
+      color:rgba(26,20,16,.028);letter-spacing:.05em;
+      pointer-events:none;writing-mode:vertical-rl;line-height:1;
+      z-index:0;
+    }
+
+    /* 三列 flex 容器 */
+    .hero-inner {
+      display: flex;
+      align-items: flex-end;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .hero-left {
+      width: 320px;
+      padding: 0 24px;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+      margin-left: 0;
+    }
+    .hero-middle {
+      flex: 1;
+      padding: 0 40px;
+      display: flex;
+      align-items: flex-end;
+    }
+    .hero-right {
+      display: flex;
+      align-items: flex-end;
+      padding: 0 24px;
+      margin-right: 0;
+    }
+
+    /* ── 右列：导航按钮区（内嵌进 header）── */
+    .hero-nav {
+      position: absolute;
+      top: 24px;
+      right: 32px;
+      z-index: 10;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .hero-nav-inner {
+      display: flex;
+      flex-direction: row;
+      gap: .42rem;
+    }
+
+    .hero-badge { display:inline-flex; align-items:center; gap:5px; background:rgba(192,57,43,.08); border:1px solid rgba(192,57,43,.25); padding:3px 10px; border-radius:2px; margin-bottom:7px; align-self:flex-start; margin-left: 0;
+      animation:fadeSlideDown .6s cubic-bezier(.22,1,.36,1) .1s both, badgePulse 4s ease-in-out 1s infinite; }
+    .hero-badge span { font-size:.6rem; letter-spacing:.14em; color:var(--cinnabar); font-weight:500; }
+    .hero-badge::before,.hero-badge::after { content:'◆'; font-size:.32rem; color:var(--cinnabar); opacity:.6; }
+    .hero-title-zh { font-family:'Ma Shan Zheng',cursive; font-size:clamp(2.2rem,3.2vw,3.2rem); color:var(--ink-black); line-height:1; letter-spacing:.05em; margin-bottom:4px; text-shadow:2px 3px 8px rgba(26,20,16,.1);
+      animation:fadeSlideDown .7s cubic-bezier(.22,1,.36,1) .2s both; }
+    .hero-title-en { font-size:.5rem; letter-spacing:.24em; color:var(--ink-light); font-weight:300; margin-bottom:10px; text-transform:uppercase;
+      animation:fadeSlideDown .6s cubic-bezier(.22,1,.36,1) .32s both; }
+    .hero-desc { font-size:clamp(.64rem,.8vw,.74rem); line-height:1.72; color:var(--ink-medium); font-weight:300; border-left:2px solid var(--cinnabar); padding-left:9px;
+      animation:fadeSlideRight .7s cubic-bezier(.22,1,.36,1) .42s both; }
+
+    /* 历史文字区：仿参考图三段文字样式 */
+    .history-section {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+      animation: fadeSlideLeft .7s cubic-bezier(.22,1,.36,1) .35s both;
+    }
+    .history-section-label {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: .62rem;
+      letter-spacing: .22em;
+      color: var(--cinnabar);
+      opacity: .85;
+      margin-bottom: 10px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .history-section-label::before { content: '◆'; font-size: .36rem; color: var(--cinnabar); opacity: .7; }
+    .history-section-label::after  { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, rgba(184,134,11,.35), transparent); }
+
+    /* 每行作为独立段落，均匀分布 */
+    .history-lines-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0;
+      min-height: 0;
+    }
+    .history-line {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(.68rem, .88vw, .8rem);
+      line-height: 1.65;
+      color: var(--ink-medium);
+      font-weight: 300;
+      letter-spacing: .04em;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .5s ease, transform .5s ease;
+    }
+    .history-line.visible { opacity: 1; transform: translateY(0); }
+
+    /* 导航圆按钮在 hero 内的样式 — 与全局 .circle-btn 共用，但覆盖部分 */
+    .hero-nav .circle-btn {
+      background: rgba(245,240,232,.9);
+      border-color: rgba(184,134,11,.28);
+      color: var(--ink-medium);
+      box-shadow: 0 2px 10px rgba(26,20,16,.1);
+    }
+    .hero-nav .circle-btn:hover {
+      background: rgba(245,240,232,1);
+      border-color: rgba(192,57,43,.45);
+      color: var(--cinnabar);
+      transform: translateY(-2px);
+    }
+    .hero-nav .circle-btn.active {
+      background: var(--ink-deep);
+      border-color: var(--ink-deep);
+      color: rgba(245,240,232,.95);
+    }
+
+    .ink-divider { display:flex; align-items:center; gap:10px; margin:14px 0 10px; }
+    .ink-divider::before,.ink-divider::after { content:''; flex:1; height:1px; background:linear-gradient(to right,transparent,rgba(184,134,11,.4),transparent); transform-origin:left; animation:dividerDraw .8s cubic-bezier(.22,1,.36,1) both; }
+    .ink-divider::after { transform-origin:right; }
+    .ink-divider span { font-family:'Ma Shan Zheng',cursive; color:var(--gold); font-size:.95rem; opacity:.8; animation:scaleIn .5s ease both; }
+
+    /* MAIN LAYOUT */
+    .main-content {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      min-height: calc(100vh - 150px);
+      max-width: none;
+      margin: 0;
+      gap: 0;
+      width: 100%;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      background: rgba(245,240,232,.92);
+      border-right: 1px solid rgba(184,134,11,.2);
+      padding: 16px 16px 20px;
+      position: sticky;
+      top: 0;
+      height: fit-content;
+      width: 320px;
+      justify-self: start;
+    }
+    .sidebar-title { font-family:'Ma Shan Zheng',cursive; font-size:1.15rem; color:var(--ink-black); text-align:center; margin-bottom:2px; letter-spacing:.1em; }
+    .sidebar-subtitle { font-size:.58rem; letter-spacing:.18em; color:var(--ink-light); text-align:center; text-transform:uppercase; margin-bottom:10px; }
+    .brush-line { width:100%; height:10px; margin-bottom:10px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12'%3E%3Cpath d='M2 8 Q20 3 40 7 Q70 11 100 6 Q130 1 160 7 Q180 10 198 6' fill='none' stroke='rgba(192,57,43,0.35)' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-size:100% 100%; }
+
+    .type-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; }
+    .type-item { position:relative; border-radius:4px; overflow:visible; cursor:pointer; transition:all .32s ease; border:1px solid rgba(184,134,11,.15); background:var(--paper-warm);
+      opacity:0; animation:cardReveal .55s cubic-bezier(.22,1,.36,1) both; }
+    .type-item:nth-child(1){animation-delay:.1s} .type-item:nth-child(2){animation-delay:.16s}
+    .type-item:nth-child(3){animation-delay:.22s} .type-item:nth-child(4){animation-delay:.28s}
+    .type-item:nth-child(5){animation-delay:.34s} .type-item:nth-child(6){animation-delay:.4s}
+    .type-item:nth-child(7){animation-delay:.46s} .type-item:nth-child(8){animation-delay:.52s}
+    .type-item:hover { border-color:rgba(192,57,43,.5); box-shadow:0 6px 22px rgba(192,57,43,.18); transform:translateY(-3px) scale(1.01); z-index:200; }
+    .type-item::after { content:''; position:absolute; inset:0; border-radius:4px; background:radial-gradient(circle at 50% 0%,rgba(192,57,43,.08) 0%,transparent 70%); opacity:0; transition:opacity .3s; pointer-events:none; }
+    .type-item:hover::after { opacity:1; }
+    .type-img-wrap { overflow:hidden; border-radius:4px 4px 0 0; }
+    .type-item img { width:100%; height:148px; object-fit:contain; display:block; filter:none; transition:filter .35s,transform .45s; }
+    .type-item:hover img { filter:sepia(0%) contrast(1.02); transform:scale(1.08); }
+    .type-label { padding:4px 4px; font-size:.84rem; font-weight:500; color:var(--ink-medium); text-align:center; font-family:'Noto Serif SC',serif; letter-spacing:.06em; background:var(--paper-warm); border-top:1px solid rgba(184,134,11,.1); border-radius:0 0 4px 4px; transition:color .3s; }
+    .type-item:hover .type-label { color:var(--cinnabar); }
+    .type-item.active-card { border-color:rgba(192,57,43,.55); box-shadow:0 0 0 2px rgba(192,57,43,.15); }
+    .type-item.active-card .type-label { color:var(--cinnabar); font-weight:700; }
+    .type-detail-panel { display:none; margin-top:10px; background:var(--paper-warm); border:1px solid rgba(184,134,11,.3); border-radius:4px; padding:12px 14px 10px; box-shadow:0 4px 20px rgba(26,20,16,.1); animation:panelIn .25s ease; position:relative; }
+    @keyframes panelIn { from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)} }
+    .type-detail-panel.visible { display:block; }
+    .type-detail-panel::before { content:''; position:absolute; top:-7px; left:var(--arrow-left,50%); width:12px; height:12px; background:var(--paper-warm); border-left:1px solid rgba(184,134,11,.3); border-top:1px solid rgba(184,134,11,.3); transform:rotate(45deg); }
+    .detail-close { position:absolute; top:6px; right:8px; width:20px; height:20px; border-radius:50%; border:1px solid rgba(192,57,43,.25); color:var(--ink-light); font-size:.8rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; background:none; }
+    .detail-close:hover { background:var(--cinnabar); color:white; border-color:var(--cinnabar); }
+    .detail-name { font-family:'Ma Shan Zheng',cursive; font-size:.94rem; color:var(--ink-black); letter-spacing:.08em; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid rgba(184,134,11,.18); padding-right:22px; }
+    .detail-name::before { content:'▪ '; color:var(--cinnabar); }
+    .detail-section { margin-bottom:6px; }
+    .detail-section-label { font-size:.56rem; letter-spacing:.14em; color:var(--cinnabar); font-weight:600; margin-bottom:3px; }
+    .detail-section-text { font-size:.68rem; line-height:1.35; color:var(--ink-medium); font-weight:300; }
+
+    /* CONTENT AREA */
+    .content-area {
+      padding: 14px 30px 28px 22px;
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      justify-self: stretch;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .sec-header { display:flex; align-items:center; gap:6px; margin-bottom:10px; }
+    .sec-num { font-family:'Ma Shan Zheng',cursive; font-size:2rem; color:var(--cinnabar); opacity:.2; line-height:1; min-width:24px; animation:numGlow 4s ease-in-out infinite; }
+    .sec-title { font-family:'Ma Shan Zheng',cursive; font-size:1.15rem; color:var(--ink-black); letter-spacing:.06em; }
+    .sec-line { flex:1; height:1px; background:linear-gradient(to right,rgba(184,134,11,.35),transparent); }
+
+    /* SECTION 01 */
+    .profile-section {
+      display: flex;
+      flex-direction: row;
+      gap: 12px;
+      margin-bottom: 14px;
+      align-items: stretch;
+      flex-wrap: wrap;
+    }
+
+    .profile-card {
+      background: var(--paper-warm);
+      border: 1px solid rgba(184,134,11,.2);
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 4px 18px rgba(26,20,16,.06);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 520px;
+      transition: box-shadow .35s;
+      animation: scaleIn .7s cubic-bezier(.22,1,.36,1) .3s both;
+    }
+    .profile-card:hover { box-shadow:0 8px 32px rgba(26,20,16,.12); }
+    .profile-card::before { content:''; position:absolute; inset:4px; border:1px solid rgba(184,134,11,.1); pointer-events:none; z-index:1; }
+    .profile-card img {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      max-height: 520px;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+      margin: 0 auto;
+      filter: sepia(6%) contrast(.96) brightness(.99);
+      transition: filter .4s, transform .5s;
+    }
+    .profile-card:hover img { filter:sepia(0%) contrast(1) brightness(1); transform:scale(1.015); }
+
+    /* BOOK */
+    .scroll-book {
+      width: 360px;
+      display: flex;
+      flex-direction: column;
+      animation: fadeSlideLeft .7s cubic-bezier(.22,1,.36,1) .4s both;
+    }
+    .book-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      padding: 0 2px;
+    }
+    .book-header-title { font-family:'Ma Shan Zheng',cursive; font-size:.82rem; color:var(--ink-black); letter-spacing:.1em; }
+    .book-header-hint { font-size:.48rem; color:var(--ink-faint); letter-spacing:.06em; }
+
+    .book-viewport {
+      position: relative;
+      perspective: 1400px;
+      perspective-origin: 50% 35%;
+      min-height: 300px;
+      flex: 1;
+    }
+
+    .book-page { position:absolute; inset:0; transform-style:preserve-3d; pointer-events:none; opacity:0; }
+    .book-page.current { opacity:1; pointer-events:auto; z-index:10; }
+    .book-page.flip-out-fwd { opacity:1; animation:flipOutFwd .48s cubic-bezier(.4,0,.2,1) forwards; z-index:20; }
+    .book-page.flip-in-fwd  { opacity:1; animation:flipInFwd  .48s cubic-bezier(.4,0,.2,1) forwards; z-index:15; }
+    .book-page.flip-out-back { opacity:1; animation:flipOutBack .48s cubic-bezier(.4,0,.2,1) forwards; z-index:20; }
+    .book-page.flip-in-back  { opacity:1; animation:flipInBack  .48s cubic-bezier(.4,0,.2,1) forwards; z-index:15; }
+
+    @keyframes flipOutFwd  { 0%{transform:rotateY(0deg);opacity:1} 45%{transform:rotateY(-50deg);opacity:.5} 100%{transform:rotateY(-90deg);opacity:0} }
+    @keyframes flipInFwd   { 0%{transform:rotateY(90deg);opacity:0} 55%{transform:rotateY(40deg);opacity:.5} 100%{transform:rotateY(0deg);opacity:1} }
+    @keyframes flipOutBack { 0%{transform:rotateY(0deg);opacity:1} 45%{transform:rotateY(50deg);opacity:.5} 100%{transform:rotateY(90deg);opacity:0} }
+    @keyframes flipInBack  { 0%{transform:rotateY(-90deg);opacity:0} 55%{transform:rotateY(-40deg);opacity:.5} 100%{transform:rotateY(0deg);opacity:1} }
+
+    .page-face {
+      width: 100%;
+      min-height: 278px;
+      background: linear-gradient(160deg, #fefaf0 0%, #f8f0dc 55%, #f2e8cc 100%);
+      border: 1px solid rgba(184,134,11,.28);
+      border-radius: 3px 12px 12px 3px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 3px 4px 16px rgba(26,20,16,.12), inset -3px 0 10px rgba(26,20,16,.05), inset 0 0 0 1px rgba(255,255,255,.35);
+      padding: 11px 12px 46px 16px;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow .3s;
+    }
+    .page-face:hover { box-shadow:4px 6px 24px rgba(26,20,16,.18),inset -3px 0 10px rgba(26,20,16,.05),inset 0 0 0 1px rgba(255,255,255,.35); }
+    .page-face::before { content:''; position:absolute; top:0; left:0; right:0; bottom:0; background-image:repeating-linear-gradient(0deg,transparent,transparent 25px,rgba(184,134,11,.07) 25px,rgba(184,134,11,.07) 26px); pointer-events:none; }
+    .page-face::after { content:''; position:absolute; top:0; left:0; width:18px; height:100%; background:linear-gradient(to right,rgba(26,20,16,.1),transparent); pointer-events:none; }
+
+    .page-margin { position:absolute; top:0; left:38px; bottom:0; width:1px; background:rgba(192,57,43,.15); pointer-events:none; }
+    .page-stack-shadow { position:absolute; bottom:-3px; right:4px; left:4px; height:7px; background:linear-gradient(to bottom,rgba(184,134,11,.12),transparent); border-radius:0 0 6px 6px; pointer-events:none; }
+
+    .page-row-tag { display:inline-flex; align-items:center; gap:6px; margin-bottom:10px; }
+    .page-row-tag-bar { width:14px; height:1px; background:rgba(192,57,43,.45); }
+    .page-row-tag-text { font-size:.52rem; letter-spacing:.18em; color:var(--cinnabar); font-weight:700; font-family:'Noto Serif SC',serif; }
+
+    .page-title { font-family:'Ma Shan Zheng',cursive; font-size:.94rem; color:var(--ink-black); letter-spacing:.06em; line-height:1.4; margin-bottom:9px; padding-bottom:8px; border-bottom:1px solid rgba(184,134,11,.2); position:relative; z-index:1; }
+    .page-title-dot { display:inline-block; width:6px; height:6px; background:var(--cinnabar); border-radius:50%; margin-right:6px; vertical-align:middle; opacity:.7; }
+
+    .page-section { margin-bottom:8px; position:relative; z-index:1; flex: 1; }
+    .page-section-label { font-size:.52rem; letter-spacing:.18em; color:var(--gold); font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:5px; }
+    .page-section-label::after { content:''; flex:1; height:1px; background:rgba(184,133,11,.14); }
+    .page-section-text { font-size:.66rem; line-height:1.82; color:var(--ink-medium); font-weight:300; }
+
+    .page-footer { position:absolute; bottom:12px; left:24px; right:12px; display:flex; align-items:center; justify-content:space-between; z-index:2; }
+    .page-num { font-family:'Ma Shan Zheng',cursive; font-size:.58rem; color:var(--ink-faint); letter-spacing:.1em; }
+    .page-seal { width:20px; height:20px; border:1px solid rgba(192,57,43,.3); border-radius:2px; display:flex; align-items:center; justify-content:center; font-family:'Ma Shan Zheng',cursive; font-size:.42rem; color:rgba(192,57,43,.5); }
+    .page-dogear { position:absolute; bottom:0; right:0; width:0; height:0; border-style:solid; border-width:0 0 30px 30px; border-color:transparent transparent rgba(184,134,11,.22) transparent; }
+
+    .book-nav { display:flex; align-items:center; justify-content:space-between; margin-top:6px; padding:0 2px; }
+    .book-nav-btn { width:30px; height:30px; border-radius:50%; border:1px solid rgba(184,134,11,.3); background:var(--paper-warm); color:var(--ink-medium); font-size:.85rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .22s; box-shadow:0 2px 6px rgba(26,20,16,.08); }
+    .book-nav-btn:hover:not(:disabled) { background:var(--ink-deep); color:rgba(245,240,232,.9); border-color:var(--ink-deep); transform:scale(1.12); box-shadow:0 4px 14px rgba(26,20,16,.2); }
+    .book-nav-btn:disabled { opacity:.28; cursor:default; }
+    .book-progress { display:flex; gap:4px; align-items:center; flex-wrap:wrap; justify-content:center; max-width:180px; }
+    .book-dot { width:6px; height:6px; border-radius:50%; background:rgba(184,134,11,.2); cursor:pointer; transition:all .22s; border:1px solid rgba(184,134,11,.15); }
+    .book-dot.active { background:var(--cinnabar); border-color:var(--cinnabar); transform:scale(1.3); }
+    .book-dot:hover:not(.active) { background:rgba(192,57,43,.4); }
+
+    /* SECTION 02 DATA SCROLL */
+    .data-scroll-outer {
+      position: relative;
+      margin-bottom: 14px;
+      user-select: none;
+      overflow: hidden;
+      animation: sectionSlide .7s cubic-bezier(.22,1,.36,1) .35s both;
+      width: 100%;
+      max-width: 1200px;
+      margin-left: 0;
+      margin-right: auto;
+      align-self: flex-start;
+    }
+
+    .data-scroll-track {
+      overflow: hidden;
+      position: relative;
+      height: 262px;
+      border-top: 2px solid rgba(184,134,11,.35);
+      border-bottom: 2px solid rgba(184,134,11,.35);
+      width: 100%;
+    }
+
+    .data-scroll-track::before,
+    .data-scroll-track::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(184,134,11,.25) 10%, rgba(184,134,11,.25) 90%, transparent);
+      z-index: 5;
+      pointer-events: none;
+    }
+    .data-scroll-track::before { top: 5px; }
+    .data-scroll-track::after  { bottom: 5px; }
+
+    .data-scroll-mask-l,
+    .data-scroll-mask-r {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 60px;
+      z-index: 4;
+      pointer-events: none;
+    }
+    .data-scroll-mask-l { left: 0;  background: linear-gradient(to right, var(--paper), transparent); }
+    .data-scroll-mask-r { right: 0; background: linear-gradient(to left,  var(--paper), transparent); }
+
+    .data-scroll-belt {
+      display: flex;
+      gap: 0;
+      width: max-content;
+      height: 100%;
+      animation: beltScroll 55s linear infinite;
+    }
+    .data-scroll-belt:hover { animation-play-state: paused; }
+    .data-scroll-belt.paused { animation-play-state: paused; }
+
+    @keyframes beltScroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .ds-panel {
+      flex-shrink: 0;
+      width: 320px;
+      min-width: 320px;
+      max-width: 320px;
+      height: 262px;
+      padding: 13px 15px 11px;
+      background: var(--paper-warm);
+      border-right: 1px solid rgba(184,134,11,.18);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: background .28s, transform .28s;
+      box-sizing: border-box;
+    }
+    .ds-panel:hover { background: #fdf9f0; transform:translateY(-1px); }
+
+    .ds-panel-bg {
+      position: absolute;
+      bottom: -8px; right: -6px;
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 4.2rem;
+      color: rgba(26,20,16,.03);
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .ds-panel::before {
+      content: '';
+      position: absolute;
+      top: 6px; left: 6px; right: 6px; bottom: 6px;
+      border: 1px solid rgba(184,134,11,.08);
+      pointer-events: none;
+    }
+
+    .ds-panel-num { font-family:'Ma Shan Zheng',cursive; font-size:.52rem; letter-spacing:.2em; color:var(--cinnabar); opacity:.6; margin-bottom:1px; }
+    .ds-panel-title { font-family:'Ma Shan Zheng',cursive; font-size:.88rem; color:var(--ink-black); letter-spacing:.07em; margin-bottom:1px; line-height:1.3; }
+    .ds-panel-en { font-size:.46rem; letter-spacing:.14em; color:var(--ink-faint); text-transform:uppercase; margin-bottom:8px; display:block; }
+
+    .ds-divider { width:100%; height:1px; background:linear-gradient(to right,var(--cinnabar),rgba(184,134,11,.2),transparent); margin-bottom:6px; opacity:.5; }
+
+    .ds-chart { width:100%; height:155px; }
+
+    .ds-table { width:100%; border-collapse:collapse; font-family:'Noto Serif SC',serif; font-size:.62rem; }
+    .ds-table th { font-size:.52rem; letter-spacing:.08em; color:var(--cinnabar); font-weight:600; padding:3px 5px; border-bottom:1px solid rgba(184,134,11,.2); text-align:left; white-space:nowrap; }
+    .ds-table td { padding:3px 5px; color:var(--ink-medium); font-weight:300; line-height:1.42; border-bottom:1px solid rgba(184,134,11,.08); vertical-align:top; }
+    .ds-table tr:last-child td { border-bottom:none; }
+    .ds-table tr:hover td { background:rgba(184,134,11,.05); transition:background .18s; }
+    .ds-td-hl { color:var(--ink-black); font-weight:500; }
+    .ds-td-tag { display:inline-block; padding:1px 4px; border-radius:2px; font-size:.5rem; letter-spacing:.05em; }
+    .ds-td-tag.high   { background:rgba(26,20,16,.08);  color:var(--ink-deep); }
+    .ds-td-tag.mid    { background:rgba(184,134,11,.1); color:var(--gold); }
+    .ds-td-tag.low    { background:rgba(196,180,154,.2);color:var(--ink-light); }
+    .ds-td-tag.special{ background:rgba(192,57,43,.08); color:var(--cinnabar); }
+
+    .ds-stars { color:var(--gold); font-size:.58rem; letter-spacing:.03em; }
+    .ds-stars-empty { color:rgba(196,180,154,.4); }
+
+    .ds-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:3px; }
+    .ds-stat { background:rgba(245,240,232,.8); border:1px solid rgba(184,134,11,.15); border-radius:3px; padding:6px 8px; position:relative; transition:border-color .22s, box-shadow .22s, transform .22s; }
+    .ds-stat:hover { border-color:rgba(192,57,43,.3); box-shadow:0 3px 10px rgba(192,57,43,.1); transform:translateY(-1px); }
+    .ds-stat-val { font-family:'Ma Shan Zheng',cursive; font-size:1.2rem; color:var(--ink-black); line-height:1; margin-bottom:2px; }
+    .ds-stat-val span { font-size:.64rem; color:var(--ink-light); }
+    .ds-stat-label { font-size:.54rem; color:var(--ink-light); letter-spacing:.04em; font-family:'Noto Serif SC',serif; }
+    .ds-stat-note { font-size:.48rem; color:var(--ink-faint); margin-top:1px; font-family:'Noto Serif SC',serif; }
+
+    .ds-controls { display:flex; align-items:center; justify-content:center; gap:14px; margin-top:8px; margin-bottom:4px; }
+    .ds-play-btn { width:28px; height:28px; border-radius:50%; border:1px solid rgba(192,57,43,.35); background:rgba(192,57,43,.06); color:var(--cinnabar); font-size:.7rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .22s; }
+    .ds-play-btn:hover { background:var(--cinnabar); color:white; transform:scale(1.12); }
+    .ds-speed-label { font-size:.54rem; color:var(--ink-faint); letter-spacing:.1em; font-family:'Noto Serif SC',serif; }
+
+    /* SECTION 03 QUIZ */
+    .bg-video { position:fixed; inset:0; width:100%; height:100%; object-fit:cover; z-index:-2; opacity:.18; pointer-events:none; }
+
+    .quiz-wrap { position:relative; border-radius:4px; overflow:hidden; border:1px solid rgba(184,134,11,.25); box-shadow:0 8px 32px rgba(26,20,16,.1);
+      transition:box-shadow .35s; max-width: 1200px; width: 100%; margin: 0 0 14px 0; align-self: flex-start; }
+    .quiz-wrap:hover { box-shadow:0 12px 40px rgba(26,20,16,.14); }
+
+    .quiz-inner { position:relative; z-index:1; padding:18px 28px 18px; width: 100%; box-sizing: border-box; }
+
+    .quiz-progress-bar { display:flex; gap:4px; margin-bottom:14px; align-items:center; }
+    .quiz-progress-dot { height:3px; border-radius:2px; background:rgba(184,134,11,.2); transition:background .4s, transform .3s; flex:1; }
+    .quiz-progress-dot.done { background:var(--jade); }
+    .quiz-progress-dot.active { background:var(--cinnabar); transform:scaleY(1.5); }
+    .quiz-progress-label { margin-left:auto; font-size:.64rem; color:var(--ink-light); letter-spacing:.1em; font-family:'Noto Serif SC',serif; white-space:nowrap; }
+
+    .quiz-question-area { min-height:52px; margin-bottom:13px; }
+    .quiz-q-num { font-family:'Ma Shan Zheng',cursive; font-size:.68rem; color:var(--cinnabar); letter-spacing:.14em; margin-bottom:6px; opacity:.7; }
+    .quiz-question { font-family:'Noto Serif SC',serif; font-size:.94rem; color:var(--ink-black); line-height:1.7; font-weight:500; letter-spacing:.03em;
+      animation:fadeIn .35s ease; }
+
+    .quiz-options { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:13px; width: 100%; }
+    .quiz-option { padding:9px 14px; background:rgba(245,240,232,.7); border:1.5px solid rgba(184,134,11,.2); border-radius:4px; cursor:pointer; font-family:'Noto Serif SC',serif; font-size:.8rem; color:var(--ink-medium); line-height:1.5; transition:all .22s ease; text-align:left; letter-spacing:.03em;
+      position:relative; overflow:hidden; }
+    .quiz-option::before { content:''; position:absolute; inset:0; background:rgba(192,57,43,.04); opacity:0; transition:opacity .2s; }
+    .quiz-option:hover:not(.disabled) { border-color:rgba(192,57,43,.5); background:rgba(192,57,43,.06); color:var(--ink-black); transform:translateY(-2px); box-shadow:0 3px 12px rgba(192,57,43,.12); }
+    .quiz-option:hover:not(.disabled)::before { opacity:1; }
+    .quiz-option:active:not(.disabled) { transform:translateY(0) scale(.98); }
+    .quiz-option.correct { border-color:var(--jade); background:rgba(46,107,79,.1); color:var(--jade); font-weight:500; }
+    .quiz-option.wrong { border-color:var(--cinnabar); background:rgba(192,57,43,.08); color:var(--cinnabar); text-decoration:line-through; opacity:.7; }
+    .quiz-option.disabled { cursor:default; }
+
+    .quiz-result { display:none; padding:11px 15px; border-radius:4px; margin-bottom:11px; border-left:3px solid transparent; animation:fadeIn .35s ease; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)} }
+    .quiz-result.show { display:block; }
+    .quiz-result.correct-result { background:rgba(46,107,79,.08); border-color:var(--jade); }
+    .quiz-result.wrong-result { background:rgba(192,57,43,.07); border-color:var(--cinnabar); }
+    .quiz-result-header { display:flex; align-items:center; gap:7px; margin-bottom:6px; }
+    .quiz-result-icon { font-size:1rem; }
+    .quiz-result-verdict { font-family:'Ma Shan Zheng',cursive; font-size:.96rem; letter-spacing:.06em; }
+    .correct-result .quiz-result-verdict { color:var(--jade); }
+    .wrong-result .quiz-result-verdict { color:var(--cinnabar); }
+    .quiz-knowledge-label { font-size:.58rem; letter-spacing:.17em; color:var(--gold); font-weight:600; margin-bottom:4px; }
+    .quiz-knowledge-text { font-size:.76rem; line-height:1.78; color:var(--ink-medium); font-weight:300; font-family:'Noto Serif SC',serif; }
+
+    .quiz-btn-row { display:flex; justify-content:flex-end; gap:8px; margin-top:2px; }
+    .quiz-btn { padding:7px 20px; border:1.5px solid rgba(184,134,11,.4); border-radius:2px; background:transparent; color:var(--ink-medium); font-family:'Noto Serif SC',serif; font-size:.78rem; letter-spacing:.1em; cursor:pointer; transition:all .22s; display:none; }
+    .quiz-btn.show { display:inline-block; }
+    .quiz-btn-next { background:var(--ink-deep); color:rgba(245,240,232,.9); border-color:var(--ink-deep); }
+    .quiz-btn-next:hover { background:var(--cinnabar); border-color:var(--cinnabar); transform:translateY(-1px); box-shadow:0 4px 12px rgba(192,57,43,.25); }
+    .quiz-btn-restart:hover { background:var(--ink-deep); color:rgba(245,240,232,.9); border-color:var(--ink-deep); transform:translateY(-1px); }
+
+    .quiz-final { display:none; text-align:center; padding:14px 0 6px; animation:fadeIn .5s ease; }
+    .quiz-final.show { display:block; }
+    .quiz-final-title { font-family:'Ma Shan Zheng',cursive; font-size:1.5rem; color:var(--ink-black); letter-spacing:.1em; margin-bottom:4px; }
+    .quiz-score-display { font-family:'Ma Shan Zheng',cursive; font-size:2.8rem; color:var(--cinnabar); line-height:1; margin:10px 0;
+      animation:scaleIn .6s cubic-bezier(.22,1,.36,1); }
+    .quiz-score-total { font-size:1rem; color:var(--ink-light); }
+    .quiz-final-comment { font-size:.8rem; color:var(--ink-medium); line-height:1.75; margin:10px auto; max-width:420px; font-family:'Noto Serif SC',serif; border-top:1px solid rgba(184,134,11,.15); border-bottom:1px solid rgba(184,134,11,.15); padding:10px 0; }
+
+    /* FOOTER */
+    .site-footer { background:var(--ink-deep); padding:13px 56px; position:relative; z-index:1; }
+    .site-footer::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(to right,var(--cinnabar),var(--gold),var(--cinnabar)); }
+    .footer-inner { display:flex; align-items:center; justify-content:space-between; }
+    .footer-location { font-size:.66rem; letter-spacing:.14em; color:var(--ink-faint); }
+    .footer-brand { font-family:'Ma Shan Zheng',cursive; font-size:.9rem; color:rgba(245,240,232,.6); letter-spacing:.1em; }
+    .footer-text { font-size:.6rem; letter-spacing:.1em; color:rgba(196,180,154,.5); }
+    .seal {
+      position:fixed; bottom:26px; right:26px; width:44px; height:44px;
+      border-radius:4px; border:2px solid var(--cinnabar);
+      display:flex; align-items:center; justify-content:center;
+      z-index:50; opacity:.45; transition:opacity .3s, transform .4s, border-color .3s;
+      cursor:default;
+    }
+    .seal:hover { opacity:.88; transform:rotate(8deg) scale(1.08); border-color:rgba(192,57,43,.8); }
+    .seal-inner { font-family:'Ma Shan Zheng',cursive; color:var(--cinnabar); font-size:.53rem; text-align:center; line-height:1.35; letter-spacing:.04em; }
+
+    /* RESPONSIVE */
+    @media (max-width:1200px) {
+      .hero-left { flex:0 0 195px; padding:14px 16px 14px 22px; }
+      .hero-nav { padding:0 14px 0 12px; }
+      .circle-btn { width:44px; height:44px; }
+      .circle-btn svg { width:16px; height:16px; }
+    }
+    @media (max-width:1100px) {
+      .profile-section { grid-template-columns:1fr; }
+      .scroll-book { width:100%; }
+      .hero-title-zh { font-size:2.4rem; }
+    }
+    @media (max-width:960px) {
+      .hero-inner { flex-wrap:wrap; }
+      .hero-left { flex:0 0 180px; }
+      .hero-nav { width:100%; justify-content:center; padding:10px 16px; border-top:1px solid rgba(184,134,11,.12); order:3; }
+      .hero-right { border-right:none; }
+    }
+    @media (max-width:768px) {
+      .hero-inner { flex-direction:column; }
+      .hero-left { flex:none; width:100%; border-right:none; border-bottom:1px solid rgba(184,134,11,.12); padding:14px 20px; }
+      .hero-right { padding:12px 20px; border-right:none; }
+      .hero-nav-inner { flex-wrap:wrap; justify-content:center; }
+      .ds-panel { width:280px; min-width: 280px; max-width: 280px; }
+      .quiz-wrap { max-width: 100%; margin: 0 auto 14px; }
+      .quiz-inner { padding:16px 20px 14px; }
+      .quiz-options { grid-template-columns:1fr; }
+      .main-content { grid-template-columns:1fr; }
+      .sidebar { position:static; border-right:none; border-bottom:1px solid rgba(184,134,11,.2); width:100%; }
+      .content-area { padding:18px 18px; }
+      .data-scroll-outer { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<nav id="circleNav">
+  <a href="index.html" class="circle-btn" data-page="index">
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16L16 5l11 11"/><path d="M8 14v13h16V14"/></svg>
+    <span>首页</span>
+  </a>
+  <a href="matouqiang.html" class="circle-btn active" data-page="matouqiang">
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 28V21h5V15h4V9h4v6h4v6h5v7"/></svg>
+    <span>马头墙</span>
+  </a>
+  <a href="tianjing.html" class="circle-btn" data-page="tianjing">
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="6" width="20" height="20" rx="2"/><rect x="12" y="12" width="8" height="8" rx="1"/><line x1="16" y1="6" x2="16" y2="12"/><line x1="16" y1="20" x2="16" y2="26"/><line x1="6" y1="16" x2="12" y2="16"/><line x1="20" y1="16" x2="26" y2="16"/></svg>
+    <span>天井</span>
+  </a>
+  <a href="sandiao.html" class="circle-btn" data-page="sandiao">
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 26Q14 18 16 16T24 6"/><path d="M6 22Q10 18 14 14"/><path d="M18 18Q22 14 26 10"/><circle cx="24" cy="6" r="2"/><circle cx="8" cy="26" r="2"/></svg>
+    <span>三雕</span>
+  </a>
+  <a href="zongzu.html" class="circle-btn" data-page="zongzu">
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L16 6l13 12"/><path d="M6 16v12h20V16"/><path d="M13 28v-8h6v8"/></svg>
+    <span>宗族</span>
+  </a>
+  <a href="baohu.html" class="circle-btn" data-page="baohu">
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4L6 9v7c0 7 4 13 10 15 6-2 10-8 10-15V9L16 4z"/><path d="M12 16l3 3 5-6"/></svg>
+    <span>保护</span>
+  </a>
+  <a href="kuawenhua.html" class="circle-btn" data-page="kuawenhua">
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20a2 2 0 012 2v10a2 2 0 01-2 2H16l-6 5v-5H6a2 2 0 01-2-2V10a2 2 0 012-2z"/><circle cx="12" cy="15" r="1" fill="currentColor"/><circle cx="16" cy="15" r="1" fill="currentColor"/><circle cx="20" cy="15" r="1" fill="currentColor"/></svg>
+    <span>跨文化</span>
+  </a>
+</nav>
+
+<div class="page-wrapper">
+
+  <header class="hero-header">
+    <div class="hero-inner">
+
+      <!-- 左列：标题区 -->
+      <div class="hero-left">
+        <div class="hero-badge"><span>徽派建筑文化</span></div>
+        <h1 class="hero-title-zh">马头墙</h1>
+        <p class="hero-title-en">Horse-Head Wall · Huizhou Architecture</p>
+        <p class="hero-desc">
+          徽派建筑之魂，高耸于屋脊两端，形似马首昂扬。<br>
+          既是防火之术，亦是族望之征——白墙黛瓦间，<br>
+          封火墙的层叠轮廓勾勒出徽州山水的独特天际线。
+        </p>
+      </div>
+
+      <!-- 中列：历史渊源文字 -->
+      <div class="hero-right">
+        <div class="history-section" id="historyPanel">
+          <div class="history-section-label">历史渊源</div>
+          <div class="history-lines-wrap" id="historyCols"></div>
+        </div>
+      </div>
+
+      <!-- 右列：导航按钮组 -->
+      <div class="hero-nav">
+        <div class="hero-nav-inner">
+          <a href="index.html" class="circle-btn" data-page="index">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16L16 5l11 11"/><path d="M8 14v13h16V14"/></svg>
+            <span>首页</span>
+          </a>
+          <a href="matouqiang.html" class="circle-btn active" data-page="matouqiang">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 28V21h5V15h4V9h4v6h4v6h5v7"/></svg>
+            <span>马头墙</span>
+          </a>
+          <a href="tianjing.html" class="circle-btn" data-page="tianjing">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="6" width="20" height="20" rx="2"/><rect x="12" y="12" width="8" height="8" rx="1"/><line x1="16" y1="6" x2="16" y2="12"/><line x1="16" y1="20" x2="16" y2="26"/><line x1="6" y1="16" x2="12" y2="16"/><line x1="20" y1="16" x2="26" y2="16"/></svg>
+            <span>天井</span>
+          </a>
+          <a href="sandiao.html" class="circle-btn" data-page="sandiao">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 26Q14 18 16 16T24 6"/><path d="M6 22Q10 18 14 14"/><path d="M18 18Q22 14 26 10"/><circle cx="24" cy="6" r="2"/><circle cx="8" cy="26" r="2"/></svg>
+            <span>三雕</span>
+          </a>
+          <a href="zongzu.html" class="circle-btn" data-page="zongzu">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L16 6l13 12"/><path d="M6 16v12h20V16"/><path d="M13 28v-8h6v8"/></svg>
+            <span>宗族</span>
+          </a>
+          <a href="baohu.html" class="circle-btn" data-page="baohu">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4L6 9v7c0 7 4 13 10 15 6-2 10-8 10-15V9L16 4z"/><path d="M12 16l3 3 5-6"/></svg>
+            <span>保护</span>
+          </a>
+          <a href="kuawenhua.html" class="circle-btn" data-page="kuawenhua">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20a2 2 0 012 2v10a2 2 0 01-2 2H16l-6 5v-5H6a2 2 0 01-2-2V10a2 2 0 012-2z"/><circle cx="12" cy="15" r="1" fill="currentColor"/><circle cx="16" cy="15" r="1" fill="currentColor"/><circle cx="20" cy="15" r="1" fill="currentColor"/></svg>
+            <span>跨文化</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <div class="main-content">
+
+    <aside class="sidebar">
+      <h2 class="sidebar-title">马头墙种类</h2>
+      <p class="sidebar-subtitle">Types of Horse-Head Wall</p>
+      <div class="brush-line"></div>
+      <div class="type-grid" id="typeGrid">
+        <div class="type-item" data-id="0" onclick="showDetail(0,this)"><div class="type-img-wrap"><img src="素材/马头墙页面/二叠式.png" alt="两叠式"></div><div class="type-label">两叠式</div></div>
+        <div class="type-item" data-id="1" onclick="showDetail(1,this)"><div class="type-img-wrap"><img src="素材/马头墙页面/三叠式.png" alt="三叠式"></div><div class="type-label">三叠式</div></div>
+        <div class="type-item" data-id="2" onclick="showDetail(2,this)"><div class="type-img-wrap"><img src="素材/马头墙页面/四叠式.png" alt="四叠式"></div><div class="type-label">四叠式</div></div>
+        <div class="type-item" data-id="3" onclick="showDetail(3,this)"><div class="type-img-wrap"><img src="素材/马头墙页面/雀尾式.png" alt="鹊尾式"></div><div class="type-label">鹊尾式</div></div>
+        <div class="type-item" data-id="4" onclick="showDetail(4,this)"><div class="type-img-wrap"><img src="素材/马头墙页面/印斗式.png" alt="印斗式"></div><div class="type-label">印斗式</div></div>
+        <div class="type-item" data-id="5" onclick="showDetail(5,this)"><div class="type-img-wrap"><img src="素材/马头墙页面/坐吻式.png" alt="坐吻式"></div><div class="type-label">坐吻式</div></div>
+        <div class="type-item" data-id="6" onclick="showDetail(6,this)"><div class="type-img-wrap"><img src="素材/马头墙页面/文马头.png" alt="文马头"></div><div class="type-label">文马头</div></div>
+        <div class="type-item" data-id="7" onclick="showDetail(7,this)"><div class="type-img-wrap"><img src="素材/马头墙页面/武马头.png" alt="武马头"></div><div class="type-label">武马头</div></div>
+      </div>
+      <div class="type-detail-panel" id="typeDetailPanel">
+        <button class="detail-close" onclick="closeDetail()">×</button>
+        <div class="detail-name" id="detailName"></div>
+        <div class="detail-section"><div class="detail-section-label">◆ 结构特征</div><div class="detail-section-text" id="detailStruct"></div></div>
+        <div class="detail-section"><div class="detail-section-label">◆ 功能寓意</div><div class="detail-section-text" id="detailFunc"></div></div>
+      </div>
+      <!-- 马头墙实景图集 -->
+      <div style="margin-top:18px;">
+        <div style="font-family:'Ma Shan Zheng',cursive;font-size:0.88rem;color:var(--cinnabar);letter-spacing:0.1em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(184,134,11,0.18);">▪ 实景赏析</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="border-radius:4px;overflow:hidden;border:1px solid rgba(184,134,11,0.15);"><img src="素材/马头墙页面/1.png" alt="马头墙实景1" style="width:100%;height:90px;object-fit:cover;display:block;transition:transform 0.3s;" onmouseover="this.style.transform='scale(1.07)'" onmouseout="this.style.transform='scale(1)'"></div>
+          <div style="border-radius:4px;overflow:hidden;border:1px solid rgba(184,134,11,0.15);"><img src="素材/马头墙页面/2.png" alt="马头墙实景2" style="width:100%;height:90px;object-fit:cover;display:block;transition:transform 0.3s;" onmouseover="this.style.transform='scale(1.07)'" onmouseout="this.style.transform='scale(1)'"></div>
+          <div style="border-radius:4px;overflow:hidden;border:1px solid rgba(184,134,11,0.15);"><img src="素材/马头墙页面/3.png" alt="马头墙实景3" style="width:100%;height:90px;object-fit:cover;display:block;transition:transform 0.3s;" onmouseover="this.style.transform='scale(1.07)'" onmouseout="this.style.transform='scale(1)'"></div>
+          <div style="border-radius:4px;overflow:hidden;border:1px solid rgba(184,134,11,0.15);"><img src="素材/马头墙页面/4.png" alt="马头墙实景4" style="width:100%;height:90px;object-fit:cover;display:block;transition:transform 0.3s;" onmouseover="this.style.transform='scale(1.07)'" onmouseout="this.style.transform='scale(1)'"></div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="content-area">
+
+      <!-- SECTION 01 -->
+      <div class="ink-divider"><span>壹</span></div>
+      <div class="sec-header">
+        <span class="sec-num">01</span>
+        <h2 class="sec-title">墙体结构剖面 · 形制谱系</h2>
+        <div class="sec-line"></div>
+      </div>
+
+      <div class="profile-section">
+        <div class="profile-card">
+          <img src="素材/马头墙页面/马头墙剖面图.png" alt="马头墙结构剖面图">
+        </div>
+
+        <div class="scroll-book">
+          <div class="book-header">
+            <span class="book-header-title">形制谱系详解</span>
+            <span class="book-header-hint">点击箭头 · 键盘 ←→ 翻页</span>
+          </div>
+          <div class="book-viewport" id="bookViewport"></div>
+          <div class="book-nav">
+            <button class="book-nav-btn" id="bookPrev" onclick="turnPage(-1)" disabled>&#8592;</button>
+            <div class="book-progress" id="bookProgress"></div>
+            <button class="book-nav-btn" id="bookNext" onclick="turnPage(1)">&#8594;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 02 -->
+      <div class="ink-divider reveal"><span>贰</span></div>
+      <div class="sec-header reveal">
+        <span class="sec-num">02</span>
+        <h2 class="sec-title">数据可视化分析</h2>
+        <div class="sec-line"></div>
+      </div>
+
+      <div class="data-scroll-outer" id="dataScrollOuter">
+        <div class="data-scroll-mask-l"></div>
+        <div class="data-scroll-mask-r"></div>
+        <div class="data-scroll-track" id="dataScrollTrack">
+          <div class="data-scroll-belt" id="dataScrollBelt">
+
+            <div class="ds-panel">
+              <div class="ds-panel-bg">尺</div>
+              <div class="ds-panel-num">壹 · 尺度参数</div>
+              <div class="ds-panel-title">墙体尺度规制</div>
+              <span class="ds-panel-en">Dimensional Standards</span>
+              <div class="ds-divider"></div>
+              <table class="ds-table">
+                <tr><th>参数</th><th>数值 / 描述</th><th>来源</th></tr>
+                <tr><td class="ds-td-hl">超出屋脊高度</td><td>0.5 – 0.9 米</td><td>安徽新闻网</td></tr>
+                <tr><td class="ds-td-hl">墙体厚度</td><td>20 – 30 厘米（小青砖砌筑）</td><td>徽派建筑专业资料</td></tr>
+                <tr><td class="ds-td-hl">退阶尺寸</td><td>随屋面坡度自然变化，灵活确定</td><td>—</td></tr>
+                <tr><td class="ds-td-hl">气候影响</td><td>尺度比例对夏冬太阳能利用有显著影响</td><td>《建筑节能》Ecotect</td></tr>
+              </table>
+            </div>
+
+            <div class="ds-panel">
+              <div class="ds-panel-bg">叠</div>
+              <div class="ds-panel-num">贰 · 叠数分布</div>
+              <div class="ds-panel-title">阶梯叠数与等级</div>
+              <span class="ds-panel-en">Layer Count × Grade</span>
+              <div class="ds-divider"></div>
+              <div id="layerChart" class="ds-chart"></div>
+            </div>
+
+            <div class="ds-panel">
+              <div class="ds-panel-bg">制</div>
+              <div class="ds-panel-num">叁 · 形制对照</div>
+              <div class="ds-panel-title">叠数形制对照表</div>
+              <span class="ds-panel-en">Layer-Grade Reference</span>
+              <div class="ds-divider"></div>
+              <table class="ds-table">
+                <tr><th>叠数</th><th>形制名称</th><th>适用建筑</th><th>等级</th></tr>
+                <tr><td class="ds-td-hl">一叠</td><td>一封山</td><td>普通民居、附属建筑</td><td><span class="ds-td-tag low">基础</span></td></tr>
+                <tr><td class="ds-td-hl">两叠</td><td>二马墙头</td><td>小型民居</td><td><span class="ds-td-tag low">较常见</span></td></tr>
+                <tr><td class="ds-td-hl">三叠</td><td>三山屏风</td><td>最主流结构</td><td><span class="ds-td-tag high">最普遍</span></td></tr>
+                <tr><td class="ds-td-hl">四叠</td><td>—</td><td>规模较大民居</td><td><span class="ds-td-tag mid">常见</span></td></tr>
+                <tr><td class="ds-td-hl">五叠</td><td>五岳朝天</td><td>宗祠、大户</td><td><span class="ds-td-tag special">高等级</span></td></tr>
+                <tr><td class="ds-td-hl">七叠</td><td>—</td><td>极少数大型民居</td><td><span class="ds-td-tag special">极罕见</span></td></tr>
+              </table>
+            </div>
+
+            <div class="ds-panel">
+              <div class="ds-panel-bg">座</div>
+              <div class="ds-panel-num">肆 · 座头形制</div>
+              <div class="ds-panel-title">座头类型分布</div>
+              <span class="ds-panel-en">Cap-Head Distribution</span>
+              <div class="ds-divider"></div>
+              <div id="capChart" class="ds-chart"></div>
+            </div>
+
+            <div class="ds-panel">
+              <div class="ds-panel-bg">型</div>
+              <div class="ds-panel-num">伍 · 座头详解</div>
+              <div class="ds-panel-title">四大座头形制对照</div>
+              <span class="ds-panel-en">Cap-Head Type Reference</span>
+              <div class="ds-divider"></div>
+              <table class="ds-table">
+                <tr><th>类型</th><th>结构特征</th><th>文化寓意</th><th>适用</th></tr>
+                <tr><td class="ds-td-hl">鹊尾式</td><td>喜鹊尾羽状翘起</td><td>"抬头见喜"，吉祥喜庆</td><td><span class="ds-td-tag high">最常见</span></td></tr>
+                <tr><td class="ds-td-hl">印斗式</td><td>方斗砖（田字/卍字纹）</td><td>官印象征，激励读书入仕</td><td><span class="ds-td-tag mid">富裕徽商</span></td></tr>
+                <tr><td class="ds-td-hl">朝笏式</td><td>形似朝笏</td><td>崇文重仕，对做官的期盼</td><td><span class="ds-td-tag mid">体现志向</span></td></tr>
+                <tr><td class="ds-td-hl">坐吻式</td><td>吻兽（哺鸡/鳌鱼/天狗）</td><td>镇宅辟邪，祈福禳灾</td><td><span class="ds-td-tag special">祠堂寺庙</span></td></tr>
+              </table>
+            </div>
+
+            <div class="ds-panel">
+              <div class="ds-panel-bg">功</div>
+              <div class="ds-panel-num">陆 · 功能权重</div>
+              <div class="ds-panel-title">多维功能权重图</div>
+              <span class="ds-panel-en">Functional Weight Radar</span>
+              <div class="ds-divider"></div>
+              <div id="radarChart" class="ds-chart"></div>
+            </div>
+
+            <div class="ds-panel">
+              <div class="ds-panel-bg">效</div>
+              <div class="ds-panel-num">柒 · 功能评分</div>
+              <div class="ds-panel-title">七大功能权重明细</div>
+              <span class="ds-panel-en">Function Score Details</span>
+              <div class="ds-divider"></div>
+              <table class="ds-table">
+                <tr><th>功能</th><th>评分</th><th>说明</th></tr>
+                <tr><td class="ds-td-hl">防火</td><td><span class="ds-stars">★★★★★★★★★★</span> 10</td><td>原名"封火墙"，核心功能</td></tr>
+                <tr><td class="ds-td-hl">审美装饰</td><td><span class="ds-stars">★★★★★★★★★</span><span class="ds-stars-empty">★</span> 9</td><td>"青砖小瓦马头墙"</td></tr>
+                <tr><td class="ds-td-hl">防风</td><td><span class="ds-stars">★★★★★★★★</span><span class="ds-stars-empty">★★</span> 8</td><td>坚固墙体可防风</td></tr>
+                <tr><td class="ds-td-hl">调节气候</td><td><span class="ds-stars">★★★★★★★★</span><span class="ds-stars-empty">★★</span> 8</td><td>吸热采光，冬暖夏凉</td></tr>
+                <tr><td class="ds-td-hl">文化象征</td><td><span class="ds-stars">★★★★★★★★</span><span class="ds-stars-empty">★★</span> 8</td><td>座头寓意丰富</td></tr>
+                <tr><td class="ds-td-hl">家族地位</td><td><span class="ds-stars">★★★★★★★</span><span class="ds-stars-empty">★★★</span> 7</td><td>叠数越多等级越高</td></tr>
+                <tr><td class="ds-td-hl">分割空间</td><td><span class="ds-stars">★★★★★★★</span><span class="ds-stars-empty">★★★</span> 7</td><td>保证私密与安全</td></tr>
+              </table>
+            </div>
+
+            <div class="ds-panel" style="width:430px;">
+              <div class="ds-panel-bg">构</div>
+              <div class="ds-panel-num">捌 · 构造部件</div>
+              <div class="ds-panel-title">墙体构件分解</div>
+              <span class="ds-panel-en">Structural Component Breakdown</span>
+              <div class="ds-divider"></div>
+              <table class="ds-table">
+                <tr><th>构件</th><th>位置/材质</th><th>功能</th></tr>
+                <tr><td class="ds-td-hl">垛头（阶梯）</td><td>屋面层层叠落</td><td>核心防火结构，随屋面坡度迭落</td></tr>
+                <tr><td class="ds-td-hl">搏风板（金花板）</td><td>垛头顶端，木质</td><td>保护墙头，防雨防腐</td></tr>
+                <tr><td class="ds-td-hl">座头（马头）</td><td>搏风板上方，砖雕</td><td>装饰与寓意载体</td></tr>
+                <tr><td class="ds-td-hl">三线排檐砖</td><td>墙顶挑砖</td><td>承托小青瓦，形成檐口</td></tr>
+                <tr><td class="ds-td-hl">小青瓦</td><td>墙顶覆盖</td><td>防水排水，两坡墙檐</td></tr>
+              </table>
+            </div>
+
+            <div class="ds-panel">
+              <div class="ds-panel-bg">保</div>
+              <div class="ds-panel-num">玖 · 保护数据</div>
+              <div class="ds-panel-title">黄山市遗产保护</div>
+              <span class="ds-panel-en">Huangshan Heritage Data</span>
+              <div class="ds-divider"></div>
+              <div class="ds-stat-grid">
+                <div class="ds-stat">
+                  <div class="ds-stat-val">8,032<span> 处</span></div>
+                  <div class="ds-stat-label">不可移动文物点</div>
+                  <div class="ds-stat-note">安徽省黄山市</div>
+                </div>
+                <div class="ds-stat">
+                  <div class="ds-stat-val">6,264<span> 幢</span></div>
+                  <div class="ds-stat-label">皖南古民居</div>
+                  <div class="ds-stat-note">截至2013年</div>
+                </div>
+                <div class="ds-stat">
+                  <div class="ds-stat-val">101<span> 个</span></div>
+                  <div class="ds-stat-label">保护古村落</div>
+                  <div class="ds-stat-note">"百村千幢"工程</div>
+                </div>
+                <div class="ds-stat">
+                  <div class="ds-stat-val">1,065<span> 幢</span></div>
+                  <div class="ds-stat-label">保护古民居</div>
+                  <div class="ds-stat-note">黄山市文化委员会</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ds-panel">
+              <div class="ds-panel-bg">护</div>
+              <div class="ds-panel-num">拾 · 保护规模</div>
+              <div class="ds-panel-title">遗产保护数量对比</div>
+              <span class="ds-panel-en">Conservation Scale Comparison</span>
+              <div class="ds-divider"></div>
+              <div id="heritageChart" class="ds-chart"></div>
+            </div>
+
+            <div class="ds-panel" style="width:420px;">
+              <div class="ds-panel-bg">典</div>
+              <div class="ds-panel-num">拾壹 · 法规典例</div>
+              <div class="ds-panel-title">标准规范与保护案例</div>
+              <span class="ds-panel-en">Standards & Conservation Cases</span>
+              <div class="ds-divider"></div>
+              <table class="ds-table">
+                <tr><th>地区/机构</th><th>内容</th><th>年份</th></tr>
+                <tr><td class="ds-td-hl">国家建筑标准</td><td>03J922-1《地方传统建筑—徽州地区》正式实施</td><td>2003.12.1</td></tr>
+                <tr><td class="ds-td-hl">安徽歙县</td><td>投入2000余万元，改造1000余幢平顶房为马头墙传统样式</td><td>2006年</td></tr>
+                <tr><td class="ds-td-hl">明代弘治年间</td><td>知府何歆推行"五家为伍，甓以高垣"政令，五年筑墙两千余道</td><td>1503年</td></tr>
+                <tr><td class="ds-td-hl">北宋遗构</td><td>浙江东阳发现景祐五年（1038年）马头墙雏形遗构，为现存最早实证</td><td>1038年</td></tr>
+              </table>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="ds-controls">
+        <button class="ds-play-btn" id="dsPlayBtn" onclick="dsTogglePlay()" title="暂停/播放">&#9646;&#9646;</button>
+        <span class="ds-speed-label" id="dsSpeedLabel">缓速自动滚动 · 悬停暂停</span>
+      </div>
+
+      <div style="margin-bottom:18px;"></div>
+
+      <!-- SECTION 03 -->
+      <div class="ink-divider reveal"><span>叁</span></div>
+      <div class="sec-header reveal">
+        <span class="sec-num">03</span>
+        <h2 class="sec-title">知识问答</h2>
+        <div class="sec-line"></div>
+      </div>
+
+      <div class="quiz-wrap reveal">
+        <video class="bg-video" autoplay loop muted playsinline>
+          <source src="素材\马头墙页面\生成徽派建筑动画.mp4" type="video/mp4"/>
+        </video>
+        <div class="quiz-inner">
+          <div class="quiz-progress-bar" id="quizProgress"></div>
+          <div id="quizPanel">
+            <div class="quiz-question-area">
+              <div class="quiz-q-num" id="quizQNum">第 1 题 / 共 8 题</div>
+              <div class="quiz-question" id="quizQuestion"></div>
+            </div>
+            <div class="quiz-options" id="quizOptions"></div>
+            <div class="quiz-result" id="quizResult">
+              <div class="quiz-result-header">
+                <span class="quiz-result-icon" id="quizResultIcon"></span>
+                <span class="quiz-result-verdict" id="quizResultVerdict"></span>
+              </div>
+              <div class="quiz-knowledge-label">◆ 知识科普</div>
+              <div class="quiz-knowledge-text" id="quizKnowledge"></div>
+            </div>
+            <div class="quiz-btn-row">
+              <button class="quiz-btn quiz-btn-next" id="btnNext" onclick="nextQuestion()">下一题 →</button>
+            </div>
+          </div>
+          <div class="quiz-final" id="quizFinal">
+            <div class="quiz-final-title">问答结束</div>
+            <div class="quiz-score-display"><span id="finalScore">0</span><span class="quiz-score-total"> / 8</span></div>
+            <div class="quiz-final-comment" id="finalComment"></div>
+            <div class="quiz-btn-row" style="justify-content:center;margin-top:12px;">
+              <button class="quiz-btn quiz-btn-restart show" onclick="restartQuiz()">重新挑战</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+<div class="seal"><div class="seal-inner">徽<br>州<br>印</div></div>
+
+<script>
+const typeData = [
+  {name:'两叠式（二马墙头）',struct:'屋面上方作两层阶梯状叠落，墙体高度较低，整体体量小巧，是马头墙中最基础的形态。根据房屋进深而定，脊檐长短随屋面坡度自然变化。墙体构造为随屋面坡度层层迭落，墙顶挑三线排檐砖，上覆小青瓦，垛头顶端安装搏风板。',func:'满足基本的防火、防风需求，在相邻民居发生火灾时起到隔断火源的作用；多用于普通民居，以简约实用为原则，节省建筑材料。阶数较少意味着家庭历史相对较短、地位相对较低。'},
+  {name:'三叠式（三山屏风）',struct:'作三层阶梯叠落，墙体高度适中，层次分明，是徽派建筑中最常见、应用最广泛的结构形式。墙体随屋面坡度层层迭落，每层垛头安装搏风板（金花板），板上安设座头装饰。',func:'防火隔断效果最优，能有效阻隔火势蔓延；高大的墙体可阻挡火焰横向蔓延，为扑救火灾争取时间。视觉上错落有致，兼具实用功能与装饰美感。'},
+  {name:'四叠式',struct:'作四层阶梯叠落，墙体较三叠式更高，横向延展面也更长，整体气势更为突出。构造方式同样为随屋面坡度层层迭落，墙顶挑三线排檐砖，覆小青瓦，垛头设搏风板及座头。',func:'进一步强化防火、防风能力；同时提升宅院的私密性与空间封闭感，多用于规模较大的民居。高大的墙体还可起到防暑隔热、隔音降噪等多重功能。'},
+  {name:'鹊尾式',struct:'墙头顶端雕凿呈弧形，形似喜鹊的尾羽，故称"鹊尾式"。其构造做法是在垛头顶端的搏风板上安装雕凿成喜鹊尾巴形状的砖雕作为座头。墙头覆以青瓦与两坡墙檐，整体造型轻盈灵动。',func:'弧形设计利于排水顺畅，防止雨水侵蚀墙头。造型寓意"抬头见喜"，寄托吉祥喜庆的美好愿望。按徽州传统"前武后文"的制式，鹊尾式马头墙常居前，与后进的印斗式形成呼应。'},
+  {name:'印斗式',struct:'顶部由窑烧制带有"田"字纹或"卍"字纹的方斗形砖构成，形似官印或米斗。在印斗托的处理上又有"坐斗"与"挑斗"两种做法。这种形制的马头墙在徽州民居中等级仅次于坐吻式，深受徽商家族喜爱。',func:'方斗结构可加固墙体顶端，增强座头的稳定性与耐久性。印斗象征官印，寄托"仕途顺遂、家宅殷实"的期望；米斗象征财富，寓意五谷丰登、家业兴旺。'},
+  {name:'坐吻式',struct:'顶端安装吻兽构件，构造最为复杂，工艺要求最高。由窑烧"吻兽"构件安在座头上，常见有哺鸡、鳌鱼、天狗等瑞兽形象。此类马头墙层次多、构造复杂，通常与多叠式（四叠、五叠）配合使用。',func:'吻兽具有镇宅辟邪的象征意义，寄托祈福禳灾的美好愿望。因工艺复杂、造价高昂，坐吻式多见于祠堂、社屋、禅寺等高等级公共建筑，以及少数巨贾大族的宅邸。'},
+  {name:'文马头（印斗式）',struct:'文马头即印斗式马头墙，因徽州人赋予其"文"之内涵而得名。顶部由窑烧制方斗形砖构成，形似官印或米斗。整体造型厚重稳健，线条流畅，给人内敛、典雅的感觉，仿佛一位温文尔雅的文人，静谧而庄重。',func:'方斗结构加固墙体顶端，增强稳定性。文马头代表着徽州人对文化、教育的重视，以及对和谐、安稳生活的向往。在一些大型建筑群中，印斗式马头墙常置于后进，形成"前武后文"的规制。'},
+  {name:'武马头（鹊尾式）',struct:'武马头即鹊尾式马头墙，因徽州人赋予其"武"之内涵而得名。墙头顶端雕凿呈弧形，形似喜鹊的尾羽。造型高耸张扬，犹如朝笏，线条峻峭，挺拔有力，如同一匹蓄势待发的战马，充满了力量与动感。',func:'弧形设计利于排水顺畅，防止雨水侵蚀墙头。武马头传递着力量与地位，展现主人对权力和胜利的渴望。这种马头墙常见于富商大贾或官宦人家的宅邸，象征显赫地位和非凡成就。'}
+];
+
+let activeTypeItem = null;
+function showDetail(id, el) {
+  const panel = document.getElementById('typeDetailPanel');
+  if (activeTypeItem === el && panel.classList.contains('visible')) { closeDetail(); return; }
+  document.querySelectorAll('.type-item').forEach(i => i.classList.remove('active-card'));
+  el.classList.add('active-card'); activeTypeItem = el;
+  const d = typeData[id];
+  document.getElementById('detailName').textContent = d.name;
+  document.getElementById('detailStruct').textContent = d.struct;
+  document.getElementById('detailFunc').textContent = d.func;
+  const grid = document.getElementById('typeGrid');
+  const gr = grid.getBoundingClientRect(), ir = el.getBoundingClientRect();
+  panel.style.setProperty('--arrow-left', Math.max(16, Math.min((ir.left + ir.width/2) - gr.left, panel.offsetWidth - 16)) + 'px');
+  panel.classList.add('visible');
+  panel.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+function closeDetail() {
+  document.getElementById('typeDetailPanel').classList.remove('visible');
+  document.querySelectorAll('.type-item').forEach(i => i.classList.remove('active-card'));
+  activeTypeItem = null;
+}
+
+const bookPages = [
+  { row:'第一行 · 左', title:'无座头式 · 单叠素白马头墙', struct:'此为马头墙最基础的原始形态，属单叠（一阶）结构。墙体随屋面坡度作一层阶梯状叠落，无任何"座头"装饰构件，仅以小青瓦覆盖两坡墙檐。白灰粉刷墙面，轮廓呈规整的弧形与直墙组合，整体造型极为简约，体现"清水出芙蓉"的质朴美感。', func:'核心功能为满足基本的防火、防风需求，在相邻民居发生火灾时起隔断火源作用。无座头装饰，不承载身份象征意义，多用于普通民居、附属建筑或次要房舍，以实用为原则，是徽州村落中数量最多的基础形制。' },
+  { row:'第一行 · 中', title:'鹊尾式 · 单叠素白马头墙', struct:'核心标识是墙头座头雕凿呈弧形，形似喜鹊尾羽，故称"鹊尾式"。属单叠（一阶）层级，墙顶挑三线排檐砖、覆小青瓦，垛头顶端安装搏风板（金花板），其上安鹊尾状座头。白墙青瓦，线条流畅灵动，造型轻盈，是徽派建筑中最普及的"武式"马头墙代表。', func:'弧形座头设计利于排水顺畅，防止雨水侵蚀墙头。文化寓意极为丰富——"抬头见喜"，寄托吉祥喜庆的美好愿望，象征喜讯频传、喜事临门。按徽州传统"前武后文"的规制，鹊尾式常居前，展现对外进取的精神风貌。' },
+  { row:'第一行 · 右', title:'鹊尾式 · 单叠仿旧石墙马头墙', struct:'形制与素白鹊尾款完全一致——鹊尾式座头、单叠层级、两坡瓦檐。核心差异在于墙体材料：舍弃传统白灰粉刷，改用仿旧石材肌理，保留青瓦翘角与搏风板构造，整体呈现复古质感。这种处理既延续了传统形制，又赋予墙体更丰富的视觉层次与历史厚重感。', func:'功能上延续鹊尾式的防火防风作用与"抬头见喜"的吉祥寓意。材料变异突出肌理美学与历史质感，常用于仿古文旅建筑、乡村风貌改造项目，是传统形制在当代的适应性创新。' },
+  { row:'第二行 · 左', title:'印斗式 · 三叠素白马头墙', struct:'"文式"马头墙的典型代表。座头由窑烧制带有"田"字纹或"卍"字纹的方斗形砖构成，形似官印或米斗。三叠（三阶）层级，墙体高度适中，结构对称庄重，墙身带镂空砖雕窗洞，既减轻墙体重量，又增加通风采光。', func:'方斗结构可加固墙体顶端，增强稳定性。文化寓意深远——印斗象征官印，寄托"仕途顺遂、家宅殷实"的期望；米斗象征财富，寓意五谷丰登、家业兴旺。体现了徽商"贾而好儒"的文化特质，激励后辈读书入仕。' },
+  { row:'第二行 · 中左', title:'印斗式 · 双叠素白马头墙（带侧门）', struct:'印斗式座头，双叠（二阶）层级，墙体较三叠式更为低矮小巧。墙身增设拱形侧门，门洞上方仍保持阶梯叠落形态，形成"墙门一体"的构造。白灰粉刷墙面，青瓦压檐，整体形制比三叠款更紧凑，体现"小而精"的设计思路。', func:'兼具多重功能——印斗座头延续"激励读书入仕"的文化寓意；双叠层级满足基础防火需求；侧门设计便于通行，兼顾空间分隔与人员流动。多用于民居院落的次入口或附属建筑。' },
+  { row:'第二行 · 中右', title:'印斗式 · 三叠窄体素白马头墙', struct:'印斗式座头，三叠层级，核心差异在于墙身宽度收窄，无窗洞及其他装饰，线条更为简洁洗练。这种形制是在标准三叠印斗式基础上的适应性调整，以适应小开间建筑的面宽限制，同时保留完整的阶梯轮廓与座头形态。', func:'功能上完整保留印斗式的防火防风作用与文化象征意义。窄体设计体现徽州村落"寸土寸金"的土地利用智慧，在紧凑的布局中实现"形制不减、礼制不失"的营造目标。' },
+  { row:'第二行 · 右', title:'印斗式 · 三叠青砖墙马头墙', struct:'印斗式座头，三叠层级，墙体通体采用小青砖砌筑，外露砖面，不施白灰粉刷。砖砌工艺精细，砖缝整齐，质感厚重沉稳，整体等级感与庄严感显著提升。青砖本色与青瓦相呼应，形成"青砖黛瓦"的纯粹色调。', func:'功能上，青砖墙体较白灰墙面更耐久、更坚固，防火防风性能更优。不施粉饰的砖墙本身即彰显财力与地位，配合印斗座头的"读书入仕"寓意，形成"内外兼修"的价值表达。' },
+  { row:'第三行 · 左', title:'无座头式 · 三叠青砖墙马头墙', struct:'无座头装饰，三叠（三阶）层级，通体小青砖砌筑，墙顶青瓦压檐。舍弃所有非功能性构件，仅靠砖墙的叠落轮廓、砖缝的韵律排列、青瓦的线脚勾勒，呈现雄浑大气的建筑美感。', func:'无座头减少了风阻与雨水侵蚀点，青砖墙体更坚固耐久，三叠层级防火隔断效果最优。弱化装饰、突出结构，体现"大巧若拙"的营造哲学。多用于祠堂、寺庙的配殿，或防火要求极高的建筑群。' },
+  { row:'第三行 · 中', title:'仿旧混合肌理 · 三叠马头墙（带窗）', struct:'融合印斗式基座特征，三叠层级，墙体采用仿旧砖石混合肌理，通过不同材质、不同色调的搭配形成丰富的视觉层次。墙身增设传统花格窗，窗棂纹样取自徽州传统图案，兼具采光通风与装饰美化功能。', func:'花格窗改善墙体通风采光；混合肌理增强墙体结构稳定性。印斗基座保留"激励读书入仕"的寓意，花格窗延续传统审美意趣。此形制是传统与现代的融合，适用于徽派民宿、文创空间。' },
+  { row:'第三行 · 右', title:'极简式 · 双叠素白马头墙（带台基）', struct:'无明显座头装饰，双叠（二阶）层级，白灰粉刷墙面，墙身底部增设石质台基，轮廓线做切角处理。这是传统形制的极简化改良——保留马头墙最核心的阶梯轮廓与黑白配色，但简化细节，线条更为洗练利落。', func:'石质台基增强墙体防潮防腐能力；双叠层级满足基础防火需求。设计契合当代审美对"简约""抽象"的追求，多用于现代徽派建筑、校园或公共建筑的徽派风格改造，是传统元素在当代语境中的转译与新生。' }
+];
+
+let currentPage = 0;
+let isAnimating = false;
+const TOTAL = bookPages.length;
+
+function buildPageHTML(data, idx) {
+  return `
+    <div class="page-face">
+      <div class="page-margin"></div>
+      <div class="page-row-tag">
+        <div class="page-row-tag-bar"></div>
+        <span class="page-row-tag-text">${data.row}</span>
+        <div class="page-row-tag-bar"></div>
+      </div>
+      <div class="page-title"><span class="page-title-dot"></span>${data.title}</div>
+      <div class="page-section">
+        <div class="page-section-label">结构特征</div>
+        <div class="page-section-text">${data.struct}</div>
+      </div>
+      <div class="page-section">
+        <div class="page-section-label">功能寓意</div>
+        <div class="page-section-text">${data.func}</div>
+      </div>
+      <div class="page-footer">
+        <span class="page-num">第 ${idx+1} 页 · 共 ${TOTAL} 页</span>
+        <span class="page-seal">徽</span>
+      </div>
+      <div class="page-dogear"></div>
+    </div>
+    <div class="page-stack-shadow"></div>
+  `;
+}
+
+function mountPage() {
+  const vp = document.getElementById('bookViewport');
+  vp.innerHTML = '';
+  const el = document.createElement('div');
+  el.className = 'book-page current';
+  el.innerHTML = buildPageHTML(bookPages[currentPage], currentPage);
+  vp.appendChild(el);
+  updateControls();
+}
+
+function turnPage(dir) {
+  if (isAnimating) return;
+  const next = currentPage + dir;
+  if (next < 0 || next >= TOTAL) return;
+  isAnimating = true;
+  const vp = document.getElementById('bookViewport');
+  const outEl = vp.querySelector('.book-page.current');
+  const inEl = document.createElement('div');
+  inEl.className = 'book-page';
+  inEl.innerHTML = buildPageHTML(bookPages[next], next);
+  vp.appendChild(inEl);
+  outEl.classList.remove('current');
+  outEl.classList.add(dir > 0 ? 'flip-out-fwd' : 'flip-out-back');
+  inEl.classList.add(dir > 0 ? 'flip-in-fwd' : 'flip-in-back');
+  setTimeout(() => { currentPage = next; mountPage(); isAnimating = false; }, 500);
+}
+
+function jumpToPage(idx) {
+  if (isAnimating || idx === currentPage) return;
+  const dir = idx > currentPage ? 1 : -1;
+  isAnimating = true;
+  const vp = document.getElementById('bookViewport');
+  const outEl = vp.querySelector('.book-page.current');
+  const inEl = document.createElement('div');
+  inEl.className = 'book-page';
+  inEl.innerHTML = buildPageHTML(bookPages[idx], idx);
+  vp.appendChild(inEl);
+  outEl.classList.remove('current');
+  outEl.classList.add(dir > 0 ? 'flip-out-fwd' : 'flip-out-back');
+  inEl.classList.add(dir > 0 ? 'flip-in-fwd' : 'flip-in-back');
+  setTimeout(() => { currentPage = idx; mountPage(); isAnimating = false; }, 500);
+}
+
+function updateControls() {
+  document.getElementById('bookPrev').disabled = currentPage === 0;
+  document.getElementById('bookNext').disabled = currentPage === TOTAL - 1;
+  document.getElementById('bookProgress').innerHTML = bookPages.map((_,i) =>
+    `<div class="book-dot${i===currentPage?' active':''}" onclick="jumpToPage(${i})" title="第${i+1}页"></div>`
+  ).join('');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') turnPage(1);
+  if (e.key === 'ArrowLeft')  turnPage(-1);
+});
+
+const quizData = [
+  {q:'马头墙因形状酷似什么动物的头部而得名？',opts:['牛头','马头','虎头','鹿头'],ans:1,knowledge:'马头墙又称"封火墙"，因其高出屋顶的墙体轮廓层层叠落、形似昂扬的马首而得名。它是徽派建筑最具代表性的外观特征，在皖南村落的天际线中随处可见。'},
+  {q:'马头墙最主要的实用功能是什么？',opts:['装饰美观','防火隔断','遮风挡雨','储存粮食'],ans:1,knowledge:'徽州民居历来聚族而居，房屋密集。马头墙高出屋面，能在相邻建筑发生火灾时有效阻断火势蔓延，为扑救争取宝贵时间，因此也称"封火墙"。'},
+  {q:'以下哪种马头墙形式在徽州民居中最为常见？',opts:['二叠式','三叠式','坐吻式','印斗式'],ans:1,knowledge:'三叠式（又称"三山屏风"）是徽派建筑中应用最广泛的马头墙形式。三层阶梯叠落的轮廓错落有致，既有良好的防火效果，又兼具动态的装饰美感。'},
+  {q:'坐吻式马头墙顶部装饰的构件叫什么？',opts:['搏风板','印斗砖','吻兽','瓦当'],ans:2,knowledge:'坐吻式马头墙在座头顶端安装窑烧"吻兽"，常见有哺鸡、鳌鱼、天狗等瑞兽形象。此类形制工艺最为复杂，多见于祠堂、寺庙及大户宅邸，具有镇宅辟邪的象征意义。'},
+  {q:'印斗式马头墙顶部的方斗形砖，寓意是什么？',opts:['五谷丰登与仕途顺遂','吉祥平安','驱邪避灾','子孙繁盛'],ans:0,knowledge:'印斗顶部砖块形似官印，寓意"仕途顺遂、光耀门楣"；亦似米斗，象征"五谷丰登、家业兴旺"。徽商常借此激励后辈努力读书入仕，寄托对家族未来的期望。'},
+  {q:'徽州民居有"前武后文"的规制，"武"指的是哪种马头墙？',opts:['印斗式（文马头）','鹊尾式（武马头）','坐吻式','四叠式'],ans:1,knowledge:'鹊尾式马头墙造型高耸张扬，线条峻峭，如战马蓄势，因而得名"武马头"，按规制居于前进。印斗式造型内敛典雅称"文马头"，置于后进，二者形成"前武后文"的格局。'},
+  {q:'马头墙覆盖在墙顶的瓦片，通常使用哪种颜色？',opts:['红瓦','黄瓦','小青瓦','白瓦'],ans:2,knowledge:'徽派建筑惯用小青瓦，色泽青灰，质地细腻，与白粉墙形成经典的黑白水墨对比。这种"粉墙黛瓦"的视觉风格，是徽州民居最鲜明的美学标志。'},
+  {q:'马头墙的阶数（叠数）多少，在社会文化上通常代表什么？',opts:['叠数越多，建筑越古老','叠数越多，家族历史越久远、地位越高','叠数越少，越受人尊敬','叠数与社会地位无关'],ans:1,knowledge:'在徽州文化中，马头墙的叠数是家族财力与地位的象征。二叠式多见于普通民居，三叠、四叠则标志着更雄厚的家业。叠数越多，意味着房屋进深越大，家族历史越悠久、社会地位越显赫。'}
+];
+let currentQ=0,score=0,answered=false;
+function buildProgress(){const bar=document.getElementById('quizProgress');bar.innerHTML=quizData.map((_,i)=>{let c='quiz-progress-dot';if(i<currentQ)c+=' done';else if(i===currentQ)c+=' active';return`<div class="${c}"></div>`}).join('')+`<span class="quiz-progress-label">${currentQ+1} / ${quizData.length}</span>`;}
+function renderQuestion(){answered=false;const d=quizData[currentQ];document.getElementById('quizQNum').textContent=`第 ${currentQ+1} 题 · 共 ${quizData.length} 题`;document.getElementById('quizQuestion').textContent=d.q;document.getElementById('quizOptions').innerHTML=d.opts.map((o,i)=>`<button class="quiz-option" onclick="selectOption(${i})"><span>${String.fromCharCode(65+i)}．</span><span>${o}</span></button>`).join('');document.getElementById('quizResult').className='quiz-result';document.getElementById('btnNext').classList.remove('show');buildProgress();}
+function selectOption(idx){if(answered)return;answered=true;const d=quizData[currentQ];document.querySelectorAll('.quiz-option').forEach((b,i)=>{b.classList.add('disabled');if(i===d.ans)b.classList.add('correct');else if(i===idx&&idx!==d.ans)b.classList.add('wrong');});const ok=idx===d.ans;if(ok)score++;const res=document.getElementById('quizResult');res.className='quiz-result show '+(ok?'correct-result':'wrong-result');document.getElementById('quizResultIcon').textContent=ok?'✦':'✗';document.getElementById('quizResultVerdict').innerHTML=ok?'回答正确！':`<span>正确答案：</span><span>${String.fromCharCode(65+d.ans)}．</span><span>${d.opts[d.ans]}</span>`;document.getElementById('quizKnowledge').textContent=d.knowledge;const btn=document.getElementById('btnNext');btn.classList.add('show');btn.textContent=currentQ<quizData.length-1?'下一题 →':'查看结果';}
+function nextQuestion(){currentQ++;if(currentQ>=quizData.length)showFinal();else renderQuestion();}
+function showFinal(){document.getElementById('quizPanel').style.display='none';document.getElementById('quizProgress').style.display='none';document.getElementById('quizFinal').classList.add('show');document.getElementById('finalScore').textContent=score;const c=[[0,2,'初来乍到，尚需多加研习。徽州建筑，博大精深，不妨从马头墙开始细细品读。'],[3,4,'略有所知，颇具基础。继续深入探索，徽州古建的奥秘还有很多等着你。'],[5,6,'颇有学识，徽派建筑的韵味已了然于心。再细品，必有新发现。'],[7,8,'博学多识，出类拔萃！对马头墙的了解已达徽州匠人之境，令人叹服。']].find(([lo,hi])=>score>=lo&&score<=hi);document.getElementById('finalComment').textContent=c[2];}
+function restartQuiz(){currentQ=0;score=0;answered=false;document.getElementById('quizPanel').style.display='';document.getElementById('quizProgress').style.display='';document.getElementById('quizFinal').classList.remove('show');renderQuestion();}
+
+const historyLines = [
+  '徽派马头墙历史渊源可追溯至唐宋时期，其雏形为保护泥筑围墙不受檐水冲刷的单层阶梯状凸起。浙江东阳发现的北宋景祐五年（1038年）遗构是现存最早实证。',
+  '明代弘治十六年（1503年）是发展的重要转折点，徽州知府何歆推行"五家为伍，甓以高垣"的政令，以行政力量推广封火墙，五年间筑墙两千余道，时称"何公火墙"。',
+  '明清时期马头墙从单一防火构件演化出防风、防盗等多重功能，并衍生出鹊尾、印斗、朝笏、坐吻等丰富座头造型，最终成为徽派建筑最具辨识度的文化符号。'
+];
+
+function buildHistoryCols() {
+  const wrap = document.getElementById('historyCols');
+  if (!wrap) return;
+  historyLines.forEach(text => {
+    const div = document.createElement('div');
+    div.className = 'history-line';
+    div.textContent = text;
+    wrap.appendChild(div);
+  });
+  const lines = wrap.querySelectorAll('.history-line');
+  // Hero is always visible on load — trigger after a short paint delay
+  setTimeout(() => {
+    lines.forEach((line, i) => setTimeout(() => line.classList.add('visible'), 80 + i * 100));
+  }, 300);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  buildHistoryCols();
+  mountPage();
+  renderQuestion();
+
+  const P = {
+    deep:'#2d2519', mid:'#4a3d2e', light:'#8c7a60', faint:'#c4b49a',
+    red:'#c0392b', gold:'#b8860b', jade:'#2e6b4f',
+    bg:'rgba(245,240,232,.95)', border:'rgba(184,134,11,.3)',
+    txt:{ color:'#2d2519', fontFamily:'Noto Serif SC' }
+  };
+
+  const layerChart = echarts.init(document.getElementById('layerChart'));
+  layerChart.setOption({
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:P.bg,borderColor:P.border,textStyle:P.txt,
+      formatter:p=>{const notes=['附属建筑基础形制','小型民居，较常见','最主流，三·四阶最普遍','规模较大民居','宗祠/大户，五岳朝天','极少数大型民居前后厅'];return`${p[0].name}<br/>普及指数：${p[0].value}/10<br/><span style="color:#8c7a60;font-size:.85em">${notes[p[0].dataIndex]}</span>`;}},
+    grid:{top:6,right:24,bottom:28,left:84},
+    xAxis:{type:'value',max:10,name:'普及指数',nameTextStyle:{color:P.light,fontFamily:'Noto Serif SC',fontSize:9},axisLabel:{color:P.light,fontFamily:'Noto Serif SC',fontSize:9},splitLine:{lineStyle:{color:'rgba(184,134,11,.1)'}}},
+    yAxis:{type:'category',data:['一叠·一封山','两叠·二马墙头','三叠·三山屏风','四叠式','五叠·五岳朝天','七叠式'],axisLabel:{color:P.mid,fontFamily:'Noto Serif SC',fontSize:9.5},axisLine:{lineStyle:{color:'rgba(184,134,11,.2)'}}},
+    series:[{type:'bar',barWidth:'46%',
+      data:[{value:6,itemStyle:{color:'#c4b49a'}},{value:7,itemStyle:{color:'#a89070'}},{value:10,itemStyle:{color:P.deep}},{value:8,itemStyle:{color:'#6b5540'}},{value:4,itemStyle:{color:P.light}},{value:1,itemStyle:{color:'#ddd0ba'}}],
+      itemStyle:{borderRadius:[0,3,3,0]},
+      label:{show:true,position:'right',color:P.light,fontFamily:'Noto Serif SC',fontSize:9,formatter:p=>['附属','较常见','最常见','常见','少见','极少'][p.dataIndex]},
+      animationDuration:1400,animationEasing:'cubicOut'}]
+  });
+
+  const capChart = echarts.init(document.getElementById('capChart'));
+  capChart.setOption({
+    tooltip:{trigger:'item',backgroundColor:P.bg,borderColor:P.border,textStyle:P.txt,
+      formatter:p=>{const desc=['明清皖浙民居标配，数量最多','文人儒士、富裕徽商宅邸','体现主人崇文重仕志向','祠堂寺庙等高等级建筑'];return`${p.name}<br/>占比约：${p.percent}%<br/><span style="color:#8c7a60;font-size:.85em">${desc[p.dataIndex]}</span>`;}},
+    legend:{bottom:'1%',left:'center',itemGap:12,textStyle:{color:P.light,fontFamily:'Noto Serif SC',fontSize:9.5}},
+    series:[{name:'座头形制',type:'pie',radius:['28%','58%'],center:['50%','42%'],
+      itemStyle:{borderRadius:4,borderColor:'#faf6ee',borderWidth:3},
+      label:{show:true,formatter:'{b}\n{d}%',fontFamily:'Noto Serif SC',fontSize:9.5,color:P.mid},
+      labelLine:{lineStyle:{color:'rgba(184,134,11,.4)'}},
+      data:[{value:45,name:'鹊尾式',itemStyle:{color:P.deep}},{value:28,name:'印斗式',itemStyle:{color:'#6b5540'}},{value:16,name:'朝笏式',itemStyle:{color:P.light}},{value:11,name:'坐吻式',itemStyle:{color:P.faint}}],
+      animationType:'scale',animationEasing:'elasticOut'}]
+  });
+
+  const radarChart = echarts.init(document.getElementById('radarChart'));
+  radarChart.setOption({
+    tooltip:{backgroundColor:P.bg,borderColor:P.border,textStyle:P.txt},
+    radar:{
+      indicator:[{name:'防火',max:10},{name:'审美装饰',max:10},{name:'防风',max:10},{name:'调节气候',max:10},{name:'文化象征',max:10},{name:'家族地位',max:10},{name:'分割空间',max:10}],
+      center:['50%','52%'],radius:'58%',
+      axisName:{color:P.mid,fontFamily:'Noto Serif SC',fontSize:10},
+      splitLine:{lineStyle:{color:'rgba(184,134,11,.15)'}},
+      splitArea:{areaStyle:{color:['rgba(245,240,232,.6)','rgba(240,232,218,.4)']}},
+      axisLine:{lineStyle:{color:'rgba(184,134,11,.2)'}}},
+    series:[{type:'radar',data:[{value:[10,9,8,8,8,7,7],name:'功能权重'}],
+      areaStyle:{color:'rgba(192,57,43,.12)'},lineStyle:{color:P.red,width:2},itemStyle:{color:P.red}}]
+  });
+
+  const heritageChart = echarts.init(document.getElementById('heritageChart'));
+  heritageChart.setOption({
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:P.bg,borderColor:P.border,textStyle:P.txt},
+    grid:{top:10,right:12,bottom:44,left:48},
+    xAxis:{type:'category',data:['不可移动\n文物点','皖南古\n民居','保护古\n村落','保护古\n民居'],
+      axisLabel:{color:P.light,fontFamily:'Noto Serif SC',fontSize:9,interval:0,lineHeight:14},axisLine:{lineStyle:{color:'rgba(184,134,11,.22)'}}},
+    yAxis:{type:'value',name:'处/幢',nameTextStyle:{color:P.light,fontFamily:'Noto Serif SC',fontSize:9},axisLabel:{color:P.light,fontFamily:'Noto Serif SC',fontSize:9},splitLine:{lineStyle:{color:'rgba(184,134,11,.1)'}}},
+    series:[{type:'bar',barWidth:'40%',
+      data:[
+        {value:8032,itemStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:P.deep},{offset:1,color:P.faint}]},borderRadius:[3,3,0,0]}},
+        {value:6264,itemStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'#6b5540'},{offset:1,color:'#c4b49a'}]},borderRadius:[3,3,0,0]}},
+        {value:101,itemStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:P.red},{offset:1,color:'rgba(192,57,43,.3)'}]},borderRadius:[3,3,0,0]}},
+        {value:1065,itemStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:P.gold},{offset:1,color:'rgba(184,134,11,.3)'}]},borderRadius:[3,3,0,0]}}
+      ],
+      label:{show:true,position:'top',color:P.mid,fontFamily:'Noto Serif SC',fontSize:9,formatter:p=>p.value>=1000?p.value.toLocaleString():p.value},
+      animationDuration:1400,animationEasing:'cubicOut'}]
+  });
+
+  const belt = document.getElementById('dataScrollBelt');
+  const originalPanels = Array.from(belt.querySelectorAll('.ds-panel'));
+  originalPanels.forEach(p => {
+    const clone = p.cloneNode(true);
+    clone.querySelectorAll('[id]').forEach(el => { el.id = el.id + '_clone'; });
+    belt.appendChild(clone);
+  });
+
+  let dsIsPlaying = true;
+  window.dsTogglePlay = function() {
+    dsIsPlaying = !dsIsPlaying;
+    const btn = document.getElementById('dsPlayBtn');
+    const lbl = document.getElementById('dsSpeedLabel');
+    belt.classList.toggle('paused', !dsIsPlaying);
+    btn.innerHTML = dsIsPlaying ? '&#9646;&#9646;' : '&#9654;';
+    lbl.textContent = dsIsPlaying ? '缓速自动滚动 · 悬停暂停' : '已暂停 · 点击继续';
+  };
+
+  window.addEventListener('resize', () => {
+    layerChart.resize(); capChart.resize(); radarChart.resize(); heritageChart.resize();
+  });
+
+  /* ── SCROLL REVEAL ── */
+  const revealEls = document.querySelectorAll('.reveal, .reveal-left');
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        revealObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -20px 0px' });
+  revealEls.forEach(el => revealObs.observe(el));
+
+  /* ── NAV STAGGER ENTRANCE ── */
+  document.querySelectorAll('.hero-nav-inner .circle-btn').forEach((btn, i) => {
+    btn.style.opacity = '0';
+    btn.style.transform = 'translateY(-10px) scale(.92)';
+    btn.style.transition = `opacity .4s ease ${i * 0.06 + 0.2}s, transform .4s cubic-bezier(.22,1,.36,1) ${i * 0.06 + 0.2}s, background .28s, color .28s, border-color .28s, box-shadow .28s`;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      btn.style.opacity = '1';
+      btn.style.transform = 'translateY(0) scale(1)';
+    }));
+  });
+
+  /* ── PAGE TITLE GLOW PULSE ── */
+  const titleEl = document.querySelector('.hero-title-zh');
+  if (titleEl) {
+    setInterval(() => {
+      titleEl.style.textShadow = '2px 3px 8px rgba(26,20,16,.1), 0 0 22px rgba(192,57,43,.25)';
+      setTimeout(() => { titleEl.style.textShadow = '2px 3px 8px rgba(26,20,16,.1)'; }, 1200);
+    }, 4000);
+  }
+
+});
+</script>
+<script src="i18n.js"></script>
+</body>
+</html>
