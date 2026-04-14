@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>天井 | 徽派建筑的呼吸与灵魂</title>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&family=ZCOOL+QingKe+HuangYou&family=Liu+Jian+Mao+Cao&family=Long+Cang&family=Noto+Serif+SC:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink-black:#2d2519;
+  --ink-deep:#4a3d2e;
+  --ink-medium:#6b5a45;
+  --ink-warm:#8c7a60;
+  --ink-light:#b89a6e;
+  --ink-mist:#d4c4a8;
+  --paper:#f5eedc;
+  --paper-warm:#faf4e4;
+  --cinnabar:#c0392b;
+  --cinnabar-light:#d44030;
+  --gold:#b8860b;
+  --gold-light:#c8921a;
+  --flip-ms:1050;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;}
+body{
+  font-family:'Ma Shan Zheng','Noto Serif SC','SimSun',serif;
+  color:var(--ink-black);
+  display:flex;flex-direction:column;
+  background-color: #1e180e;
+}
+
+/* ── 视频背景 ── */
+#bgVideo{
+  position:fixed;inset:0;width:100%;height:100%;
+  object-fit:cover;z-index:-3;opacity:0.72;
+  pointer-events:none;
+}
+
+/* ── 浅色宣纸蒙版 ── */
+.bg-overlay{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:rgba(245,240,232,0.22);
+}
+/* 边缘渐暗晕染，模拟宣纸四边焦痕 */
+.bg-vignette{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 88% 85% at 50% 50%,
+    transparent 40%,
+    rgba(60,35,10,.18) 72%,
+    rgba(40,24,8,.42) 100%);
+}
+/* 宣纸纤维纹理 */
+.bg-texture{
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.07;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode:multiply;
+}
+
+/* ── 水墨粒子 ── */
+.particles{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden;}
+.p{position:absolute;animation:inkFall linear infinite;}
+@keyframes inkFall{
+  0%{transform:translateY(-6px) scale(0);opacity:0;}
+  6%{opacity:.55;transform:translateY(0) scale(1);}
+  92%{opacity:.1;}
+  100%{transform:translateY(102vh) scale(.5);opacity:0;}
+}
+
+/* ── 进度条 ── */
+.page-progress{
+  position:fixed;top:0;left:0;height:3px;z-index:500;
+  background:linear-gradient(to right,var(--cinnabar),var(--gold));
+  transition:width .6s cubic-bezier(.22,1,.36,1);
+  box-shadow:0 0 8px rgba(168,112,16,.6);
+}
+
+/* ── WRAPPER ── */
+.page-wrapper{
+  position:relative;
+  flex:1;display:flex;flex-direction:column;
+  height:100vh;min-height:0;
+  animation:wrapIn .7s ease both;
+  z-index:auto;
+}
+@keyframes wrapIn{from{opacity:0;}to{opacity:1;}}
+
+/* ═══════════════════════════════
+   NAV
+═══════════════════════════════ */
+#circleNav{
+  position:fixed;top:.9rem;right:1.3rem;
+  display:flex;flex-direction:row;gap:.38rem;z-index:400;
+}
+.circle-btn{
+  width:46px;height:46px;border-radius:50%;
+  background:rgba(245,240,232,0.82);
+  backdrop-filter:blur(12px);
+  border:1.5px solid rgba(168,112,16,.3);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  text-decoration:none;color:var(--ink-medium);
+  box-shadow:0 2px 14px rgba(60,35,10,.22),inset 0 1px 0 rgba(255,255,255,.5);
+  transition:all .28s ease;cursor:pointer;
+}
+.circle-btn svg{width:15px;height:15px;stroke:currentColor;transition:transform .25s;}
+.circle-btn span{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:.48rem;letter-spacing:.05em;white-space:nowrap;color:var(--ink-medium);
+}
+.circle-btn:hover{
+  background:rgba(184,48,32,.9);border-color:var(--cinnabar);
+  color:rgba(245,240,232,0.82);transform:translateY(-2px) scale(1.06);
+  box-shadow:0 6px 20px rgba(184,48,32,.36);
+}
+.circle-btn:hover span,.circle-btn:hover svg{color:#f5eedc;}
+.circle-btn.active{
+  background:var(--cinnabar);border-color:var(--cinnabar);color:#f5eedc;
+  box-shadow:0 4px 18px rgba(184,48,32,.5);
+}
+.circle-btn.active span,.circle-btn.active svg{color:#f5eedc;}
+
+/* ═══════════════════════════════
+   HERO HEADER
+═══════════════════════════════ */
+.hero-header{
+  position:relative;flex-shrink:0;
+  background:rgba(245,240,232,0.55);
+  backdrop-filter:blur(14px);
+  border-bottom:2px solid rgba(168,112,16,.25);
+  overflow:hidden;
+  box-shadow:0 4px 24px rgba(60,35,10,.12);
+}
+/* 山脊纹 */
+.hero-header::before{
+  content:'';position:absolute;bottom:0;left:0;width:100%;height:100%;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 140' preserveAspectRatio='none'%3E%3Cpath d='M0 140 L0 90 L80 58 L130 66 L200 24 L270 38 L320 10 L400 42 L450 18 L530 50 L600 5 L680 42 L730 20 L800 55 L870 8 L940 46 L990 26 L1060 60 L1120 32 L1200 68 L1200 140 Z' fill='rgba(168,112,16,.06)'/%3E%3C/svg%3E");
+  background-size:100% 100%;pointer-events:none;
+}
+/* 草书装饰水印 */
+.hero-header::after{
+  content:'天井';position:absolute;top:-12px;right:38px;
+  font-family:'Liu Jian Mao Cao',cursive;
+  font-size:6rem;color:rgba(168,112,16,.07);
+  letter-spacing:.08em;pointer-events:none;
+  writing-mode:vertical-rl;line-height:1;
+}
+
+.hero-inner{display:flex;align-items:stretch;width:100%;}
+
+/* 左侧品牌区 */
+.hero-left{
+  width:268px;flex-shrink:0;padding:15px 20px 17px;
+  border-right:1px solid rgba(168,112,16,.18);
+  display:flex;flex-direction:column;justify-content:center;
+  background:rgba(245,240,232,0.55);
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(184,48,32,.1);border:1px solid rgba(184,48,32,.28);
+  padding:3px 11px;border-radius:2px;margin-bottom:9px;
+  animation:badgePulse 4.5s ease-in-out infinite;
+}
+@keyframes badgePulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(184,48,32,0);}
+  50%{box-shadow:0 0 0 4px rgba(184,48,32,.1);}
+}
+.hero-badge::before,.hero-badge::after{content:'◆';font-size:.5rem;color:var(--cinnabar);opacity:.6;}
+.hero-badge span{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.85rem;letter-spacing:.18em;color:var(--cinnabar);
+}
+.hero-title-zh{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:4.5rem;color:var(--ink-black);
+  text-shadow:2px 3px 0 rgba(184,48,32,.12),0 0 28px rgba(168,112,16,.1);
+  line-height:1;letter-spacing:.2em;margin-bottom:4px;
+  animation:titleIn .8s cubic-bezier(.22,1,.36,1) .1s both;
+}
+@keyframes titleIn{
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.hero-title-rule{
+  height:2px;width:0;margin-bottom:4px;
+  background:linear-gradient(to right,var(--cinnabar),var(--gold),transparent);
+  animation:ruleGrow .6s ease .38s both;
+}
+@keyframes ruleGrow{to{width:54px;}}
+.hero-title-en{
+  font-family:Georgia,serif;font-style:italic;
+  font-size:.85rem;letter-spacing:.22em;color:var(--ink-light);
+  font-weight:300;text-transform:uppercase;margin-bottom:10px;
+}
+/* 小印章 */
+.hero-seal{
+  margin-top:10px;width:38px;height:38px;border-radius:3px;
+  border:2px solid var(--cinnabar);
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(184,48,32,.06);
+  animation:sealIn .5s ease .6s both;
+}
+@keyframes sealIn{from{opacity:0;transform:rotate(-8deg) scale(.8);}to{opacity:1;transform:rotate(0) scale(1);}}
+.hero-seal-txt{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:.58rem;color:var(--cinnabar);
+  line-height:1.4;text-align:center;letter-spacing:.03em;
+}
+
+/* 右侧内容区 */
+.hero-right{flex:1;padding:12px 24px 0 20px;display:flex;flex-direction:column;justify-content:flex-end;gap:0;}
+
+/* 顶部摘要条 */
+.hero-quote-bar{
+  display:flex;align-items:center;gap:14px;
+  padding:7px 14px;margin-bottom:8px;
+  background:rgba(168,112,16,.06);
+  border:1px solid rgba(168,112,16,.15);
+  border-radius:3px;
+  animation:descIn .7s cubic-bezier(.22,1,.36,1) .15s both;
+}
+.hero-quote-bar-icon{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:1.8rem;color:rgba(184,48,32,.25);
+  line-height:1;flex-shrink:0;
+}
+.hero-quote-bar-text{
+  font-family:'Liu Jian Mao Cao',cursive;
+  font-size:.95rem;color:var(--ink-deep);
+  letter-spacing:.12em;line-height:1.5;
+}
+
+/* 主描述盒 */
+.hero-desc{
+  font-size:.92rem;line-height:1.85;color:var(--ink-medium);
+  background:rgba(245,240,232,0.65);
+  padding:10px 18px 13px;
+  border:1px solid rgba(168,112,16,.16);border-bottom:none;
+  border-radius:6px 6px 0 0;border-left:3px solid var(--cinnabar);
+  transform:translateY(1px);
+  animation:descIn .8s cubic-bezier(.22,1,.36,1) .28s both;
+  font-family:'ZCOOL XiaoWei',serif;
+}
+@keyframes descIn{
+  from{opacity:0;transform:translateY(14px);}
+  to{opacity:1;transform:translateY(1px);}
+}
+.hero-intro{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.95rem;color:var(--ink-black);
+  margin-bottom:7px;padding-bottom:6px;
+  border-bottom:1px dashed rgba(168,112,16,.2);
+  letter-spacing:.04em;
+}
+.hero-history{display:flex;flex-direction:column;gap:4px;}
+.history-item{
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.75rem;color:var(--ink-medium);line-height:1.5;
+}
+.history-item strong{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  color:var(--cinnabar);font-size:.95rem;margin-right:5px;
+}
+
+/* 右侧数据指标栏 */
+.hero-stats{
+  display:flex;gap:0;margin-bottom:0;
+  border:1px solid rgba(168,112,16,.16);border-top:none;border-bottom:none;
+  background:rgba(245,240,232,0.65);
+  animation:descIn .8s cubic-bezier(.22,1,.36,1) .4s both;
+}
+.stat-item{
+  flex:1;padding:7px 12px;text-align:center;
+  border-right:1px solid rgba(168,112,16,.12);
+  transition:background .25s;
+}
+.stat-item:last-child{border-right:none;}
+.stat-item:hover{background:rgba(184,48,32,.06);}
+.stat-num{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:1.3rem;color:var(--cinnabar);
+  display:block;line-height:1.1;
+}
+.stat-label{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.58rem;color:var(--ink-light);
+  letter-spacing:.08em;margin-top:1px;display:block;
+}
+
+/* ═══════════════════════════════
+   MAIN
+═══════════════════════════════ */
+.main-content{display:flex;flex:1;width:100%;align-items:stretch;min-height:0;}
+
+/* ═══════════════════════════════
+   SIDEBAR
+═══════════════════════════════ */
+.sidebar{
+  width:262px;flex-shrink:0;
+  background:rgba(245,240,232,0.55);
+  backdrop-filter:blur(14px) saturate(1.2);
+  border-right:1px solid rgba(168,112,16,.18);
+  padding:9px 12px 0;
+  display:flex;flex-direction:column;
+  position:relative;
+  box-shadow:2px 0 18px rgba(60,35,10,.08);
+}
+.sidebar::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(to right,transparent,rgba(168,112,16,.5),transparent);
+}
+.ds-ctrl{
+  display:flex;align-items:center;gap:8px;
+  padding-bottom:8px;border-bottom:1px solid rgba(168,112,16,.12);
+  margin-bottom:8px;flex-shrink:0;
+}
+.ds-play-btn{
+  width:24px;height:24px;border-radius:50%;
+  border:1px solid rgba(184,48,32,.4);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(184,48,32,.08);color:var(--cinnabar);
+  font-size:.58rem;transition:all .22s;
+}
+.ds-play-btn:hover{background:var(--cinnabar);color:rgba(245,240,232,0.82);transform:scale(1.14);}
+.ds-speed-label{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.55rem;color:var(--ink-light);letter-spacing:.1em;
+}
+/* 侧栏章节导航 */
+.sidebar-chapters{
+  display:flex;flex-direction:column;gap:2px;
+  padding-bottom:8px;margin-bottom:8px;
+  border-bottom:1px solid rgba(168,112,16,.1);
+}
+.ch-nav-item{
+  display:flex;align-items:center;gap:6px;padding:4px 7px;
+  border-radius:2px;cursor:pointer;
+  transition:background .2s,transform .2s;
+  border:1px solid transparent;
+}
+.ch-nav-item:hover{background:rgba(184,48,32,.07);border-color:rgba(184,48,32,.15);transform:translateX(3px);}
+.ch-nav-item.active-ch{background:rgba(184,48,32,.1);border-color:rgba(184,48,32,.22);}
+.ch-nav-num{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:.72rem;color:var(--cinnabar);width:16px;flex-shrink:0;
+}
+.ch-nav-title{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.64rem;color:var(--ink-medium);letter-spacing:.06em;
+}
+.ch-nav-dot{
+  margin-left:auto;width:4px;height:4px;border-radius:50%;
+  background:rgba(168,112,16,.3);flex-shrink:0;
+}
+.ch-nav-item.active-ch .ch-nav-dot{background:var(--cinnabar);}
+
+.data-scroll-outer{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;min-height:0;}
+.dsm-top,.dsm-bot{position:absolute;left:0;right:0;height:38px;z-index:4;pointer-events:none;}
+.dsm-top{top:0;background:linear-gradient(to bottom,rgba(245,240,232,0.82),transparent);}
+.dsm-bot{bottom:0;background:linear-gradient(to top,rgba(245,240,232,0.82),transparent);}
+.data-scroll-track{overflow:hidden;flex:1;position:relative;}
+.data-scroll-belt{display:flex;flex-direction:column;width:100%;animation:beltV 50s linear infinite;}
+.data-scroll-belt:hover,.data-scroll-belt.paused{animation-play-state:paused;}
+@keyframes beltV{0%{transform:translateY(0);}100%{transform:translateY(-50%);}}
+.ds-panel{
+  flex-shrink:0;width:100%;padding:8px 7px;
+  background:transparent;
+  border-bottom:1px solid rgba(168,112,16,.1);
+  cursor:pointer;transition:background .25s,transform .22s;
+  position:relative;overflow:hidden;
+}
+.ds-panel::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:linear-gradient(to bottom,var(--cinnabar),var(--gold));
+  transform:scaleY(0);transform-origin:top;transition:transform .3s ease;
+}
+.ds-panel:hover::before{transform:scaleY(1);}
+.ds-panel:hover{background:rgba(168,112,16,.07);transform:translateX(3px);}
+.ds-panel-img{
+  width:100%;height:250px;object-fit:cover;border-radius:2px;margin-bottom:5px;
+  border:1px solid rgba(168,112,16,.15);
+  filter:sepia(22%) brightness(.88) contrast(1.04);transition:filter .4s,transform .5s;
+}
+.ds-panel:hover .ds-panel-img{filter:sepia(0%) brightness(1);transform:scale(1.03);}
+.ds-panel-num{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.5rem;letter-spacing:.16em;color:var(--cinnabar);margin-bottom:2px;
+}
+.ds-panel-title{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:.88rem;color:var(--ink-black);letter-spacing:.08em;margin-bottom:1px;
+}
+.ds-panel-en{
+  font-family:'Long Cang',cursive;
+  font-size:.46rem;letter-spacing:.1em;color:var(--ink-light);
+  margin-bottom:5px;display:block;
+}
+.ds-divider{
+  width:100%;height:1px;
+  background:linear-gradient(to right,var(--cinnabar),rgba(168,112,16,.2),transparent);
+  margin-bottom:5px;opacity:.35;
+}
+.ds-panel-desc{
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.62rem;color:var(--ink-warm);line-height:1.55;
+}
+
+/* ═══════════════════════════════
+   BOOK STAGE
+═══════════════════════════════ */
+.content-area{flex:1;min-height:0;display:flex;align-items:stretch;position:relative;}
+.book-stage{
+  position:relative;flex:1;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+  background:radial-gradient(ellipse 65% 65% at 50% 50%,
+    rgba(240,228,198,.12) 0%,transparent 100%);
+}
+.book-wrap{
+  position:relative;width:100%;height:100%;
+  perspective:2700px;perspective-origin:50% 44%;
+}
+.book-open{
+  position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;
+  transform-style:preserve-3d;
+  animation:bookReveal .95s cubic-bezier(.22,1,.36,1) .1s both;
+  filter:drop-shadow(0 28px 72px rgba(40,24,8,.55)) drop-shadow(0 6px 18px rgba(40,24,8,.35));
+}
+@keyframes bookReveal{
+  from{opacity:0;transform:translateY(20px) scale(.98);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+
+/* 书页 */
+.pg{
+  position:relative;overflow:hidden;
+  background:linear-gradient(152deg,#fefbf0 0%,rgba(245,240,232,0.82) 50%,rgba(245,240,232,0.82) 100%);
+}
+.pg::before{
+  content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 25px,rgba(168,112,16,.06) 25px,rgba(168,112,16,.06) 26px);
+}
+.pg-l{
+  border-right:1px solid rgba(168,112,16,.2);
+  box-shadow:inset -18px 0 36px rgba(40,24,8,.14),inset -2px 0 6px rgba(40,24,8,.07);
+}
+.pg-r{box-shadow:inset 18px 0 36px rgba(40,24,8,.14),inset 2px 0 6px rgba(40,24,8,.07);}
+.pg-l::after{content:'';position:absolute;top:0;bottom:0;left:46px;width:1px;background:rgba(184,48,32,.12);z-index:1;pointer-events:none;}
+.pg-r::after{content:'';position:absolute;top:0;bottom:0;right:46px;width:1px;background:rgba(184,48,32,.12);z-index:1;pointer-events:none;}
+.book-spine-crease{position:absolute;top:0;bottom:0;left:50%;width:54px;transform:translateX(-50%);background:linear-gradient(to right,transparent,rgba(40,24,8,.04) 22%,rgba(40,24,8,.13) 50%,rgba(40,24,8,.04) 78%,transparent);z-index:20;pointer-events:none;}
+.book-spine-line{position:absolute;top:0;bottom:0;left:50%;width:1px;background:linear-gradient(to bottom,transparent,rgba(168,112,16,.28) 10%,rgba(168,112,16,.28) 90%,transparent);z-index:21;pointer-events:none;}
+
+/* ── 书页内容 ── */
+.pg-content{
+  position:relative;z-index:2;height:100%;
+  display:flex;flex-direction:column;
+  padding:15px 18px 12px 20px;overflow:auto;
+  font-family:'ZCOOL XiaoWei',serif;
+}
+.pg-r .pg-content{padding:15px 20px 12px 18px;}
+
+.pg-watermark{
+  position:absolute;bottom:-4%;right:-1%;
+  font-family:'Liu Jian Mao Cao',cursive;
+  font-size:13rem;color:rgba(40,24,8,.025);
+  line-height:1;pointer-events:none;z-index:0;user-select:none;
+}
+.pg-header{
+  position:absolute;top:13px;
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.56rem;color:var(--ink-light);letter-spacing:.15em;
+  z-index:10;display:flex;align-items:center;gap:6px;
+}
+.pg-header::after{content:'';display:block;width:18px;height:1px;background:var(--cinnabar);}
+.pg-l .pg-header{left:44px;}
+.pg-r .pg-header{right:44px;flex-direction:row-reverse;}
+.pg-r .pg-header::after{background:var(--gold);}
+
+.pg-num{
+  position:absolute;bottom:11px;
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:.76rem;color:var(--ink-mist);z-index:10;
+}
+.pg-l .pg-num{left:44px;}
+.pg-r .pg-num{right:44px;}
+
+/* 章节 */
+.ch-heading{margin-top:3px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(168,112,16,.2);}
+.ch-num{font-family:'Ma Shan Zheng',cursive;font-size:1.1rem;color:var(--cinnabar);display:block;margin-bottom:-3px;opacity:.85;}
+.ch-title{font-family:'Ma Shan Zheng',cursive;font-size:1.8rem;color:var(--ink-black);line-height:1.15;letter-spacing:.06em;}
+.ch-sub{font-family:'ZCOOL QingKe HuangYou',cursive;font-size:.6rem;color:var(--ink-medium);letter-spacing:.12em;margin-top:3px;}
+
+/* 排版 */
+.text-lead{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.75rem;color:var(--ink-deep);
+  line-height:1.7;margin-bottom:6px;text-align:justify;
+  border-left:3px solid var(--cinnabar);padding-left:10px;
+  position:relative;z-index:2;
+}
+.text-body{
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.68rem;color:var(--ink-medium);
+  line-height:1.8;letter-spacing:.03em;
+  margin-bottom:6px;text-align:justify;position:relative;z-index:2;
+}
+.drop-cap::first-letter{
+  float:left;font-family:'Ma Shan Zheng',cursive;
+  font-size:2.85rem;line-height:.8;
+  padding-top:2px;padding-right:7px;color:var(--cinnabar);
+  text-shadow:1px 1px 0 rgba(184,48,32,.18);
+}
+.side-note{
+  float:right;writing-mode:vertical-rl;padding:9px 8px;margin-left:11px;
+  background:rgba(168,112,16,.06);border:1px solid rgba(168,112,16,.2);
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.68rem;color:var(--ink-deep);
+  line-height:1.85;letter-spacing:.1em;
+  box-shadow:2px 2px 0 rgba(184,48,32,.07);
+  max-height:305px;position:relative;z-index:2;
+}
+
+/* 知识卡片 */
+.knowledge-card{
+  background:rgba(168,112,16,.06);
+  border:1px solid rgba(168,112,16,.18);
+  border-left:3px solid var(--gold);
+  padding:6px 10px;margin-bottom:6px;
+  border-radius:0 3px 3px 0;
+  position:relative;z-index:2;
+}
+.knowledge-card-title{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.65rem;color:var(--gold);
+  letter-spacing:.12em;margin-bottom:4px;
+  display:flex;align-items:center;gap:5px;
+}
+.knowledge-card-title::before{content:'▸';font-size:.6rem;}
+.knowledge-card p{
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.65rem;color:var(--ink-medium);
+  line-height:1.6;text-align:justify;margin:0;
+}
+
+/* 诗词引用块 */
+.poetry-block{
+  text-align:center;padding:8px 12px;margin:6px 0;
+  background:rgba(184,48,32,.04);
+  border-top:1px solid rgba(184,48,32,.15);
+  border-bottom:1px solid rgba(184,48,32,.15);
+  position:relative;z-index:2;
+}
+.poetry-block p{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.72rem;color:var(--ink-deep);
+  line-height:1.8;letter-spacing:.15em;
+}
+.poetry-block cite{
+  display:block;text-align:right;
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.58rem;color:var(--ink-light);
+  letter-spacing:.1em;display:block;margin-top:4px;
+}
+
+/* 要点列表 */
+.point-list{
+  list-style:none;display:flex;flex-direction:column;gap:3px;
+  margin-bottom:6px;position:relative;z-index:2;
+}
+.point-list li{
+  display:flex;align-items:flex-start;gap:6px;
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.68rem;color:var(--ink-medium);line-height:1.6;
+}
+.point-list li::before{
+  content:'◆';font-size:.38rem;color:var(--cinnabar);
+  flex-shrink:0;margin-top:.28rem;
+}
+
+/* ═══════════════════════════════
+   ENHANCED ANTIQUE STYLES
+   数据卡片、时间轴、引用、指标等
+═══════════════════════════════ */
+
+/* 数据卡片增强版 */
+.data-card{
+  background:linear-gradient(160deg,rgba(254,251,240,.95) 0%,rgba(248,244,230,.9) 100%);
+  border:1px solid rgba(184,134,11,.25);
+  border-radius:4px;
+  padding:.75rem .9rem;
+  margin:.5rem 0;
+  box-shadow:0 2px 8px rgba(60,35,10,.08);
+  position:relative;z-index:2;
+}
+.data-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold) 20%,var(--cinnabar) 50%,var(--gold) 80%,transparent);
+  opacity:.6;
+}
+.data-card-title{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:.75rem;color:var(--cinnabar);
+  letter-spacing:.12em;margin-bottom:.4rem;
+  display:flex;align-items:center;gap:.35rem;
+}
+.data-card-title::before{
+  content:'◆';font-size:.45rem;color:var(--gold);
+}
+.data-card-content{
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.62rem;color:var(--ink-medium);
+  line-height:1.7;letter-spacing:.03em;
+}
+
+/* 古风引用块增强 */
+.ancient-quote{
+  background:linear-gradient(135deg,rgba(184,48,32,.06) 0%,transparent 60%);
+  border-left:3px solid var(--cinnabar);
+  padding:.6rem .8rem;margin:.55rem 0;
+  position:relative;z-index:2;
+}
+.ancient-quote::before{
+  content:'「';position:absolute;top:-.2rem;left:.3rem;
+  font-family:'Ma Shan Zheng',cursive;font-size:1.8rem;
+  color:var(--cinnabar);opacity:.25;
+}
+.ancient-quote p{
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.68rem;color:var(--ink-deep);
+  line-height:1.9;letter-spacing:.06em;
+}
+.ancient-quote cite{
+  display:block;text-align:right;
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.58rem;color:var(--gold);
+  letter-spacing:.08em;margin-top:.3rem;
+}
+
+/* 指标网格 */
+.metrics-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:.4rem .6rem;
+  margin:.5rem 0;
+}
+.metric-item{
+  background:rgba(184,134,11,.08);
+  border:1px solid rgba(184,134,11,.15);
+  border-radius:3px;
+  padding:.45rem .55rem;
+  text-align:center;
+}
+.metric-value{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:1.1rem;color:var(--cinnabar);
+  letter-spacing:.05em;
+}
+.metric-label{
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.52rem;color:var(--ink-light);
+  letter-spacing:.06em;margin-top:.15rem;
+}
+
+/* 时间轴样式 */
+.timeline{
+  position:relative;padding-left:1.2rem;margin:.5rem 0;
+}
+.timeline::before{
+  content:'';position:absolute;left:.4rem;top:.3rem;bottom:.3rem;
+  width:1px;background:linear-gradient(180deg,var(--gold) 0%,var(--cinnabar) 50%,var(--gold) 100%);
+  opacity:.4;
+}
+.timeline-item{
+  position:relative;margin-bottom:.55rem;
+}
+.timeline-item::before{
+  content:'';position:absolute;left:-.95rem;top:.35rem;
+  width:6px;height:6px;border-radius:50%;
+  background:var(--cinnabar);border:2px solid var(--paper);
+  box-shadow:0 0 0 1px var(--gold);
+}
+.timeline-era{
+  font-family:'Ma Shan Zheng',cursive;
+  font-size:.68rem;color:var(--cinnabar);
+  letter-spacing:.1em;
+}
+.timeline-desc{
+  font-family:'ZCOOL XiaoWei',serif;
+  font-size:.6rem;color:var(--ink-medium);
+  line-height:1.6;margin-top:.15rem;
+}
+
+/* 锦囊/标签组 */
+.tag-group{
+  display:flex;flex-wrap:wrap;gap:.25rem;
+  margin:.45rem 0;
+}
+.tag{
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.58rem;
+  color:var(--ink-warm);
+  background:rgba(184,134,11,.1);
+  border:1px solid rgba(184,134,11,.2);
+  border-radius:2px;
+  padding:.15rem .4rem;
+  letter-spacing:.04em;
+}
+.tag.important{
+  background:rgba(192,57,43,.1);
+  border-color:rgba(192,57,43,.25);
+  color:var(--cinnabar);
+}
+
+/* 书法题跋样式 */
+.calligraphy-note{
+  font-family:'Liu Jian Mao Cao',cursive;
+  font-size:1.2rem;
+  color:rgba(184,48,32,.18);
+  text-align:right;
+  margin-top:auto;
+  line-height:1.4;
+  letter-spacing:.08em;
+}
+
+/* 装饰分隔线 */
+.decor-divider{
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(184,134,11,.4) 30%,var(--cinnabar) 50%,rgba(184,134,11,.4) 70%,transparent);
+  margin:.6rem 0;position:relative;
+}
+.decor-divider::after{
+  content:'◆';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  font-size:.4rem;color:var(--cinnabar);
+  background:var(--paper);padding:0 .3rem;
+}
+
+/* 图片 */
+.book-img{position:relative;border-radius:3px;overflow:hidden;box-shadow:0 3px 14px rgba(40,24,8,.12);border:1px solid rgba(168,112,16,.14);height: 380px;width:100%;background:linear-gradient(152deg,#fefbf0 0%,#f8f0d8 50%,#f0e6c0 100%);margin:8px 0;}
+.book-img img{width:100%;height:100%;object-fit:cover;transition:transform 3s ease;display:block;filter:sepia(10%) brightness(.98) contrast(1.02);}
+.book-img:hover img{transform:scale(1.04);filter:sepia(0%) brightness(1);}
+.img-cap{
+  position:absolute;bottom:0;left:0;right:0;
+  background:rgba(40,24,8,.6);backdrop-filter:blur(5px);
+  color:var(--paper);padding:5px 11px;
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.62rem;letter-spacing:.08em;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.img-cap span:last-child{color:rgba(200,178,90,.9);font-size:.55rem;}
+
+.verse{
+  margin-top:auto;text-align:right;
+  font-family:'Liu Jian Mao Cao',cursive;
+  font-size:1.5rem;color:rgba(184,48,32,.22);line-height:1.4;
+}
+
+/* ═══════════════════════════════
+   FLIP ENGINE
+═══════════════════════════════ */
+.flip-canvas{position:absolute;top:0;bottom:0;width:50%;transform-style:preserve-3d;pointer-events:none;z-index:30;opacity:0;visibility:hidden;}
+.flip-canvas.live{opacity:1;visibility:visible;}
+.flip-canvas.dir-fwd{left:50%;transform-origin:left center;}
+.flip-canvas.dir-bwd{left:0;transform-origin:right center;}
+.flip-face{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:linear-gradient(152deg,#fefbf0 0%,#f8f0d8 50%,#f0e6c0 100%);}
+.flip-face::before{content:'';position:absolute;inset:0;z-index:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 25px,rgba(168,112,16,.06) 25px,rgba(168,112,16,.06) 26px);pointer-events:none;}
+.flip-back{transform:rotateY(180deg);}
+.flip-shadow{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:0;transition:opacity .06s;}
+.dir-fwd .flip-shadow{background:linear-gradient(to left,rgba(40,24,8,.32) 0%,transparent 68%);}
+.dir-bwd .flip-shadow{background:linear-gradient(to right,rgba(40,24,8,.32) 0%,transparent 68%);}
+.flip-canvas.live .flip-shadow{opacity:1;}
+@keyframes fwdOut{0%{transform:rotateY(0deg)translateZ(0px);}16%{transform:rotateY(-28deg)translateZ(16px);}50%{transform:rotateY(-90deg)translateZ(22px);}84%{transform:rotateY(-152deg)translateZ(10px);}100%{transform:rotateY(-180deg)translateZ(0px);}}
+@keyframes fwdIn{0%{transform:rotateY(180deg)translateZ(0px);}16%{transform:rotateY(152deg)translateZ(10px);}50%{transform:rotateY(90deg)translateZ(22px);}84%{transform:rotateY(28deg)translateZ(16px);}100%{transform:rotateY(0deg)translateZ(0px);}}
+@keyframes bwdOut{0%{transform:rotateY(0deg)translateZ(0px);}16%{transform:rotateY(28deg)translateZ(16px);}50%{transform:rotateY(90deg)translateZ(22px);}84%{transform:rotateY(152deg)translateZ(10px);}100%{transform:rotateY(180deg)translateZ(0px);}}
+@keyframes bwdIn{0%{transform:rotateY(-180deg)translateZ(0px);}16%{transform:rotateY(-152deg)translateZ(10px);}50%{transform:rotateY(-90deg)translateZ(22px);}84%{transform:rotateY(-28deg)translateZ(16px);}100%{transform:rotateY(0deg)translateZ(0px);}}
+.flip-canvas.a-fo{animation:fwdOut calc(var(--flip-ms)*1ms) cubic-bezier(.4,0,.25,1) forwards;}
+.flip-canvas.a-fi{animation:fwdIn  calc(var(--flip-ms)*1ms) cubic-bezier(.4,0,.25,1) forwards;}
+.flip-canvas.a-bo{animation:bwdOut calc(var(--flip-ms)*1ms) cubic-bezier(.4,0,.25,1) forwards;}
+.flip-canvas.a-bi{animation:bwdIn  calc(var(--flip-ms)*1ms) cubic-bezier(.4,0,.25,1) forwards;}
+
+.book-btn{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:38px;height:58px;
+  background:rgba(248,244,230,.92);
+  border:1px solid rgba(168,112,16,.3);color:var(--cinnabar);
+  font-family:'Ma Shan Zheng',cursive;font-size:1.15rem;
+  cursor:pointer;z-index:40;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 18px rgba(40,24,8,.22);transition:all .24s ease;
+}
+.book-btn:hover{background:var(--ink-deep);color:var(--paper-warm);border-color:var(--ink-deep);transform:translateY(-50%) scale(1.05);}
+.book-btn:disabled{opacity:0;pointer-events:none;}
+.book-btn.prev{left:0;border-radius:0 4px 4px 0;}
+.book-btn.next{right:0;border-radius:4px 0 0 4px;}
+
+.page-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:40;}
+.pdot{width:6px;height:6px;border-radius:50%;background:rgba(168,112,16,.25);cursor:pointer;border:1px solid rgba(168,112,16,.15);transition:all .22s;}
+.pdot.on{background:var(--cinnabar);border-color:var(--cinnabar);transform:scale(1.55);box-shadow:0 0 5px rgba(184,48,32,.4);}
+.pdot:hover:not(.on){background:rgba(184,48,32,.4);}
+
+.kbd-hint{
+  position:absolute;bottom:10px;right:13px;
+  font-family:'ZCOOL QingKe HuangYou',cursive;
+  font-size:.5rem;color:var(--ink-mist);letter-spacing:.09em;
+  display:flex;align-items:center;gap:4px;z-index:40;
+}
+.k{display:inline-flex;align-items:center;justify-content:center;width:15px;height:13px;border:1px solid rgba(168,112,16,.22);border-radius:2px;font-size:.44rem;color:var(--ink-mist);background:rgba(168,112,16,.06);}
+
+/* ═══════════════════════════════
+   FOOTER
+═══════════════════════════════ */
+.site-footer{
+  background:rgba(245,240,232,0.60);
+  backdrop-filter:blur(14px);
+  padding:9px 50px;position:relative;z-index:10;flex-shrink:0;
+  border-top:1px solid rgba(168,112,16,.2);
+  box-shadow:0 -4px 20px rgba(60,35,10,.1);
+}
+.site-footer::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(to right,transparent,var(--cinnabar) 20%,var(--gold) 50%,var(--cinnabar) 80%,transparent);
+  opacity:.5;
+}
+.footer-inner{display:flex;align-items:center;justify-content:space-between;}
+.footer-location{font-family:'ZCOOL XiaoWei',serif;font-size:.65rem;letter-spacing:.14em;color:var(--ink-light);}
+.footer-brand{font-family:'Ma Shan Zheng',cursive;font-size:.98rem;color:var(--ink-medium);letter-spacing:.14em;}
+.footer-text{font-family:'ZCOOL XiaoWei',serif;font-size:.58rem;letter-spacing:.1em;color:var(--ink-light);}
+.footer-copy{font-family:'ZCOOL QingKe HuangYou',cursive;font-size:.52rem;color:var(--ink-mist);letter-spacing:.08em;}
+
+/* 印章 */
+.seal{
+  position:fixed;bottom:26px;right:26px;width:46px;height:46px;border-radius:4px;
+  border:2px solid var(--cinnabar);
+  display:flex;align-items:center;justify-content:center;
+  z-index:200;opacity:.42;transition:opacity .3s,transform .35s;
+  background:rgba(248,244,230,.5);backdrop-filter:blur(8px);
+  box-shadow:2px 2px 0 rgba(184,48,32,.15);
+}
+.seal:hover{opacity:.9;transform:rotate(4deg) scale(1.1);}
+.seal-inner{font-family:'Ma Shan Zheng',cursive;color:var(--cinnabar);font-size:.55rem;text-align:center;line-height:1.35;letter-spacing:.04em;}
+</style>
+</head>
+<body>
+
+<video id="bgVideo" autoplay loop muted playsinline
+  style="position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;opacity:0.72;pointer-events:none;">
+  <source src="素材/天井与保护补充素材/天井.mp4" type="video/mp4"/>
+</video>
+
+<!-- 宣纸纹理背景 -->
+<div class="paper-texture"></div>
+
+<!-- 边缘晕染效果 -->
+<div class="ink-edge ink-edge-top"></div>
+<div class="ink-edge ink-edge-bottom"></div>
+<div class="ink-edge ink-edge-left"></div>
+<div class="ink-edge ink-edge-right"></div>
+
+<div class="bg-overlay"></div>
+<div class="bg-vignette"></div>
+<div class="bg-texture"></div>
+<div class="particles" id="particles"></div>
+<div class="page-progress" id="pageProgress" style="width:20%"></div>
+
+<!-- NAV -->
+<nav id="circleNav">
+  <a href="index.html" class="circle-btn"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16L16 5l11 11"/><path d="M8 14v13h16V14"/></svg><span>首页</span></a>
+  <a href="matouqiang.html" class="circle-btn"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 28V21h5V15h4V9h4v6h4v6h5v7"/></svg><span>马头墙</span></a>
+  <a href="tianjing.html" class="circle-btn active"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="6" width="20" height="20" rx="2"/><rect x="12" y="12" width="8" height="8" rx="1"/><line x1="16" y1="6" x2="16" y2="12"/><line x1="16" y1="20" x2="16" y2="26"/><line x1="6" y1="16" x2="12" y2="16"/><line x1="20" y1="16" x2="26" y2="16"/></svg><span>天井</span></a>
+  <a href="sandiao.html" class="circle-btn"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 26Q14 18 16 16T24 6"/><path d="M6 22Q10 18 14 14"/><path d="M18 18Q22 14 26 10"/><circle cx="24" cy="6" r="2"/><circle cx="8" cy="26" r="2"/></svg><span>三雕</span></a>
+  <a href="zongzu.html" class="circle-btn"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L16 6l13 12"/><path d="M6 16v12h20V16"/><path d="M13 28v-8h6v8"/></svg><span>宗族</span></a>
+  <a href="baohu.html" class="circle-btn"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4L6 9v7c0 7 4 13 10 15 6-2 10-8 10-15V9L16 4z"/><path d="M12 16l3 3 5-6"/></svg><span>保护</span></a>
+  <a href="kuawenhua.html" class="circle-btn"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20a2 2 0 012 2v10a2 2 0 01-2 2H16l-6 5v-5H6a2 2 0 01-2-2V10a2 2 0 012-2z"/><circle cx="12" cy="15" r="1" fill="currentColor"/><circle cx="16" cy="15" r="1" fill="currentColor"/><circle cx="20" cy="15" r="1" fill="currentColor"/></svg><span>跨文化</span></a>
+</nav>
+
+<div class="page-wrapper">
+  <!-- HERO -->
+  <header class="hero-header">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-badge"><span>徽派建筑文化</span></div>
+        <h1 class="hero-title-zh">天井</h1>
+        <div class="hero-title-rule"></div>
+        <p class="hero-title-en">Skywell · Huizhou Architecture</p>
+        <div class="hero-seal"><div class="hero-seal-txt">天<br>井<br>记</div></div>
+      </div>
+      <div class="hero-right">
+        <div class="hero-quote-bar">
+          <div class="hero-quote-bar-icon">「</div>
+          <div class="hero-quote-bar-text">一方天井，四水归堂；半亩方塘，仰见天光</div>
+        </div>
+        <div class="hero-desc">
+          <p class="hero-intro">天井是徽派建筑的核心空间，兼具采光通风、调节微气候之功能，"四水归堂"格局既利排水又蕴聚财寓意，是徽人与天地对话的精神场所。</p>
+          <div class="hero-history">
+            <div class="history-item"><strong>溯源</strong>中原四合院与本土干阑式建筑融合而成，演变为高墙围合、天井居中的形制，与原始穴居"天霤"意象一脉相承。</div>
+            <div class="history-item"><strong>演化</strong>宋元以降尺度渐缩，以节约用地、增强防御，形成"单体多井"层进布局，地域特征愈发鲜明。</div>
+            <div class="history-item"><strong>哲学</strong>"四水归堂"象征聚财，石漏雕作钱形寓意"流银入库"，深刻体现儒家"天人合一"的宇宙观。</div>
+          </div>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-num">千年</span>
+            <span class="stat-label">历史渊源</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">四水</span>
+            <span class="stat-label">归堂格局</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">七山</span>
+            <span class="stat-label">一水一分田</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">国遗</span>
+            <span class="stat-label">文化遗产</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-content">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="ds-ctrl">
+        <button class="ds-play-btn" id="dsPlayBtn" onclick="dsToggle()">&#9646;&#9646;</button>
+        <span class="ds-speed-label">图卷自动滚动</span>
+      </div>
+      <!-- 章节快速导航 -->
+      <div class="sidebar-chapters" id="chapterNav">
+        <div class="ch-nav-item active-ch" onclick="goTo(0)"><span class="ch-nav-num">序</span><span class="ch-nav-title">天井记·四水归堂</span><span class="ch-nav-dot"></span></div>
+        <div class="ch-nav-item" onclick="goTo(1)"><span class="ch-nav-num">壹</span><span class="ch-nav-title">防御与宗法交织</span><span class="ch-nav-dot"></span></div>
+        <div class="ch-nav-item" onclick="goTo(2)"><span class="ch-nav-num">贰</span><span class="ch-nav-title">光学调光器</span><span class="ch-nav-dot"></span></div>
+        <div class="ch-nav-item" onclick="goTo(3)"><span class="ch-nav-num">叁</span><span class="ch-nav-title">理水与财富观</span><span class="ch-nav-dot"></span></div>
+        <div class="ch-nav-item" onclick="goTo(4)"><span class="ch-nav-num">肆</span><span class="ch-nav-title">烟囱效应</span><span class="ch-nav-dot"></span></div>
+      </div>
+      <div class="data-scroll-outer">
+        <div class="dsm-top"></div><div class="dsm-bot"></div>
+        <div class="data-scroll-track">
+          <div class="data-scroll-belt" id="dsBelt">
+            <div class="ds-panel"><img src="./素材/天井与保护补充素材/天井1.jpg" onerror="this.style.display='none'" class="ds-panel-img"><div class="ds-panel-num">01 · 气象万千</div><div class="ds-panel-title">堂前天光</div><span class="ds-panel-en">Sky Light Over the Hall</span><div class="ds-divider"></div><div class="ds-panel-desc">以天井为框引蓝天白云入画，木构厅堂与匾额楹联错落，传递徽派宗祠的庄重通透之美。</div></div>
+            <div class="ds-panel"><img src="./素材/天井与保护补充素材/天井2.jpg" onerror="this.style.display='none'" class="ds-panel-img"><div class="ds-panel-num">02 · 雕梁画栋</div><div class="ds-panel-title">回廊天井</div><span class="ds-panel-en">Corridor Courtyard</span><div class="ds-divider"></div><div class="ds-panel-desc">繁复木雕回廊环绕中央天井，暖黄宫灯悬于梁间，展现精巧的空间层次感。</div></div>
+            <div class="ds-panel"><img src="./素材/天井与保护补充素材/天井3.jpg" onerror="this.style.display='none'" class="ds-panel-img"><div class="ds-panel-num">03 · 岁月留痕</div><div class="ds-panel-title">厅堂盛景</div><span class="ds-panel-en">Ancestral Hall</span><div class="ds-divider"></div><div class="ds-panel-desc">对称布局的厅堂以大缸为前景，匾额与祖像居中，尽显徽派民居的规整与家族仪式感。</div></div>
+            <div class="ds-panel"><img src="./素材/天井与保护补充素材/天井4.jpg" onerror="this.style.display='none'" class="ds-panel-img"><div class="ds-panel-num">04 · 四水归堂</div><div class="ds-panel-title">福字天井</div><span class="ds-panel-en">Patio with Fu Character</span><div class="ds-divider"></div><div class="ds-panel-desc">仰视视角聚焦"福"字匾额与镂空木构，青瓦天井漏下天光，凸显祈福意涵。</div></div>
+            <div class="ds-panel"><img src="./素材/天井与保护补充素材/天井5.jpg" onerror="this.style.display='none'" class="ds-panel-img"><div class="ds-panel-num">05 · 光影错落</div><div class="ds-panel-title">梁间清韵</div><span class="ds-panel-en">Elegance Between Beams</span><div class="ds-divider"></div><div class="ds-panel-desc">纵深感极强的木梁结构层层递进，天光穿堂而过，传递徽派建筑的静谧文人气息。</div></div>
+            <div class="ds-panel"><img src="./素材/天井与保护补充素材/天井6.jpg" onerror="this.style.display='none'" class="ds-panel-img"><div class="ds-panel-num">06 · 古韵悠长</div><div class="ds-panel-title">檐下灯影</div><span class="ds-panel-en">Lantern Shadows</span><div class="ds-divider"></div><div class="ds-panel-desc">仰视角捕捉徽派木构屋檐与垂挂宫灯，朱红流苏点缀，尽显古建雅致与生活温度。</div></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="content-area">
+      <div class="book-stage">
+        <div class="book-wrap">
+          <div class="book-open" id="bookOpen">
+            <div class="pg pg-l" id="pgL"><div class="pg-content" id="pgLC"></div></div>
+            <div class="pg pg-r" id="pgR"><div class="pg-content" id="pgRC"></div></div>
+            <div class="book-spine-crease"></div>
+            <div class="book-spine-line"></div>
+          </div>
+          <div class="flip-canvas" id="flipC">
+            <div class="flip-face" id="flipFront"><div class="pg-content" id="flipFC"></div></div>
+            <div class="flip-face flip-back" id="flipBack"><div class="pg-content" id="flipBC"></div></div>
+            <div class="flip-shadow"></div>
+          </div>
+          <button id="btnPrev" class="book-btn prev" disabled>〈</button>
+          <button id="btnNext" class="book-btn next">〉</button>
+          <div class="page-dots" id="pageDots"></div>
+          <div class="kbd-hint"><span class="k">←</span><span class="k">→</span> 翻页</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-location">📍 安徽省黄山市黟县宏村</div>
+      <div class="footer-brand">徽派建筑文化</div>
+      <div class="footer-text">文化信息交互可视化展示</div>
+      <div class="footer-copy">非物质文化遗产数字化保护项目</div>
+    </div>
+  </footer>
+</div>
+
+<div class="seal"><div class="seal-inner">徽<br>州<br>印</div></div>
+
+<script>
+/* 金色粒子 */
+(function(){
+  const c=document.getElementById('particles');
+  for(let i=0;i<14;i++){
+    const p=document.createElement('div');p.className='p';
+    const s=Math.random()*2.4+.6;
+    const sq=Math.random()>.65;
+    p.style.cssText=
+      `width:${s}px;height:${s}px;left:${Math.random()*100}%;`+
+      `border-radius:${sq?'1px':'50%'};`+
+      `animation-duration:${Math.random()*18+12}s;`+
+      `animation-delay:${Math.random()*-24}s;`+
+      `opacity:${Math.random()*.4+.1};`+
+      `background:rgba(${168+Math.floor(Math.random()*30)},${100+Math.floor(Math.random()*22)},${10+Math.floor(Math.random()*16)},.55);`;
+    c.appendChild(p);
+  }
+})();
+
+/* 页面内容 */
+const S=[
+  /* 序 */
+  {L:`<div class="pg-watermark">序</div>
+      <div class="pg-header">序言 · Preface</div>
+      <div style="margin-top:36px"></div>
+      <h1 style="font-family:'Ma Shan Zheng',cursive;font-size:2.35rem;line-height:1.2;margin-bottom:6px;color:var(--ink-black);">一方天井，四水归堂</h1>
+      <div style="font-family:'ZCOOL QingKe HuangYou',cursive;font-size:.72rem;color:var(--cinnabar);letter-spacing:.42em;margin-bottom:12px;">徽派建筑之魂</div>
+      <div class="text-lead">在徽州的粉墙黛瓦之间，藏着一方通向天空的窗——天井。</div>
+      <div class="text-body">窗子很小，小得容不下一个人进出；天井很大，大得装得下一整个天空。它是徽州老房子的"心"，是深宅大院中唯一敢于敞开胸襟、仰望苍穹的地方。每逢雨天，四面的屋檐将雨水引入天井，形成"四水归堂"的奇观——这不是简单的排水，而是徽商"肥水不流外人田"的财富密码，是"财源滚滚归家来"的世代祈愿。</div>
+      <div class="poetry-block">
+        <p>粉墙黛瓦马头墙，<br>天井一方见苍茫。<br>四水归堂财运聚，<br>月光如洗照故乡。</p>
+        <cite>—— 徽州民间咏天井</cite>
+      </div>
+      <div class="text-lead">天井，是徽州人写给天空的情书。</div>
+      <div class="text-body">晴天，阳光从天井洒落，在青石板上铺成温暖的光斑；雪天，万千六边形精灵争相涌入，把清石板染成洁白。此时，老宅的主人总会捋须感叹：“四水归门堂，瑞雪兆丰年。”这不仅是诗意的咏叹，更是一个家族的期盼——期盼远走沪杭经商的儿郎早日归家，期盼天井之下的人丁兴旺、世代绵延。</div>
+      <div class="text-lead">天井还是徽州女人的守望台。</div>
+      <div class="text-body">当丈夫背着包袱雨伞远走他乡，徽州女人便开始了日复一日的空房独守。更深夜静，月光如洗，她只能对着天井托寄一缕相思；狂风大作，雷电交织，娇小的身躯只能依偎着软绵的被衾。直到有一天，青鸟从天井飞落，带来远方的音讯……天井见证了太多徽州女人的青春、相思与白发。</div>
+      <div class="text-body">从功能上看，天井解决了封闭高墙内的采光、通风问题，其高深形态形成的“拔风”效应，能有效调节室内微气候。从文化上看，天井体现了“天人合一”的哲学追求，既是建筑中“以虚带实”的留白，也是人与天地对话的精神空间。</div>
+      <div class="text-body">内敛的徽州人开着小小的窗子，谨小慎微地做人，却在磨砺中开阔了心胸。这，或许就是天井真正本真的意义。</div>
+      <div class="pg-num">— 一 —</div>`,
+   R:`<div class="pg-header" style="right:44px;left:auto;flex-direction:row-reverse;">序言续 · Continued</div>
+      <div style="margin-top:36px"></div>
+      <div class="text-body"></div>
+      <div class="book-img" style="flex:1;margin-top:10px;min-height:0;">
+        <img src="./素材/天井与保护补充素材/右侧天井图.jpg" alt="" onerror="this.style.display='none'">
+        <div class="img-cap"><span>图 / 徽州深宅天井实景</span><span>Skywell Interior</span></div>
+      </div>
+      <div class="text-body">今以是书，献与天下爱徽州者。愿君在翻阅之间，能透过这一方天井，看见徽州人的智慧、坚守与深情。</div>
+      <div class="verse">是为序。</div>
+      <div class="pg-num" style="right:44px;left:auto;">— 二 —</div>`},
+
+  /* 壹 */
+  {L:`<div class="pg-watermark">壁</div>
+      <div class="pg-header">第一章 · Chapter I</div>
+      <div style="margin-top:36px"></div>
+      <div class="ch-heading"><span class="ch-num">壹</span><h2 class="ch-title">内敛的堡垒</h2><div class="ch-sub">防御与宗法交织的空间起源</div></div>
+      <div class="side-note">粉墙黛瓦马头墙，<br>厅堂左右有厢房。<br>高墙深院小窗户，<br>飞檐翘角花格窗。<br>肥梁瘦柱内天井，<br>四方财水归明堂。<br><span style="color:var(--cinnabar);font-size:.54rem;font-family:'ZCOOL QingKe HuangYou',cursive;">—— 流传于歙县、黟县的民间建筑口诀</span><br><br>家有天井一方，<br>子子孙孙兴旺。<br>四水归明堂，<br>肥水不外流。<br><span style="color:var(--cinnabar);font-size:.54rem;font-family:'ZCOOL QingKe HuangYou',cursive;">—— 徽州祈福歌谣</span></div>
+      <div class="text-lead drop-cap">徽州地处皖南山区，"七山一水一分田"。在极其有限的平地上，为了聚族而居，民居往往比邻而建，密度极高。</div>
+      <div class="text-lead">渊源流长</div>
+      <div class="text-body">徽派天井并非一蹴而就的建筑巧思，而是跨越千年的文化沉淀，其雏形最早可追溯至汉代的天窗，彼时的天窗仅为解决密闭空间采光难题的简陋构件，随着中原士族数次南迁，宗族文化扎根徽州这片群山环绕的土地，天窗也随之脱胎换骨，从单一的功能载体，逐步演变为徽派建筑中承载宗族伦理、风水观念与生活智慧的核心空间，成为徽州人精神世界的具象投射。南宋理学大家朱熹在《家礼》中着重强调的“堂奥”秩序，是徽州宗族礼制的核心准则，而这份抽象的礼法，正是通过天井的空间界定得以落地生根。</div>
+      <div class="text-lead">型制内涵</div>
+      <div class="text-body">天井居于建筑中心，划分出厅堂、厢房、廊庑等不同区域，厅堂为尊、厢房为次，前庭为外、内室为私，将家族内部尊卑长幼、男女有别、内外分际的礼法规矩，转化为可触摸、可感知的建筑语言，让族人在起居坐卧间时刻恪守宗族礼制，潜移默化筑牢家族秩序。与此同时，徽派建筑标志性的重檐高墙构造，藏着安全与封闭的深层辩证智慧。古时徽州地处山区，匪患频发、木质建筑易遭火灾，高墙围合的封闭形态，是徽州人为抵御外敌、防范火情做出的务实生存选择，这份封闭并非自我禁锢，反而塑造了徽派建筑独有的内向自省性格。</div>
+      
+      <div class="text-body">对外，高耸的马头墙隔绝尘世喧嚣与外界纷扰，筑起守护家族的安稳屏障；对内，一方天井打通天地隔阂，引天光、纳清风，让密闭的宅院不再压抑，形成“藏于内、秀于中”的独特建筑美学，既彰显了徽州人沉稳内敛、不事张扬的处世风骨，也暗含着守家护业、传承根基的深远期许。</div>
+      <div class="text-body">传统徽派民居习惯于在平面上横向扩张，形成"三间开"或"五间开"的多进院落。随着深度的增加，光线逐渐衰减。如何在不见天日的堡垒中引入大自然的生机？</div>
+
+      <div class="pg-num">— 三 —</div>`,
+   R:`<div class="pg-header" style="right:44px;left:auto;flex-direction:row-reverse;">第一章续 · Chapter I</div>
+      <div style="margin-top:36px"></div>
+      <div class="knowledge-card">
+        <div class="knowledge-card-title">建筑知识 · 天井的起源</div>
+        <p>天井最早见于汉代文献"天霤"，指屋顶开孔以纳天光。宋代理学家朱熹故里徽州，将儒家宗法秩序与建筑空间高度融合，使天井成为家族向心力的物质载体。</p>
+      </div>
+      <div class="text-body">于是，"天井"应运而生。它像是工匠在顶部精巧切开的一扇天窗，成为唯一与外部世界沟通的"气口"。通过这一道长方孔洞，光、风与雨水得以进入这方内向的宇宙。</div>
+      <div class="book-img" style="flex:1;margin-top:10px;min-height:0;">
+        <img src="./素材/天井与保护补充素材/天井4.jpg" alt="" onerror="this.style.display='none'">
+        <div class="img-cap"><span>高墙隔绝尘世喧嚣。</span><span>图 / 天井仰视</span></div>
+      </div>
+      <div class="pg-num" style="right:44px;left:auto;">— 四 —</div>`},
+
+  /* 贰 */
+  {L:`<div class="pg-watermark">光</div>
+      <div class="pg-header">第二章 · Chapter II</div>
+      <div style="margin-top:36px"></div>
+      <div class="ch-heading"><span class="ch-num">贰</span><h2 class="ch-title">阴阳交汇</h2><div class="ch-sub">天然的建筑光学调光器</div></div>
+      <div class="text-lead drop-cap">"明堂暗室"，是徽派建筑独特的光影美学。天井是光之容器，通过精密的物理反射，将烈日驯化为流光。</div>
+      <div class="text-body">在夏季，太阳高度角大。由于马头墙极高，直射的烈日被重檐高墙阻挡，无法直接暴晒到底层的木质厅堂。阳光打在天井四周粉刷雪白的墙壁上，经过石灰颗粒的细致漫射，将刺眼的强光驯化为柔和的散射光。</div>
+      <ul class="point-list">
+        <li>夏季遮阳：高墙阻挡直射，墙面漫反射补光，室内清凉舒适</li>
+        <li>冬季采暖：太阳高度角低，阳光可直射入堂，温暖木构厅堂</li>
+        <li>晨昏变化：随日光角度移动，光影在梁柱间缓缓爬行，如活画卷</li>
+      </ul>
+      <div class="text-body">天井营造的光影美学，是儒道哲学与传统营造技艺的完美交融，更是徽州人世界观的空间表达，其中“明堂暗室”的经典布局，不仅是物理层面的舒适营造，更深度暗合了儒家“中庸平和”与道家“阴阳相生”的核心哲学，让每一缕光线都承载着文化底蕴。</div>
+      <div class="text-body">幽暗深邃的厅堂属阴，静谧沉稳，是家族议事、接待宾客的庄重场所；敞亮通透的天井属阳，开阔明朗，是连接天地、吸纳天光的核心枢纽，一阴一阳、一暗一明形成强烈空间对比，既打破了建筑的单调感，更是“家”与“天”的深情对话。</div>
+      <div class="text-body">天井作为人居与自然的媒介，让虚无缥缈的“天人合一”理念，化作抬头可见的流云天光、日月星辰，让居住者在朝夕相处中感受自然与人文的共生。徽州匠人在光影营造上更是暗藏匠心，特意选用石灰抹面处理室内墙面，这一设计绝非单纯为了美观，而是兼具多重实用价值：借助石灰的漫反射特性，柔化直射光线、提升室内整体亮度，避免强光刺眼；同时石灰材质干燥紧实，能有效阻隔潮气，起到防潮、防霉的作用，守护木质构件与室内环境。更精妙的是，石灰经长期日晒会慢慢泛白，反光效率进一步提升，即便在阴雨连绵的梅雨季，室内也能保持柔和明亮，这份超前的采光智慧，比现代建筑的“光导管”技术早了近千年，尽显传统匠人的精湛造诣。</div>
+      <div class="text-body">四季晨昏的光影流转更富人文寓意，夏季柔光倾泻、不燥不烈，象征徽州人谦冲内敛的品性；冬季暖阳入户、温暖和煦，寓意厚德载物的胸襟；晨昏光影缓缓游走在梁柱、雕花之间，如同时间的笔触，静静镌刻着家族的日常烟火、悲欢离合。一代文化巨匠胡适对故乡天井有着刻入骨髓的眷恋，他在自传中温情回忆：“我家世世代代乡居，故宅在绩溪城北约五十华里。</div>
+      <div class="text-body">前庭有天井，两旁有厢房，楼上为‘通转楼’，楼下是堂屋。每到初秋傍晚，天井里的光影会慢慢爬上木柱，我总爱在那片光里玩耍，直到母亲的呼唤从堂屋传来。”而胡适远渡重洋求学却坚守家族婚约的人生，正是天井“聚”精神的生动写照，收拢天光、凝聚亲情，守护着徽州家族的情感纽带。</div>
+
+      <div class="pg-num">— 五 —</div>`,
+   R:`<div class="pg-header" style="right:44px;left:auto;flex-direction:row-reverse;">第二章续 · Chapter II</div>
+      <div style="margin-top:36px"></div>
+      <div class="book-img" style="flex:1;margin-top:10px;min-height:0;">
+        <img src="./素材/天井与保护补充素材/天井1.jpg" alt="" onerror="this.style.display='none'">
+        <div class="img-cap"><span>一束天光，划分阴阳。</span><span>图 / 天井正午</span></div>
+      </div>
+      
+      <div class="text-body">幽暗的内堂（阴）与明亮的天井（阳）形成了强烈的对比。古人云"阴阳交泰方能生生不息"。随着一日之内太阳在苍穹的位移，光束在木梁与屏风上缓缓爬动，天井成为了精准的光学计时仪。</div>
+      <div class="knowledge-card">
+        <div class="knowledge-card-title">光学原理 · 漫反射调光</div>
+        <p>徽州匠人将天井四壁涂以纯白石灰，利用漫反射原理，将烈日转化为柔和的散射光，使室内照度均匀而不刺眼，这一做法比现代建筑"光导管"技术早了数百年。</p>
+      </div>
+      <div class="verse">半明半暗，乃见天地。</div>
+      <div class="pg-num" style="right:44px;left:auto;">— 六 —</div>`},
+
+  /* 叁 */
+  {L:`<div class="pg-watermark">水</div>
+      <div class="pg-header">第三章 · Chapter III</div>
+      <div style="margin-top:36px"></div>
+      <div class="ch-heading"><span class="ch-num">叁</span><h2 class="ch-title">四水归堂</h2><div class="ch-sub">理水哲学与徽商财富观</div></div>
+      <div class="side-note" style="font-size:.66rem;max-height:285px;">水聚天心，财不外流。<br><span style="color:var(--cinnabar);font-size:.54rem;font-family:'ZCOOL QingKe HuangYou',cursive;">—— 徽商信条</span><br><br>天井有明堂，<br>财气不外淌。<br><span style="color:var(--cinnabar);font-size:.54rem;font-family:'ZCOOL QingKe HuangYou',cursive;">—— 休宁风水谚语</span><br><br>天井檐滴雨，<br>儿孙绕膝喜。<br><span style="color:var(--cinnabar);font-size:.54rem;font-family:'ZCOOL QingKe HuangYou',cursive;">—— 民间生活歌谣</span></div>
+      <div class="text-lead drop-cap">在徽商的宇宙观里，"山主人丁水主财"。水，不仅是生命的源泉，更是财富的具象化身。</div>
+      <div class="text-body">“四水归堂”是徽派天井最具代表性的营造理念，更是徽州文化中风水观念、商业伦理与生存智慧的深度融合，藏着徽商纵横商界数百年的精神密码。</div>
+      <div class="text-body">徽州自古“七山一水一分田”，土地贫瘠、资源匮乏，大批徽州人被迫外出经商，形成了“以商养家、以家承商”的宗族模式，而天井汇水设计，正是“肥水不流外人田”这一朴素理念的建筑具象化。四方屋面的雨水顺势聚拢于明堂中央，如同经商所得的利润源源不断回流家族，既体现了徽州人对自然资源的极致珍视，杜绝点滴浪费，也牢牢强化了宗族凝聚力，让经商立业与家族传承深度绑定，成为维系宗族存续的精神纽带。这套汇水排水系统，凝聚着徽州匠人千锤百炼的营造智慧，屋面坡度经过精密测算与反复调试，确保雨水能顺着黛瓦快速顺滑流下，既不滞留屋面侵蚀瓦片，也不飞溅冲刷墙体，最终精准汇入明堂中央的石漏，再经由地下隐秘的暗沟有序排向屋外，彻底解决了山区多雨时节的积水难题。同时，天井还具备储水功能，收集的雨水可用于庭院灌溉、日常洗涤，甚至能在火情发生时应急灭火，在资源稀缺的皖南山区，真正实现了“滴水必用、循环不息”的生态智慧。</div>
+      <div class="text-body">作为核心构件的圆形石漏，更是兼具实用与象征双重价值，其形制酷似古代铜钱，圆润规整、寓意圆满，雨滴落入石漏时发出的清脆叮咚声，被常年奔波在外的徽商视为财富汇聚的悦耳乐章，是祈求家业兴旺、财源广进的吉祥图腾。这一设计并非单纯的迷信寄托，更时刻提醒着族人，财富如同雨水，需聚少成多、积沙成塔，更要懂得循环流转、回馈家族，不可自私奢靡。</div>
+      <div class="text-body">正如《徽州府志》记载：“经商之人，总怕财源外流，就造天井，使屋前脊的雨水不致流向屋外，而顺势纳入天井之中，名之曰：‘四水到堂’，图个财不外流的吉利。同时，天井储水亦可用于生活与防火，在资源稀缺的山区，实现了‘滴水必用’的循环智慧。</div>
+      <div class="text-body">”黄山市人民政府在整理徽州宅居要素时也明确提及：“徽州的民居绝大多数都设有‘天井’，三间屋的‘天井’设在厅前，四合屋的‘天井’设在厅中，这种设计可以使屋内光线充足，空气流通。‘村有水口，家有天井’，是徽州聚落最鲜明的标识之一。</div>
+      <div class="text-body">”一方天井，汇水、聚财、凝心，成为徽商家族传承的精神载体。</div>
+      <div class="pg-num">— 七 —</div>`,
+   R:`<div class="pg-header" style="right:44px;left:auto;flex-direction:row-reverse;">第三章续 · Chapter III</div>
+      <div style="margin-top:36px"></div>
+      <div class="book-img" style="flex:1;margin-top:10px;min-height:0;">
+        <img src="./素材/天井与保护补充素材/天井3.jpg" alt="" onerror="this.style.display='none'">
+        <div class="img-cap"><span>水利万物而不争。</span><span>图 / 雨落屋檐</span></div>
+      </div>
+      <div class="text-body">这便是闻名于世的<strong style="font-family:'Ma Shan Zheng',cursive;font-size:.9rem;color:var(--cinnabar);">"四水归堂"</strong>格局。这不仅是高效的物理排水系统，在资源稀缺的内陆山区，雨水亦被收集用于生活与防火；而在徽商的商道哲学中，这更象征着"肥水不流外人田"。</div>
+      <div class="knowledge-card">
+        <div class="knowledge-card-title">风水密码 · 石漏与钱形</div>
+        <p>天井地面中央设圆形石漏，其形酷似古铜钱，喻"财从天降、流入钱孔"。漏水之声，在夜深人静时，是徽商之家最美妙的聆听——那是财富汇聚的声音。</p>
+      </div>
+      <div class="pg-num" style="right:44px;left:auto;">— 八 —</div>`},
+
+  /* 肆 */
+  {L:`<div class="pg-watermark">风</div>
+      <div class="pg-header">第四章 · Chapter IV</div>
+      <div style="margin-top:36px"></div>
+      <div class="ch-heading"><span class="ch-num">肆</span><h2 class="ch-title">天然呼吸</h2><div class="ch-sub">"烟囱效应"与生态智慧</div></div>
+      <div class="text-lead drop-cap">如果说水缸是徽派建筑的胃，那天井就是它的肺。在没有电力的古代，它是应对酷暑最精妙的生态机器。</div>
+      <div class="text-body">高耸的马头墙与深陷的天井共同构成了一个巨大的竖向通风系统。物理学上的"热压通风"（烟囱效应），在这里被古人发挥到了极致。日照使顶部空气受热膨胀上升，天井底部便产生持续的负压区，源源不断地从门缝、巷道抽取凉风入室。</div>
+      <ul class="point-list">
+        <li>夏季降温：烟囱效应使室内气温低于室外约3—5℃</li>
+        <li>除湿排浊：流动的气流带走潮湿水汽与炊烟灰尘</li>
+        <li>防火隔离：高墙分隔与天井气流可有效阻止火势蔓延</li>
+      </ul>
+      <div class="text-body">天井构建了一套无需外力驱动、自成闭环的生态通风体系，藏着古人顺应自然、因地制宜的顶级智慧，其营造理念即便放在现代建筑领域，也具备极高的借鉴价值，与现代LEED绿色建筑标准中的“自然通风”“被动式降温”“生态宜居”理念高度契合，彻底打破了“传统建筑落后于时代”的偏见，为当代绿色建筑设计提供了历经千年验证的珍贵范本。</div>
+      <div class="text-body">徽州地处江南，气候湿润多雨，夏季闷热潮湿、冬季阴冷寒湿，深宅大院若缺乏通风设计，极易滋生潮气、浊气，影响居住健康，而天井的存在，完美破解了这一难题。依托天井形成的“拔风效应”，室内外空气形成自然对流，热空气顺着天井向上攀升排出，室外新鲜冷空气缓缓流入室内，形成持续不断的气流循环，这套被动式通风系统无需电力、不耗能源，却能高效带走室内潮湿水汽、油烟浊气、生活异味，从根源上改善室内环境。同时，气流会将天井庭院中的草木清香、泥土芬芳、花香鸟语引入全屋，让深宅大院始终弥漫着自然气息，在没有空调、风扇等现代制冷设备的年代，天井依靠自然通风实现被动降温，即便酷暑时节，室内也能保持清爽宜人；梅雨季则能快速排湿，避免墙体、衣物发霉，守护居住者的身心健康。</div>
+      <div class="text-body">天井不仅是通风散热的功能空间，更是建筑与自然对话的桥梁，它让高墙围合的宅院不再是封闭的孤岛，而是始终与天地保持着呼吸联结，清风、明月、细雨、落雪，自然的四季更迭都能通过天井融入居家生活，实现人与自然的和谐共生。这份生态智慧，是徽州人观察自然、顺应自然的成果，没有复杂的技术加持，却凭借极简的设计解决了宜居核心难题。</div>
+      <div class="text-body">历经千年岁月洗礼，徽派天井的通风理念依旧不过时，它证明了传统建筑文化并非尘封的遗产，而是蕴含着可持续发展的深刻哲理，为当代建筑摆脱能源依赖、回归生态宜居提供了宝贵思路，让千年营造智慧在现代社会依旧绽放光芒。</div>
+
+
+
+      <div class="pg-num">— 九 —</div>`,
+   R:`<div class="pg-header" style="right:44px;left:auto;flex-direction:row-reverse;">第四章续 · Chapter IV</div>
+      <div style="margin-top:36px"></div>
+      <div class="book-img" style="flex:1;margin-top:10px;min-height:0;">
+        <img src="./素材/天井与保护补充素材/天井5.jpg" alt="" onerror="this.style.display='none'">
+        <div class="img-cap"><span>冷热交替，吐故纳新。</span><span>图 / 拔风效应</span></div>
+      </div>
+      <div class="text-body">这种自然的吐故纳新，使得身处深宅大院的人们，无需借助外力即可获得流动的活氧。天井，作为这桩生命有机体的"呼吸接口"，确保了在最密闭的空间中，依然能呼吸到来自皖南山林的最纯净气息。</div>
+      <div class="knowledge-card">
+        <div class="knowledge-card-title">生态启示 · 古代被动式设计</div>
+        <p>现代绿色建筑学研究表明，徽派天井的"被动式通风降温"体系，与当代LEED绿色建筑标准高度契合。这是古人在千年实践中积累的朴素生态智慧，至今仍有深刻的现实价值。</p>
+      </div>
+      <div class="verse">此中有真意，欲辨已忘言。</div>
+      <div class="pg-num" style="right:44px;left:auto;">— 十 —</div>`}
+];
+
+const T=S.length;let cur=0,busy=false;
+const pLC=document.getElementById('pgLC'),pRC=document.getElementById('pgRC');
+const fC=document.getElementById('flipC'),fFC=document.getElementById('flipFC'),fBC=document.getElementById('flipBC');
+const bP=document.getElementById('btnPrev'),bN=document.getElementById('btnNext');
+const dots=document.getElementById('pageDots');
+const prog=document.getElementById('pageProgress');
+
+function updateChapterNav(i){
+  document.querySelectorAll('.ch-nav-item').forEach((el,j)=>{
+    el.classList.toggle('active-ch',j===i);
+  });
+}
+function paint(i){
+  pLC.innerHTML=S[i].L;pRC.innerHTML=S[i].R;
+  bP.disabled=i===0;bN.disabled=i===T-1;
+  dots.innerHTML=S.map((_,j)=>`<div class="pdot${j===i?' on':''}" onclick="goTo(${j})"></div>`).join('');
+  prog.style.width=((i+1)/T*100)+'%';
+  updateChapterNav(i);
+}
+function flip(d){
+  if(busy)return;
+  const n=cur+d;if(n<0||n>=T)return;
+  busy=true;
+  const from=S[cur],to=S[n];
+  if(d>0){fFC.innerHTML=from.R;fBC.innerHTML=to.L;fC.className='flip-canvas dir-fwd live';pLC.innerHTML=from.L;pRC.innerHTML=to.R;requestAnimationFrame(()=>requestAnimationFrame(()=>fC.classList.add('a-fo')));}
+  else{fFC.innerHTML=from.L;fBC.innerHTML=to.R;fC.className='flip-canvas dir-bwd live';pLC.innerHTML=to.L;pRC.innerHTML=from.R;requestAnimationFrame(()=>requestAnimationFrame(()=>fC.classList.add('a-bo')));}
+  setTimeout(()=>{cur=n;paint(cur);fC.className='flip-canvas';busy=false;},1050);
+}
+function goTo(i){if(busy||i===cur)return;if(Math.abs(i-cur)>1){cur=i>cur?i-1:i+1;paint(cur);}flip(i>cur?1:-1);}
+bN.addEventListener('click',()=>flip(1));
+bP.addEventListener('click',()=>flip(-1));
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')flip(1);if(e.key==='ArrowLeft')flip(-1);});
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>52){dx<0?flip(1):flip(-1);}},{passive:true});
+const belt=document.getElementById('dsBelt');
+Array.from(belt.querySelectorAll('.ds-panel')).forEach(p=>belt.appendChild(p.cloneNode(true)));
+let dsOn=true;
+window.dsToggle=function(){dsOn=!dsOn;belt.classList.toggle('paused',!dsOn);document.getElementById('dsPlayBtn').innerHTML=dsOn?'&#9646;&#9646;':'&#9654;';};
+paint(0);
+</script>
+<script src="i18n.js"></script>
+</body>
+</html>

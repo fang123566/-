@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>解码徽派民居 | 宏村·空间密码与文化传承</title>
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+  <link href="https://fonts.loli.net/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js" defer></script>
+  <script type="module">
+    import 'https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js';
+    console.log('model-viewer module loaded');
+    window.modelViewerLoaded = true;
+    document.dispatchEvent(new CustomEvent('model-viewer-ready'));
+  </script>
+  <link rel="stylesheet" href="styles.css" />
+
+  <style>
+  /* ══ Loading ══ */
+  .loading-screen{position:fixed;inset:0;background:#f5f0e8;z-index:9999;display:flex;align-items:center;justify-content:center;transition:opacity .6s,visibility .6s}
+  .loading-screen.hidden{opacity:0;visibility:hidden}
+  .loading-content{text-align:center}
+  .loading-seal{width:80px;height:80px;border:3px solid #8c6b48;border-radius:4px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;animation:sealPulse 2s ease-in-out infinite}
+  @keyframes sealPulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(140,107,72,.3)}50%{transform:scale(1.05);box-shadow:0 0 20px rgba(140,107,72,.2)}}
+  .loading-text{font-family:"Ma Shan Zheng",cursive;font-size:1.5rem;color:#2d2d2b;letter-spacing:.2em}
+  .loading-dots::after{content:'';animation:dots 1.5s steps(4,end) infinite}
+  @keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+
+  /* ══ Vars ══ */
+  :root{
+    --ink-dark:#1c1a16;--ink-mid:#3d3830;--ink-light:#6b6358;
+    --paper-warm:#f6f1e8;--paper-mid:#ede6d6;--paper-dark:#d9d0be;
+    --gold:#9a7a3a;--gold-light:#c8a96a;--red-seal:#8b2020;
+    --cinnabar:#c0392b;
+  }
+
+  /* ══ Ink corner ornaments ══ */
+  .ink-corner{position:fixed;pointer-events:none;z-index:2;opacity:.12}
+  .ink-corner.tl{top:14px;left:14px}
+  .ink-corner.tr{top:14px;right:14px;transform:scaleX(-1)}
+  .ink-corner.bl{bottom:14px;left:14px;transform:scaleY(-1)}
+  .ink-corner.br{bottom:14px;right:14px;transform:scale(-1,-1)}
+  .corner-path{stroke-dasharray:220;stroke-dashoffset:220;animation:cornerDraw 1.6s ease .9s forwards}
+  @keyframes cornerDraw{to{stroke-dashoffset:0}}
+
+  /* ══ Floating ink brush bg ══ */
+  .float-brush{position:fixed;pointer-events:none;z-index:1;opacity:0;animation:brushIn 2.2s ease 1.1s forwards}
+  @keyframes brushIn{to{opacity:.05}}
+
+  /* ══ Ink particles ══ */
+  .ink-particles{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+  .ink-drop{position:absolute;border-radius:50%;background:rgba(45,45,43,.05);animation:inkFloat linear infinite}
+  @keyframes inkFloat{0%,100%{transform:translateY(0) scale(1);opacity:.05}50%{transform:translateY(-50px) scale(1.1);opacity:.09}}
+
+  /* ══════════════════════════════════════════
+     HOME BODY: two-column balanced layout
+     Left = panorama (50%)  Right = cards (50%)
+  ══════════════════════════════════════════ */
+  .home-body{
+    display:grid !important;
+    grid-template-columns:minmax(0,1.08fr) minmax(360px,.92fr) !important;
+    align-items:start !important;
+    gap:2.4rem !important;
+    width:100%;
+    max-width:1240px;
+    margin:1.4rem auto 0;
+    overflow:visible !important;
+  }
+
+  .home-feature-col{
+    display:flex;
+    flex-direction:column;
+    gap:1.35rem;
+    min-width:0;
+  }
+
+  /* Panorama: left column main visual */
+  .home-panorama{
+    width:100% !important;
+    max-width:none !important;
+    min-height:420px;
+    aspect-ratio:16 / 10;
+    position:relative;
+    overflow:hidden;
+    border-radius:24px;
+    box-shadow:0 14px 44px rgba(0,0,0,.14);
+  }
+
+  /* Cards column: right side, vertical stack */
+  .home-cards{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:1rem !important;
+    width:100%;
+    overflow:visible !important;
+    align-items:stretch !important;
+  }
+
+  .home-video-module{
+    position:relative;
+    padding:1rem;
+    border-radius:24px;
+    background:linear-gradient(180deg,rgba(246,241,232,.92),rgba(237,230,214,.88));
+    border:1px solid rgba(154,122,58,.16);
+    box-shadow:0 16px 38px rgba(0,0,0,.1), inset 0 0 0 1px rgba(255,255,255,.4);
+    backdrop-filter:blur(6px);
+  }
+  .home-video-module::before{
+    content:'';
+    position:absolute;
+    inset:12px;
+    border:1px solid rgba(154,122,58,.12);
+    border-radius:18px;
+    pointer-events:none;
+  }
+  .video-module-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:1rem;
+    margin-bottom:.85rem;
+    position:relative;
+    z-index:1;
+  }
+  .video-module-title{
+    font-family:'Ma Shan Zheng',cursive;
+    font-size:1.15rem;
+    color:var(--ink-dark);
+    letter-spacing:.14em;
+  }
+  .video-module-subtitle{
+    font-size:.68rem;
+    color:var(--gold);
+    letter-spacing:.18em;
+    white-space:nowrap;
+  }
+  .video-module-frame{
+    position:relative;
+    z-index:1;
+    aspect-ratio:16 / 9;
+    min-height:320px;
+    border-radius:18px;
+    overflow:hidden;
+    background:linear-gradient(180deg,#f5f0e8,#ede6d6);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);
+  }
+  .video-module-frame model-viewer{
+    width:100%;
+    height:100%;
+    display:block;
+    --poster-color:transparent;
+  }
+  .model-poster-slot{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    background:linear-gradient(160deg,#f5f0e8 0%,#ede6d6 100%);
+  }
+  .model-poster-slot img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    filter:sepia(20%) saturate(0.9) brightness(0.95);
+    transition:transform 0.6s ease;
+  }
+  .model-poster-slot:hover img{
+    transform:scale(1.05);
+  }
+  .model-poster-overlay{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg,rgba(26,20,16,0.1) 0%,rgba(26,20,16,0.4) 100%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:background 0.3s ease;
+  }
+  .model-poster-overlay:hover{
+    background:linear-gradient(180deg,rgba(26,20,16,0.05) 0%,rgba(26,20,16,0.3) 100%);
+  }
+  .model-poster-hint{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:0.6rem;
+    color:#fff;
+    text-shadow:0 2px 8px rgba(0,0,0,0.4);
+    transition:transform 0.3s ease;
+  }
+  .model-poster-overlay:hover .model-poster-hint{
+    transform:translateY(-4px);
+  }
+  .model-poster-hint svg{
+    width:48px;
+    height:48px;
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  }
+  .model-poster-hint span{
+    font-family:'Ma Shan Zheng',cursive;
+    font-size:1rem;
+    letter-spacing:0.15em;
+  }
+  .ar-button{
+    position:absolute;
+    bottom:12px;
+    right:12px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:8px 14px;
+    background:rgba(255,255,255,0.95);
+    border:1px solid rgba(154,122,58,0.3);
+    border-radius:6px;
+    font-family:'Noto Serif SC',serif;
+    font-size:0.75rem;
+    color:var(--ink-dark);
+    cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    transition:all 0.3s ease;
+    z-index:10;
+  }
+  .ar-button:hover{
+    background:#fff;
+    transform:translateY(-2px);
+    box-shadow:0 6px 16px rgba(0,0,0,0.2);
+  }
+  .ar-button svg{
+    color:var(--gold);
+  }
+  .model-fallback{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:.8rem;z-index:2;
+    background:linear-gradient(160deg,#f5f0e8 0%,#ede6d6 40%,#e4d8c0 100%);
+    opacity:0;pointer-events:none;transition:opacity .5s;
+  }
+  .model-fallback.show{opacity:1;pointer-events:auto}
+  .model-fallback-icon{
+    width:80px;height:80px;opacity:.5;
+  }
+  .model-fallback-text{
+    font-family:'Ma Shan Zheng',cursive;font-size:1.1rem;
+    color:var(--ink-mid);letter-spacing:.12em;text-align:center;
+  }
+  .model-fallback-hint{
+    font-family:'Noto Serif SC',serif;font-size:.7rem;
+    color:var(--ink-light);letter-spacing:.06em;
+  }
+  .model-retry-btn{
+    font-family:'Ma Shan Zheng',cursive;
+    font-size:.85rem;
+    color:var(--paper-warm);
+    background:var(--cinnabar);
+    border:none;
+    border-radius:4px;
+    padding:.5rem 1.2rem;
+    cursor:pointer;
+    letter-spacing:.1em;
+    margin-top:.5rem;
+    transition:all .3s;
+  }
+  .model-retry-btn:hover{
+    background:var(--gold);
+    transform:translateY(-2px);
+  }
+  .model-loader{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:1rem;z-index:3;
+    background:linear-gradient(160deg,#f5f0e8 0%,#ede6d6 100%);
+    transition:opacity .5s;
+  }
+  .model-loader.hidden{opacity:0;pointer-events:none}
+  .model-loader-spinner{
+    width:50px;height:50px;
+    border:3px solid rgba(154,122,58,.2);
+    border-top-color:#9a7a3a;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .model-loader-text{
+    font-family:'Ma Shan Zheng',cursive;
+    font-size:1rem;color:var(--ink-dark);letter-spacing:.1em;
+  }
+  .model-loader-progress{
+    font-family:'Noto Serif SC',serif;
+    font-size:.75rem;color:var(--gold);
+    min-width:3em;text-align:center;
+  }
+  .video-module-note{
+    position:relative;
+    z-index:1;
+    display:flex;
+    justify-content:space-between;
+    gap:1rem;
+    margin-top:.85rem;
+    font-size:.72rem;
+    color:var(--ink-light);
+    letter-spacing:.06em;
+  }
+
+  /* Section label above cards */
+  .cards-col-header{
+    display:flex;align-items:center;gap:.7rem;margin-bottom:.4rem;
+    opacity:0;animation:fadeUp .6s ease .4s forwards;
+  }
+  .cch-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(154,122,58,.38),transparent)}
+  .cch-line.l{background:linear-gradient(90deg,transparent,rgba(154,122,58,.38))}
+  .cch-text{font-family:'Ma Shan Zheng',cursive;font-size:.72rem;color:var(--gold-light);letter-spacing:.26em;opacity:.82;white-space:nowrap}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+  /* ══════════════════════════════════════════
+     SCROLL CARD — completely self-contained
+     Uses unique class prefix "hzc-" to avoid
+     collision with styles.css .scroll-* rules
+  ══════════════════════════════════════════ */
+  .hzc-card{
+    position:relative;
+    cursor:pointer;
+    outline:none;
+    opacity:0;
+    transform:translateY(22px);
+    animation:fadeUp .65s cubic-bezier(.22,1,.36,1) forwards;
+    /* allow expansion downward */
+    overflow:visible !important;
+    /* idle float */
+  }
+  .hzc-card:nth-child(2){animation-delay:.18s}
+  .hzc-card:nth-child(3){animation-delay:.32s}
+  .hzc-card:nth-child(4){animation-delay:.46s}
+
+  .hzc-card:nth-child(2) .hzc-wrap{animation:hzFloat1 6.2s ease-in-out 1s infinite}
+  .hzc-card:nth-child(3) .hzc-wrap{animation:hzFloat2 7.4s ease-in-out 1s infinite}
+  .hzc-card:nth-child(4) .hzc-wrap{animation:hzFloat3 6.8s ease-in-out 1s infinite}
+  @keyframes hzFloat1{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  @keyframes hzFloat2{0%,100%{transform:translateY(-2px)}50%{transform:translateY(3px)}}
+  @keyframes hzFloat3{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+  .hzc-card:hover .hzc-wrap,
+  .hzc-card.open  .hzc-wrap{
+    animation:none !important;
+    transform:translateY(-4px) !important;
+    box-shadow:0 2px 0 var(--paper-dark),0 4px 0 #b8af9a,inset 0 0 0 1px rgba(100,85,60,.18),0 24px 58px rgba(0,0,0,.48) !important;
+    transition:transform .3s ease,box-shadow .3s ease;
+  }
+
+  /* Paper scroll wrapper */
+  .hzc-wrap{
+    position:relative;
+    border-radius:3px;
+    /* overflow MUST be visible so body can expand outside if needed */
+    overflow:visible;
+    background:var(--paper-warm);
+    box-shadow:0 2px 0 var(--paper-dark),0 4px 0 #b8af9a,inset 0 0 0 1px rgba(100,85,60,.11),0 14px 42px rgba(0,0,0,.32);
+    transition:box-shadow .3s ease;
+  }
+
+  /* Inner clip region — only the body is clipped during animation */
+  .hzc-inner{
+    border-radius:3px;
+    overflow:hidden; /* this clips the image & body correctly */
+  }
+
+  /* Brass rods */
+  .hzc-rod{
+    height:14px;
+    background:linear-gradient(180deg,#d4b070 0%,#9a6e30 28%,#6a4d22 50%,#9a6e30 72%,#d4b070 100%);
+    position:relative;z-index:3;
+  }
+  .hzc-rod.top{border-radius:3px 3px 0 0;box-shadow:0 2px 4px rgba(0,0,0,.32)}
+  .hzc-rod.bot{border-radius:0 0 3px 3px;box-shadow:0 -2px 4px rgba(0,0,0,.26),0 3px 6px rgba(0,0,0,.28)}
+  .hzc-rod::before,.hzc-rod::after{
+    content:'';position:absolute;top:50%;transform:translateY(-50%);
+    width:20px;height:20px;border-radius:50%;
+    background:radial-gradient(circle at 34% 34%,#e8c870,#7a5020);
+    box-shadow:0 2px 4px rgba(0,0,0,.48);z-index:4;
+  }
+  .hzc-rod::before{left:-5px} .hzc-rod::after{right:-5px}
+
+  /* Cover */
+  .hzc-cover{position:relative;height:160px;overflow:hidden;flex-shrink:0}
+  .hzc-cover img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .65s ease;filter:sepia(16%) saturate(.88)}
+  .hzc-card:hover .hzc-cover img,
+  .hzc-card.open  .hzc-cover img{transform:scale(1.07)}
+  .hzc-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(18,14,8,.02) 0%,rgba(18,14,8,.5) 100%)}
+
+  .hzc-label{position:absolute;bottom:11px;left:13px;z-index:2;display:flex;align-items:center;gap:8px}
+  .hzc-num{
+    width:26px;height:26px;border:1px solid rgba(200,169,106,.7);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Ma Shan Zheng',cursive;font-size:.85rem;color:var(--gold-light);flex-shrink:0;
+    transition:background .25s;
+  }
+  .hzc-card:hover .hzc-num,.hzc-card.open .hzc-num{background:rgba(200,169,106,.18)}
+  .hzc-title-text{font-family:'Ma Shan Zheng',cursive;font-size:1.1rem;color:#fff;text-shadow:0 1px 7px rgba(0,0,0,.7);letter-spacing:.12em}
+
+  .hzc-seal{
+    position:absolute;top:9px;right:11px;z-index:2;
+    width:32px;height:32px;border:1.5px solid rgba(139,32,32,.58);border-radius:2px;
+    display:flex;align-items:center;justify-content:center;opacity:.7;
+    transition:opacity .25s,transform .3s;
+  }
+  .hzc-card:hover .hzc-seal{opacity:1;transform:rotate(4deg)}
+  .hzc-seal span{font-family:'Ma Shan Zheng',cursive;font-size:.65rem;color:var(--red-seal);text-align:center;line-height:1.18;letter-spacing:.04em}
+
+  /* ── Accordion body ── */
+  .hzc-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .62s cubic-bezier(.4,0,.2,1);
+    background:var(--paper-warm);
+    position:relative;
+  }
+  .hzc-body::before{
+    content:'';position:absolute;top:0;left:13px;right:13px;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(100,80,50,.2),transparent);
+  }
+  /* open state */
+  .hzc-card.open .hzc-body{max-height:520px}
+
+  .hzc-body-inner{padding:1.2rem 1.25rem .35rem}
+
+  /* Stagger-reveal elements */
+  .hzc-lead{
+    font-size:.83rem;line-height:1.9;color:var(--ink-mid);
+    border-left:2.5px solid var(--gold);padding-left:.78rem;
+    margin-bottom:.95rem;font-weight:300;font-family:'Noto Serif SC',serif;
+    opacity:0;transform:translateX(-6px);
+    transition:opacity .35s .1s ease,transform .35s .1s ease;
+  }
+  .hzc-card.open .hzc-lead{opacity:1;transform:translateX(0)}
+
+  .hzc-pills{display:flex;flex-wrap:wrap;gap:.32rem;margin-bottom:.85rem;opacity:0;transition:opacity .35s .2s ease}
+  .hzc-card.open .hzc-pills{opacity:1}
+  .hzc-pill{font-size:.62rem;font-weight:300;color:var(--ink-light);background:var(--paper-dark);border:.5px solid rgba(100,80,50,.16);border-radius:2px;padding:.15rem .44rem;letter-spacing:.04em;font-family:'Noto Serif SC',serif}
+  .hzc-pill.g{background:#efe7d0;color:var(--gold);border-color:rgba(154,122,58,.26)}
+
+  .hzc-grid{display:grid;grid-template-columns:1fr 1fr;gap:.38rem .65rem;margin-bottom:.85rem;opacity:0;transform:translateY(5px);transition:opacity .35s .3s ease,transform .35s .3s ease}
+  .hzc-card.open .hzc-grid{opacity:1;transform:translateY(0)}
+  .hzc-gi{display:flex;flex-direction:column;gap:.07rem}
+  .hzc-gl{font-size:.59rem;color:var(--ink-light);letter-spacing:.07em;font-family:'Noto Serif SC',serif}
+  .hzc-gv{font-size:.76rem;color:var(--ink-dark);font-weight:600;font-family:'Noto Serif SC',serif}
+
+  .hzc-quote{
+    background:#efe7d0;border:.5px solid rgba(154,122,58,.24);border-radius:2px;
+    padding:.58rem .78rem .58rem 1.45rem;margin-bottom:.85rem;position:relative;
+    opacity:0;transform:translateY(5px);transition:opacity .35s .38s ease,transform .35s .38s ease;
+  }
+  .hzc-card.open .hzc-quote{opacity:1;transform:translateY(0)}
+  .hzc-quote::before{content:'「';font-family:'Ma Shan Zheng',cursive;font-size:1.55rem;color:var(--gold);opacity:.34;position:absolute;top:-2px;left:4px;line-height:1}
+  .hzc-quote p{font-size:.72rem;line-height:1.82;color:var(--gold);font-style:italic;font-family:'Noto Serif SC',serif;font-weight:300}
+
+  .hzc-tags{display:flex;flex-wrap:wrap;gap:.24rem;padding:.58rem 0;border-top:.5px solid rgba(100,80,50,.11);opacity:0;transition:opacity .35s .46s ease}
+  .hzc-card.open .hzc-tags{opacity:1}
+  .hzc-tag{font-size:.59rem;color:var(--ink-light);padding:.12rem .38rem;border:.5px solid rgba(100,80,50,.15);border-radius:1px;letter-spacing:.05em;font-family:'Noto Serif SC',serif;transition:border-color .2s,color .2s,background .2s;cursor:default}
+  .hzc-tag:hover{border-color:var(--gold);color:var(--gold);background:rgba(154,122,58,.06)}
+
+  /* Hint bar */
+  .hzc-hint{
+    display:flex;align-items:center;justify-content:center;gap:.42rem;padding:.52rem;
+    font-size:.6rem;font-family:'Noto Serif SC',serif;color:var(--ink-light);letter-spacing:.13em;
+    background:var(--paper-mid);transition:color .22s,background .22s;user-select:none;
+  }
+  .hzc-card.open .hzc-hint{color:var(--gold);background:#eae2d0}
+  .hzc-arrow{width:10px;height:10px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);transition:transform .3s ease;display:inline-block;flex-shrink:0}
+  .hzc-card.open .hzc-arrow{transform:rotate(-135deg)}
+
+  /* Ripple */
+  @keyframes hzRipple{0%{transform:scale(0);opacity:.26}100%{transform:scale(5);opacity:0}}
+  .hzc-ripple{position:absolute;border-radius:50%;width:48px;height:48px;background:rgba(154,122,58,.22);pointer-events:none;animation:hzRipple .52s ease-out forwards;transform-origin:center;z-index:5}
+
+  /* ══ Brush divider between panorama and cards col ══ */
+  /* (drawn as vertical connector, hidden on narrow screens) */
+  .brush-sep{
+    display:none; /* purely decorative, not needed in 2-col */
+  }
+
+  @media (max-width: 1100px){
+    .home-body{
+      grid-template-columns:1fr !important;
+      gap:1.5rem !important;
+      max-width:860px;
+    }
+    .home-panorama{
+      min-height:360px;
+      aspect-ratio:16 / 9;
+    }
+  }
+
+  @media (max-width: 768px){
+    .home-body{gap:1.15rem !important;}
+    .home-panorama{min-height:260px;border-radius:18px;}
+    .home-video-module{padding:.85rem;border-radius:18px;}
+    .video-module-head{flex-direction:column;align-items:flex-start;gap:.35rem;}
+    .video-module-note{flex-direction:column;gap:.35rem;}
+  }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-content">
+      <div class="loading-seal">
+        <svg width="50" height="50" viewBox="0 0 50 50" fill="none" stroke="#8c6b48" stroke-width="2">
+          <rect x="5" y="5" width="40" height="40" rx="2"/>
+          <path d="M15 25h20M25 15v20"/>
+        </svg>
+      </div>
+      <div class="loading-text">解码徽派民居<span class="loading-dots"></span></div>
+    </div>
+  </div>
+
+  <!-- Ink corner ornaments -->
+  <div class="ink-corner tl">
+    <svg width="70" height="70" viewBox="0 0 70 70" fill="none" stroke="#3d3020" stroke-width="1.4">
+      <path class="corner-path" d="M5 62L5 10Q5 5 10 5L62 5"/>
+      <path class="corner-path" d="M5 42L5 16Q5 11 10 11L42 11" style="animation-delay:1s"/>
+    </svg>
+  </div>
+  <div class="ink-corner tr">
+    <svg width="70" height="70" viewBox="0 0 70 70" fill="none" stroke="#3d3020" stroke-width="1.4">
+      <path class="corner-path" d="M5 62L5 10Q5 5 10 5L62 5"/>
+      <path class="corner-path" d="M5 42L5 16Q5 11 10 11L42 11" style="animation-delay:1s"/>
+    </svg>
+  </div>
+  <div class="ink-corner bl">
+    <svg width="70" height="70" viewBox="0 0 70 70" fill="none" stroke="#3d3020" stroke-width="1.4">
+      <path class="corner-path" d="M5 62L5 10Q5 5 10 5L62 5"/>
+    </svg>
+  </div>
+  <div class="ink-corner br">
+    <svg width="70" height="70" viewBox="0 0 70 70" fill="none" stroke="#3d3020" stroke-width="1.4">
+      <path class="corner-path" d="M5 62L5 10Q5 5 10 5L62 5"/>
+    </svg>
+  </div>
+
+  <!-- Floating ink brushstrokes -->
+  <div class="float-brush" style="top:10%;right:2%">
+    <svg width="100" height="260" viewBox="0 0 100 260" fill="none">
+      <path d="M50 8Q72 70 44 138Q26 200 56 255" stroke="#3d3020" stroke-width="15" stroke-linecap="round" opacity=".6"/>
+    </svg>
+  </div>
+  <div class="float-brush" style="top:45%;left:1.5%;animation-delay:1.5s">
+    <svg width="80" height="180" viewBox="0 0 80 180" fill="none">
+      <path d="M40 5Q16 54 48 110Q72 156 36 178" stroke="#3d3020" stroke-width="12" stroke-linecap="round" opacity=".55"/>
+    </svg>
+  </div>
+
+  <!-- Ink particles -->
+  <div class="ink-particles" id="inkParticles"></div>
+
+  <!-- 背景视频 -->
+  <video id="bgVideo" class="bg-video" autoplay loop muted playsinline>
+    <source src="public/9ba0a2e6346f2a8446c8b10f630c6071.mp4" type="video/mp4"/>
+  </video>
+
+  <!-- 宣纸纹理背景 -->
+  <div class="paper-texture"></div>
+
+  <!-- 边缘晕染效果 -->
+  <div class="ink-edge ink-edge-top"></div>
+  <div class="ink-edge ink-edge-bottom"></div>
+  <div class="ink-edge ink-edge-left"></div>
+  <div class="ink-edge ink-edge-right"></div>
+
+  <!-- 云粒子画布 -->
+  <canvas id="cloudCanvas"></canvas>
+
+  <!-- ===== 原版导航（完整保留） ===== -->
+  <nav id="circleNav">
+    <a href="index.html" class="circle-btn active" data-page="index">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16L16 5l11 11"/><path d="M8 14v13h16V14"/></svg>
+      <span>首页</span>
+    </a>
+    <a href="matouqiang.html" class="circle-btn" data-page="matouqiang">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 28V21h5V15h4V9h4v6h4v6h5v7"/></svg>
+      <span>马头墙</span>
+    </a>
+    <a href="tianjing.html" class="circle-btn" data-page="tianjing">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="6" width="20" height="20" rx="2"/><rect x="12" y="12" width="8" height="8" rx="1"/><line x1="16" y1="6" x2="16" y2="12"/><line x1="16" y1="20" x2="16" y2="26"/><line x1="6" y1="16" x2="12" y2="16"/><line x1="20" y1="16" x2="26" y2="16"/></svg>
+      <span>天井</span>
+    </a>
+    <a href="sandiao.html" class="circle-btn" data-page="sandiao">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 26Q14 18 16 16T24 6"/><path d="M6 22Q10 18 14 14"/><path d="M18 18Q22 14 26 10"/><circle cx="24" cy="6" r="2"/><circle cx="8" cy="26" r="2"/></svg>
+      <span>三雕</span>
+    </a>
+    <a href="zongzu.html" class="circle-btn" data-page="zongzu">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L16 6l13 12"/><path d="M6 16v12h20V16"/><path d="M13 28v-8h6v8"/></svg>
+      <span>宗族</span>
+    </a>
+    <a href="baohu.html" class="circle-btn" data-page="baohu">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4L6 9v7c0 7 4 13 10 15 6-2 10-8 10-15V9L16 4z"/><path d="M12 16l3 3 5-6"/></svg>
+      <span>保护</span>
+    </a>
+    <a href="kuawenhua.html" class="circle-btn" data-page="kuawenhua">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20a2 2 0 012 2v10a2 2 0 01-2 2H16l-6 5v-5H6a2 2 0 01-2-2V10a2 2 0 012-2z"/><circle cx="12" cy="15" r="1" fill="currentColor"/><circle cx="16" cy="15" r="1" fill="currentColor"/><circle cx="20" cy="15" r="1" fill="currentColor"/></svg>
+      <span>跨文化</span>
+    </a>
+  </nav>
+
+  <!-- ===== 首页 ===== -->
+  <section class="page home-page">
+    <div class="ink-wash-bg">
+      <div class="ink-wash-layer ink-wash-1"></div>
+      <div class="ink-wash-layer ink-wash-2"></div>
+      <div class="ink-wash-layer ink-wash-3"></div>
+    </div>
+
+    <div class="huizhou-silhouette">
+      <svg viewBox="0 0 400 200" preserveAspectRatio="xMidYMax slice">
+        <defs>
+          <linearGradient id="wallGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#e8e4dc;stop-opacity:1"/>
+            <stop offset="100%" style="stop-color:#d4d0c8;stop-opacity:1"/>
+          </linearGradient>
+          <linearGradient id="roofGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#3a3a38;stop-opacity:1"/>
+            <stop offset="100%" style="stop-color:#2d2d2b;stop-opacity:1"/>
+          </linearGradient>
+        </defs>
+        <path d="M50 180L50 100L60 90L70 100L80 90L90 100L90 180Z" fill="url(#wallGrad)" opacity=".6"/>
+        <path d="M45 100L95 100L95 95L85 85L75 90L65 85L55 90L45 95Z" fill="url(#roofGrad)" opacity=".8"/>
+        <path d="M110 180L110 110L120 100L130 110L140 100L150 110L150 180Z" fill="url(#wallGrad)" opacity=".5"/>
+        <path d="M105 110L155 110L155 105L145 95L135 100L125 95L115 100L105 105Z" fill="url(#roofGrad)" opacity=".7"/>
+        <path d="M200 180L200 80L210 70L220 80L230 70L240 80L240 180Z" fill="url(#wallGrad)" opacity=".7"/>
+        <path d="M190 80L250 80L250 75L240 60L225 70L215 60L200 75L190 75Z" fill="url(#roofGrad)" opacity=".9"/>
+      </svg>
+    </div>
+
+    <div class="home-title-area">
+      <div class="title-decoration top-line"></div>
+      <h1 class="home-title">
+        <span class="char" style="--i:1">解</span>
+        <span class="char" style="--i:2">码</span>
+        <span class="char highlight" style="--i:3">徽</span>
+        <span class="char highlight" style="--i:4">派</span>
+        <span class="char" style="--i:5">民</span>
+        <span class="char" style="--i:6">居</span>
+      </h1>
+      <h2 class="home-subtitle">
+        <span class="subtitle-line"></span>
+        <span class="subtitle-text">宏村 · 空间密码与文化传承</span>
+        <span class="subtitle-line"></span>
+      </h2>
+      <div class="home-divider">
+        <div class="divider-decoration left"></div>
+        <div class="divider-line"></div>
+        <div class="divider-decoration right"></div>
+      </div>
+    </div>
+
+    <!-- ═══ Two-column body ═══ -->
+    <div class="home-body">
+
+      <div class="home-feature-col">
+        <!-- LEFT: Panorama -->
+        <div class="home-panorama" id="panorama">
+          <div class="panorama-track" id="panoramaTrack">
+            <div class="panorama-slide active">
+              <img src="素材/全景1.png" alt="宏村全景1" loading="eager"/>
+            </div>
+            <div class="panorama-slide">
+              <img src="素材/全景2.png" alt="宏村全景2" loading="lazy"/>
+            </div>
+            <div class="panorama-slide">
+              <img src="素材/全景3.png" alt="宏村全景3" loading="lazy"/>
+            </div>
+            <div class="panorama-slide">
+              <img src="素材/全景4.png" alt="宏村全景4" loading="lazy"/>
+            </div>
+          </div>
+          <button class="panorama-arrow panorama-arrow-left" id="panLeft" aria-label="上一张">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button class="panorama-arrow panorama-arrow-right" id="panRight" aria-label="下一张">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+          </button>
+          <div class="panorama-dots" id="panoramaDots">
+            <span class="panorama-dot active" data-idx="0"></span>
+            <span class="panorama-dot" data-idx="1"></span>
+            <span class="panorama-dot" data-idx="2"></span>
+            <span class="panorama-dot" data-idx="3"></span>
+          </div>
+          <div class="panorama-hint"><span class="hint-icon">◀▶</span> 点击箭头切换全景</div>
+        </div>
+
+        <!-- 3D 徽派建筑模型展示 -->
+        <section class="home-video-module" aria-labelledby="homeVideoTitle">
+          <div class="video-module-head">
+            <h3 class="video-module-title" id="homeVideoTitle">徽韵影像</h3>
+            <div class="video-module-subtitle">3D · 徽派构件沉浸展示</div>
+          </div>
+          <div class="video-module-frame" id="modelContainer">
+            <!-- 加载指示器 -->
+            <div class="model-loader" id="modelLoader">
+              <div class="model-loader-spinner"></div>
+              <div class="model-loader-text">正在加载三维模型...</div>
+              <div class="model-loader-progress" id="modelProgress">0%</div>
+            </div>
+            
+            <model-viewer
+              src="./public/models/huipai-building.glb"
+              alt="徽派建筑三维模型"
+              auto-rotate
+              camera-controls
+              shadow-intensity="0.8"
+              shadow-softness="0.5"
+              exposure="0.8"
+              environment-image="neutral"
+              camera-orbit="0deg 75deg auto"
+              min-camera-orbit="auto auto 1.5m"
+              max-camera-orbit="auto auto 8m"
+              style="width:100%;height:100%;background:transparent;"
+              id="modelViewer"
+              ar
+              ar-modes="webxr scene-viewer quick-look"
+              camera-target="auto auto auto"
+              field-of-view="45deg"
+              reveal="auto"
+              loading="eager"
+              seamless-poster
+              generate-schema
+              interaction-prompt="when-focused"
+              interaction-prompt-style="wiggle"
+              touch-action="pan-y"
+            >
+              <button slot="ar-button" class="ar-button" aria-label="进入AR模式">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2z"/>
+                  <path d="M8 11v4M12 11v4M16 11v4"/>
+                </svg>
+                <span>AR查看</span>
+              </button>
+            </model-viewer>
+            
+            <!-- 失败备用方案 -->
+            <div class="model-fallback" id="modelFallback">
+              <svg class="model-fallback-icon" viewBox="0 0 80 80" fill="none" stroke="#6b6358" stroke-width="1.5">
+                <path d="M10 65V30L25 18L40 28L55 18L70 30V65Z" fill="rgba(154,122,58,.08)"/>
+                <path d="M10 65V30L25 18L40 28L55 18L70 30V65Z"/>
+                <path d="M25 18V65M55 18V65M40 28V65"/>
+                <rect x="30" y="48" width="20" height="17" rx="1" fill="rgba(154,122,58,.12)"/>
+                <line x1="10" y1="65" x2="70" y2="65"/>
+                <path d="M5 30L25 15L40 25L55 15L75 30" stroke-dasharray="3,3" opacity=".4"/>
+              </svg>
+              <div class="model-fallback-text">三维模型加载失败</div>
+              <div class="model-fallback-hint">请检查网络连接后重试</div>
+              <button class="model-retry-btn" onclick="location.reload()">重新加载</button>
+            </div>
+          </div>
+          <div class="video-module-note">
+            <span>徽派建筑三维构件精细还原</span>
+            <span>可拖拽旋转 · 缩放查看</span>
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT: Cards column -->
+      <div class="home-cards">
+
+        <!-- column header -->
+        <div class="cards-col-header">
+          <div class="cch-line l"></div>
+          <div class="cch-text">村 落 解 读 · 三 卷</div>
+          <div class="cch-line"></div>
+        </div>
+
+        <!-- ── Card 1: 村落概况 ── -->
+        <article class="hzc-card" tabindex="0">
+          <div class="hzc-wrap">
+            <div class="hzc-rod top"></div>
+            <div class="hzc-inner">
+              <div class="hzc-cover">
+                <img src="public/村落概况.png" alt="村落概况" loading="lazy"/>
+                <div class="hzc-overlay"></div>
+                <div class="hzc-label">
+                  <div class="hzc-num">一</div>
+                  <div class="hzc-title-text">村落概况</div>
+                </div>
+                <div class="hzc-seal"><span>宏<br>村</span></div>
+              </div>
+              <div class="hzc-body">
+                <div class="hzc-body-inner">
+                  <p class="hzc-lead">宏村位于安徽省黄山市黟县，始建于南宋绍兴年间（约1131—1162年），由汪氏先祖汪彦济创立。历经明代永乐年间大规模水系营建，形成独特"牛形"仿生格局，被联合国教科文组织赞誉为"中国画里的乡村"。</p>
+                  <div class="hzc-pills">
+                    <span class="hzc-pill g">始建·南宋绍兴年间</span>
+                    <span class="hzc-pill">黟县·汪氏聚居地</span>
+                    <span class="hzc-pill g">世界文化遗产·2000年</span>
+                    <span class="hzc-pill">现存明清建筑 140余幢</span>
+                  </div>
+                  <div class="hzc-grid">
+                    <div class="hzc-gi"><span class="hzc-gl">水系规划</span><span class="hzc-gv">牛形仿生设计</span></div>
+                    <div class="hzc-gi"><span class="hzc-gl">中心水域</span><span class="hzc-gv">月沼（牛胃）</span></div>
+                    <div class="hzc-gi"><span class="hzc-gl">依托山体</span><span class="hzc-gv">雷岗山</span></div>
+                    <div class="hzc-gi"><span class="hzc-gl">南湖面积</span><span class="hzc-gv">约2万㎡</span></div>
+                  </div>
+                  <div class="hzc-quote"><p>古树为"牛角"，蜿蜒水圳为"牛肠"，月沼为"牛胃"，南湖为"牛肚"，民居似"牛身"——这套诞生于明代永乐年间的人工水系，至今仍在发挥调蓄、灌溉与防火之功。</p></div>
+                  <div class="hzc-tags">
+                    <span class="hzc-tag">明代水系规划</span><span class="hzc-tag">汪氏家族</span>
+                    <span class="hzc-tag">粉墙黛瓦</span><span class="hzc-tag">山水格局</span><span class="hzc-tag">仿生营建</span>
+                  </div>
+                </div>
+              </div>
+              <div class="hzc-hint"><span class="hzc-arrow"></span><span class="hzc-hint-txt">点击展开详情</span></div>
+            </div>
+            <div class="hzc-rod bot"></div>
+          </div>
+        </article>
+
+        <!-- ── Card 2: 建筑遗产 ── -->
+        <article class="hzc-card" tabindex="0">
+          <div class="hzc-wrap">
+            <div class="hzc-rod top"></div>
+            <div class="hzc-inner">
+              <div class="hzc-cover">
+                <img src="public/建筑遗产.png" alt="建筑遗产" loading="lazy"/>
+                <div class="hzc-overlay"></div>
+                <div class="hzc-label">
+                  <div class="hzc-num">二</div>
+                  <div class="hzc-title-text">建筑遗产</div>
+                </div>
+                <div class="hzc-seal"><span>三<br>雕</span></div>
+              </div>
+              <div class="hzc-body">
+                <div class="hzc-body-inner">
+                  <p class="hzc-lead">宏村现存140余幢明清时期古建筑，以"粉墙黛瓦马头墙、天井院落三雕美"为最显著特征。徽州三雕——砖雕、石雕、木雕——已列为国家级非物质文化遗产，是徽商财富与工匠精神最集中的物质表达。</p>
+                  <div class="hzc-pills">
+                    <span class="hzc-pill g">承志堂·占地2100㎡</span>
+                    <span class="hzc-pill">木雕题材·忠孝仁义</span>
+                    <span class="hzc-pill g">乐叙堂·明代宗祠</span>
+                    <span class="hzc-pill">南湖书院·清嘉庆年建</span>
+                  </div>
+                  <div class="hzc-grid">
+                    <div class="hzc-gi"><span class="hzc-gl">马头墙高度</span><span class="hzc-gv">高出屋脊 0.5—1m</span></div>
+                    <div class="hzc-gi"><span class="hzc-gl">天井功能</span><span class="hzc-gv">采光·通风·排水·防火</span></div>
+                    <div class="hzc-gi"><span class="hzc-gl">承志堂规模</span><span class="hzc-gv">9厅·60间·136柱</span></div>
+                    <div class="hzc-gi"><span class="hzc-gl">三雕材质</span><span class="hzc-gv">青砖·青石·杉木</span></div>
+                  </div>
+                  <div class="hzc-quote"><p>承志堂由晚清盐商汪定贵建于咸丰五年（1855年），后世称之为"民间故宫"。木雕图案逾百组，题材涵盖渔樵耕读与戏曲故事，技法融合浮雕、透雕、圆雕于一体。</p></div>
+                  <div class="hzc-tags">
+                    <span class="hzc-tag">砖雕</span><span class="hzc-tag">石雕</span><span class="hzc-tag">木雕</span>
+                    <span class="hzc-tag">马头墙</span><span class="hzc-tag">天井院落</span>
+                    <span class="hzc-tag">承志堂</span><span class="hzc-tag">非物质文化遗产</span>
+                  </div>
+                </div>
+              </div>
+              <div class="hzc-hint"><span class="hzc-arrow"></span><span class="hzc-hint-txt">点击展开详情</span></div>
+            </div>
+            <div class="hzc-rod bot"></div>
+          </div>
+        </article>
+
+        <!-- ── Card 3: 遗产价值 ── -->
+        <article class="hzc-card" tabindex="0">
+          <div class="hzc-wrap">
+            <div class="hzc-rod top"></div>
+            <div class="hzc-inner">
+              <div class="hzc-cover">
+                <img src="public/遗产价值.png" alt="遗产价值" loading="lazy"/>
+                <div class="hzc-overlay"></div>
+                <div class="hzc-label">
+                  <div class="hzc-num">三</div>
+                  <div class="hzc-title-text">遗产价值</div>
+                </div>
+                <div class="hzc-seal"><span>世<br>遗</span></div>
+              </div>
+              <div class="hzc-body">
+                <div class="hzc-body-inner">
+                  <p class="hzc-lead">2000年，宏村与西递作为"皖南古村落"整体列入联合国教科文组织《世界遗产名录》，评语称其"完美地保存了一种已经消逝的历史文明的典范"。遗产价值涵盖历史、科学、艺术、生态四个维度。</p>
+                  <div class="hzc-pills">
+                    <span class="hzc-pill g">UNESCO世界遗产·2000年</span>
+                    <span class="hzc-pill">全国重点文物保护单位</span>
+                    <span class="hzc-pill g">中国历史文化名村</span>
+                    <span class="hzc-pill">5A级旅游景区</span>
+                  </div>
+                  <div class="hzc-grid">
+                    <div class="hzc-gi"><span class="hzc-gl">历史价值</span><span class="hzc-gv">徽商文明的实物遗存</span></div>
+                    <div class="hzc-gi"><span class="hzc-gl">科学价值</span><span class="hzc-gv">仿生水系·被动节能</span></div>
+                    <div class="hzc-gi"><span class="hzc-gl">艺术价值</span><span class="hzc-gv">三雕·版画风格</span></div>
+                    <div class="hzc-gi"><span class="hzc-gl">生态价值</span><span class="hzc-gv">人居与山水和谐共生</span></div>
+                  </div>
+                  <div class="hzc-quote"><p>世界遗产委员会评审报告指出，宏村展现了明清时期中国传统社会结构与生活方式，其独特水系规划、建筑布局与儒学伦理观念彼此融合，构成了中国传统聚落的完整范本。</p></div>
+                  <div class="hzc-tags">
+                    <span class="hzc-tag">世界遗产</span><span class="hzc-tag">儒家伦理空间</span>
+                    <span class="hzc-tag">活态传承</span><span class="hzc-tag">被动节能设计</span><span class="hzc-tag">徽商文化</span>
+                  </div>
+                </div>
+              </div>
+              <div class="hzc-hint"><span class="hzc-arrow"></span><span class="hzc-hint-txt">点击展开详情</span></div>
+            </div>
+            <div class="hzc-rod bot"></div>
+          </div>
+        </article>
+
+      </div><!-- /home-cards -->
+    </div><!-- /home-body -->
+
+    <!-- 五大景点按钮 -->
+    <div class="landmark-bar">
+      <button class="landmark-btn" data-landmark="nanhu" style="background-image:url('素材/画卷（1）.png')"><span>南湖</span></button>
+      <button class="landmark-btn" data-landmark="yuezhao" style="background-image:url('素材/画卷（1）.png')"><span>月沼</span></button>
+      <button class="landmark-btn" data-landmark="chengzhitang" style="background-image:url('素材/画卷（1）.png')"><span>承志堂</span></button>
+      <button class="landmark-btn" data-landmark="nanhushuyuan" style="background-image:url('素材/画卷（1）.png')"><span>南湖书院</span></button>
+      <button class="landmark-btn" data-landmark="shurentang" style="background-image:url('素材/画卷（1）.png')"><span>树人堂</span></button>
+    </div>
+  </section>
+
+  <!-- 景点详情弹窗 -->
+  <div class="landmark-overlay" id="landmarkOverlay">
+    <div class="landmark-modal">
+      <button class="landmark-close" id="landmarkClose" aria-label="关闭">&times;</button>
+      <div class="landmark-modal-img"><img id="landmarkImg" src="" alt=""/></div>
+      <div class="landmark-modal-body">
+        <h3 class="landmark-modal-title" id="landmarkTitle"></h3>
+        <p class="landmark-modal-text" id="landmarkText"></p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 原版脚本 -->
+  <script src="app.js"></script>
+  <script src="app-knowledge.js"></script>
+
+  <script>
+  (function(){
+    /* 加载屏幕安全兜底：最多等待3秒，无论如何强制隐藏 */
+    function hideLoader(){
+      var s=document.getElementById('loadingScreen');
+      if(s&&!s.classList.contains('hidden')){
+        s.classList.add('hidden');
+        setTimeout(function(){s.style.display='none';},600);
+      }
+    }
+    window.addEventListener('load',function(){setTimeout(hideLoader,800);});
+    setTimeout(hideLoader,3000);
+  })();
+  </script>
+
+  <script>
+  (function(){
+    /* Ink particles */
+    var pc=document.getElementById('inkParticles');
+    if(pc){for(var i=0;i<13;i++){var d=document.createElement('div');d.className='ink-drop';var s=36+Math.random()*105;d.style.cssText='width:'+s+'px;height:'+s+'px;left:'+Math.random()*100+'%;top:'+Math.random()*100+'%;animation-duration:'+(9+Math.random()*11)+'s;animation-delay:'+(Math.random()*7)+'s';pc.appendChild(d);}}
+
+    /* Card accordion — uses .hzc-card / .hzc-body, fully independent of styles.css */
+    document.querySelectorAll('.hzc-card').forEach(function(card){
+      function toggle(e){
+        /* ripple on inner wrapper */
+        var inner=card.querySelector('.hzc-inner');
+        var rect=inner.getBoundingClientRect();
+        var cx=(e.clientX!=null?e.clientX:rect.left+rect.width/2)-rect.left;
+        var cy=(e.clientY!=null?e.clientY:rect.top+rect.height/2)-rect.top;
+        var rip=document.createElement('span');
+        rip.className='hzc-ripple';
+        rip.style.cssText='left:'+(cx-24)+'px;top:'+(cy-24)+'px;position:absolute';
+        inner.appendChild(rip);
+        setTimeout(function(){rip.remove();},540);
+
+        var wasOpen=card.classList.contains('open');
+        /* close others */
+        document.querySelectorAll('.hzc-card.open').forEach(function(o){
+          if(o!==card){
+            o.classList.remove('open');
+            var h=o.querySelector('.hzc-hint-txt');
+            if(h)h.textContent='点击展开详情';
+          }
+        });
+        card.classList.toggle('open',!wasOpen);
+        var hint=card.querySelector('.hzc-hint-txt');
+        if(hint)hint.textContent=card.classList.contains('open')?'点击收起':'点击展开详情';
+
+        /* scroll card into view if opening */
+        if(card.classList.contains('open')){
+          setTimeout(function(){card.scrollIntoView({behavior:'smooth',block:'nearest'});},100);
+        }
+      }
+      card.addEventListener('click',toggle);
+      card.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle(e);}});
+    });
+
+    /* model-viewer loading handler - 自动加载模式 */
+    (function initModelViewer(){
+      var mv = document.getElementById('modelViewer');
+      var fb = document.getElementById('modelFallback');
+      var loader = document.getElementById('modelLoader');
+      var progress = document.getElementById('modelProgress');
+      if(!mv) return;
+
+      var loaded = false;
+      var loadTimeout;
+      var errorCount = 0;
+      var initAttempts = 0;
+      var maxAttempts = 50;
+
+      function waitForModelViewer() {
+        if (!customElements.get('model-viewer')) {
+          initAttempts++;
+          if (initAttempts < maxAttempts) {
+            console.log('Waiting for model-viewer... attempt', initAttempts);
+            setTimeout(waitForModelViewer, 100);
+            return;
+          }
+          console.error('model-viewer failed to load after', maxAttempts, 'attempts');
+          if(fb) fb.classList.add('show');
+          if(loader) loader.classList.add('hidden');
+          return;
+        }
+        console.log('model-viewer loaded, starting...');
+        startLoading();
+      }
+
+      function startLoading() {
+        if(loader) loader.classList.remove('hidden');
+        if(fb) fb.classList.remove('show');
+
+        mv.addEventListener('progress', function(e){
+          var pct = 0;
+          if(e.detail) {
+            pct = Math.round((e.detail.progress || 0) * 100);
+          }
+          if(progress) progress.textContent = pct + '%';
+        });
+
+        mv.addEventListener('load', function(){
+          loaded = true;
+          if(fb) fb.classList.remove('show');
+          if(loader) loader.classList.add('hidden');
+          clearTimeout(loadTimeout);
+          console.log('3D model loaded successfully');
+        });
+
+        mv.addEventListener('error', function(e){
+          errorCount++;
+          if(!loaded) {
+            console.error('Model viewer error:', e);
+            if(errorCount >= 2) {
+              if(fb) fb.classList.add('show');
+              if(loader) loader.classList.add('hidden');
+            }
+          }
+        });
+
+        mv.addEventListener('model-visibility', function(e) {
+          if(e.detail && e.detail.visible) {
+            loaded = true;
+            if(fb) fb.classList.remove('show');
+            if(loader) loader.classList.add('hidden');
+            clearTimeout(loadTimeout);
+          }
+        });
+
+        loadTimeout = setTimeout(function(){
+          if(!loaded) {
+            console.warn('Model load timeout');
+            if(fb) fb.classList.add('show');
+            if(loader) loader.classList.add('hidden');
+          }
+        }, 60000);
+      }
+
+      waitForModelViewer();
+    })();
+  })();
+  </script>
+  <script src="i18n.js"></script>
+</body>
+</html>

@@ -1,0 +1,2497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>宗族文化 - 解码徽派民居</title>
+  <link rel="stylesheet" href="zongzu/css/zongzu.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;700;900&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+</head>
+<body>
+  <!-- 背景视频 -->
+  <video id="bgVideo" autoplay loop muted playsinline
+    style="position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;opacity:0.92;pointer-events:none;">
+    <source src="素材/宗族/宗族背景.mp4" type="video/mp4"/>
+  </video>
+
+  <!-- 滚动进度条 -->
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+
+  <!-- 徽派瓦当造型导航栏 -->
+  <nav id="circleNav">
+    <a href="index.html" class="circle-btn" data-page="index">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16L16 5l11 11"/><path d="M8 14v13h16V14"/></svg>
+      <span>首页</span>
+    </a>
+    <a href="matouqiang.html" class="circle-btn" data-page="matouqiang">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 28V21h5V15h4V9h4v6h4v6h5v7"/></svg>
+      <span>马头墙</span>
+    </a>
+    <a href="tianjing.html" class="circle-btn" data-page="tianjing">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="6" width="20" height="20" rx="2"/><rect x="12" y="12" width="8" height="8" rx="1"/><line x1="16" y1="6" x2="16" y2="12"/><line x1="16" y1="20" x2="16" y2="26"/><line x1="6" y1="16" x2="12" y2="16"/><line x1="20" y1="16" x2="26" y2="16"/></svg>
+      <span>天井</span>
+    </a>
+    <a href="sandiao.html" class="circle-btn" data-page="sandiao">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 26Q14 18 16 16T24 6"/><path d="M6 22Q10 18 14 14"/><path d="M18 18Q22 14 26 10"/><circle cx="24" cy="6" r="2"/><circle cx="8" cy="26" r="2"/></svg>
+      <span>三雕</span>
+    </a>
+    <a href="zongzu.html" class="circle-btn active" data-page="zongzu">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18L16 6l13 12"/><path d="M6 16v12h20V16"/><path d="M13 28v-8h6v8"/></svg>
+      <span>宗族</span>
+    </a>
+    <a href="baohu.html" class="circle-btn" data-page="baohu">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4L6 9v7c0 7 4 13 10 15 6-2 10-8 10-15V9L16 4z"/><path d="M12 16l3 3 5-6"/></svg>
+      <span>保护</span>
+    </a>
+    <a href="kuawenhua.html" class="circle-btn" data-page="kuawenhua">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8h20a2 2 0 012 2v10a2 2 0 01-2 2H16l-6 5v-5H6a2 2 0 01-2-2V10a2 2 0 012-2z"/><circle cx="12" cy="15" r="1" fill="currentColor"/><circle cx="16" cy="15" r="1" fill="currentColor"/><circle cx="20" cy="15" r="1" fill="currentColor"/></svg>
+      <span>跨文化</span>
+    </a>
+  </nav>
+
+  <section class="page sub-page">
+    <div class="hero-header" style="padding: 28px 40px; min-height: auto; background: linear-gradient(to right, rgba(252,250,245,0.42) 0%, rgba(250,246,240,0.36) 50%, rgba(245,240,232,0.28) 100%); position: relative; overflow: hidden;">
+      <!-- 右侧水墨晕渲装饰 -->
+      <div style="position: absolute; top: 0; right: 0; width: 45%; height: 100%; background: radial-gradient(ellipse 70% 90% at 85% 50%, rgba(139,69,19,0.06) 0%, transparent 70%), radial-gradient(ellipse 40% 60% at 100% 30%, rgba(74,61,46,0.04) 0%, transparent 60%); pointer-events: none; z-index: 0;"></div>
+      
+      <div class="hero-inner" style="display: flex; align-items: flex-start; justify-content: flex-start; position: relative; z-index: 1; gap: 12px;">
+        <!-- 左侧：标题 -->
+        <div class="hero-left" style="flex: 0 0 auto;">
+          <h1 class="hero-title-zh" style="font-family: 'Ma Shan Zheng', cursive; font-size: clamp(2.2rem, 3vw, 3rem); color: #4a3d2e; line-height: 1.1; letter-spacing: 0.05em; margin-bottom: 8px; text-shadow: 2px 2px 8px rgba(26,20,16,0.1); animation: fadeSlideDown 0.7s cubic-bezier(0.22,1,0.36,1) 0.1s both;">宗族文化</h1>
+          <p class="hero-title-en" style="font-size: 0.58rem; letter-spacing: 0.22em; color: #8c7a60; margin: 0; text-transform: uppercase; font-weight: 300; animation: fadeSlideDown 0.6s cubic-bezier(0.22,1,0.36,1) 0.2s both;">CLAN SYSTEM & ANCESTRAL HALL</p>
+        </div>
+        
+        <!-- 右侧：古风文字描述，逐行浮现 -->
+        <div class="hero-desc-section" style="flex: 1; max-width: 650px; padding-left: 16px; border-left: 2px solid rgba(192,57,43,0.25);">
+          <div style="font-family: 'Noto Serif SC', serif; font-size: clamp(0.72rem, 1vw, 0.85rem); line-height: 1.85; color: #4a3d2e; font-weight: 300;">
+            <p class="desc-line" style="margin-bottom: 10px; opacity: 0; transform: translateY(8px); transition: opacity 0.6s ease, transform 0.6s ease;">徽派建筑的宗族文化，是将血缘秩序写入空间的语言。祠堂居中，民居环列，形成<span style="color: #8B4513; font-weight: 500;">「千丁之族未尝散居」</span>的聚落格局——开间数量、马头墙层数、天井尺寸，无一不是身份等级的外在编码。</p>
+            <p class="desc-line" style="margin-bottom: 10px; opacity: 0; transform: translateY(8px); transition: opacity 0.6s ease, transform 0.6s ease;">以天井为单元的院落随家族繁衍不断增生，边门一开则户户相通，边门一闭则各自独立，将<span style="color: #8B4513; font-weight: 500;">「敬宗收族」</span>的伦理从精神层面落实到砖瓦之间。</p>
+            <p class="desc-line" style="margin-bottom: 0; opacity: 0; transform: translateY(8px); transition: opacity 0.6s ease, transform 0.6s ease;">而<span style="color: #8B4513; font-weight: 500;">「四水归堂」</span>的财气隐喻，更将徽商的商业智慧与宗族凝聚力融为一体——聚财为聚族，聚族为聚财，在这片高墙深院中，建筑与宗族相互塑造，生生不息。</p>
+          </div>
+        </div>
+      </div>
+      
+      <style>
+        @keyframes fadeSlideDown {
+          from { opacity: 0; transform: translateY(-14px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .desc-line.visible { opacity: 1 !important; transform: translateY(0) !important; }
+      </style>
+      
+      <script>
+        // 页面加载后逐行显示文字
+        document.addEventListener('DOMContentLoaded', function() {
+          var lines = document.querySelectorAll('.desc-line');
+          lines.forEach(function(line, index) {
+            setTimeout(function() {
+              line.classList.add('visible');
+            }, 400 + index * 350);
+          });
+        });
+      </script>
+    </div>
+
+    <!-- 横向滚动导航 -->
+    <div class="horizontal-nav">
+      <button class="nav-btn prev-btn" onclick="scrollModules(-1)">← 上一页</button>
+      <div class="nav-indicators">
+        <button class="nav-dot active" data-index="0" onclick="scrollToModule(0)"></button>
+        <button class="nav-dot" data-index="1" onclick="scrollToModule(1)"></button>
+        <button class="nav-dot" data-index="2" onclick="scrollToModule(2)"></button>
+        <button class="nav-dot" data-index="3" onclick="scrollToModule(3)"></button>
+      </div>
+      <button class="nav-btn next-btn" onclick="scrollModules(1)">下一页 →</button>
+    </div>
+
+    <!-- 滚动进度指示器 -->
+    <div class="horizontal-scroll-progress" id="horizontalScrollProgress"></div>
+
+    <div class="sub-page-content clan-container">
+      <div class="modules-wrapper">
+        <!-- 宗族聚居与建筑布局 -->
+        <div class="clan-module" id="cluster-layout">
+          <h3 class="module-title">宗族聚居与建筑布局</h3>
+          <div class="scroll-intro">
+            <p class="scroll-intro-text">
+              徽州宗族以"祖祠为核心、支祠为分支、民居为节点"，依托山水形胜形成"枕山环水、祠居一体"的聚居格局，建筑布局即宗族秩序的具象体现。
+            </p>
+          </div>
+          
+          <!-- 左右布局容器 -->
+          <div style="display:flex;gap:28px;align-items:flex-start;margin-top:16px;">
+
+            <!-- 左侧：建筑布局图片 -->
+            <div style="flex:0 0 52%;min-width:0;">
+              <!-- 格局总览大图 -->
+              <div class="compact-main-image" style="margin-bottom:12px;">
+                <img src="素材/宗族/格局总览.png" alt="格局总览" class="compact-main-img" loading="lazy">
+              </div>
+              <!-- 细节图片六宫格 -->
+              <div class="compact-images">
+                <div class="compact-image-item">
+                  <img src="素材/宗族/村落布局.jpg" alt="村落布局" loading="lazy">
+                  <span>村落布局</span>
+                </div>
+                <div class="compact-image-item">
+                  <img src="素材/宗族/宗族祠堂.jpg" alt="主祠堂" loading="lazy">
+                  <span>主祠堂</span>
+                </div>
+                <div class="compact-image-item">
+                  <img src="素材/宗族/祠堂内部.jpg" alt="支祠" loading="lazy">
+                  <span>支祠</span>
+                </div>
+                <div class="compact-image-item">
+                  <img src="素材/宗族/村落布局.jpg" alt="民居群" loading="lazy">
+                  <span>民居群</span>
+                </div>
+                <div class="compact-image-item">
+                  <img src="素材/宗族/村落布局.jpg" alt="水系巷弄" loading="lazy">
+                  <span>水系巷弄</span>
+                </div>
+                <div class="compact-image-item">
+                  <img src="素材/宗族/村落布局.jpg" alt="水口" loading="lazy">
+                  <span>水口</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 右侧：格局解读 + 宗族文化符号 -->
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap: 15px;">
+              <!-- 格局解读文字 -->
+              <div class="compact-description" style="margin:0;">
+                <h4 class="compact-title">格局解读</h4>
+                <p class="compact-text">
+                  徽州宗族的聚族而居制度、宗法等级制度、风水文化理念，共同塑造了徽派村落「祠为核心、支祠环绕、民居辐射、枕山环水、水口锁村」的经典布局。建筑是宗族文化的具象载体，宗族是建筑布局的核心灵魂，二者相融相生，形成了徽州独有的「祠居一体」的建筑文化特色。
+                </p>
+                <p class="compact-text">
+                  主祠堂是宗族的精神与地理双重核心，选址必在村落风水最佳、位置最居中处，建筑规模最大、装饰最精（三雕工艺最全），是宗族祭祀、议事、举行重大礼仪的场所，象征着宗族的血脉统一与秩序核心。
+                </p>
+                <p class="compact-text">
+                  宗法制度规定「祠为尊」，所有建筑不得超越祠堂的规模和高度，体现「尊祖敬宗」的宗族理念。支祠作为分支祠堂，规模次之，分布在村落的各个区域，形成宗族的分支网络。
+                </p>
+              </div>
+
+              <!-- 宗族文化符号 -->
+              <div style="padding-top:16px;border-top:1px solid var(--border-ink);">
+                <h4 style="font-family:var(--font-title);color:var(--primary-redwood);margin-bottom:14px;">宗族文化符号</h4>
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
+                  <div class="symbol-item" style="text-align:center;background:rgba(255,255,255,0.6);border:1px solid var(--border-ink);border-radius:var(--radius-sm);padding:10px;">
+                    <div style="width:100%;height:140px;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:8px;">
+                      <img src="素材/宗族/宗族祠堂.jpg" alt="宗族匾额" style="width:100%;height:100%;object-fit:cover;">
+                    </div>
+                    <div class="symbol-label" style="font-family:var(--font-title);color:var(--primary-redwood);font-size:0.85rem;">宗族匾额</div>
+                    <p style="font-size:0.72rem;line-height:1.4;color:var(--primary-text);margin-top:5px;">堂号匾额是宗族身份的重要标识，通常悬挂在祠堂或民居的正厅上方。</p>
+                  </div>
+                  <div class="symbol-item" style="text-align:center;background:rgba(255,255,255,0.6);border:1px solid var(--border-ink);border-radius:var(--radius-sm);padding:10px;">
+                    <div style="width:100%;height:140px;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:8px;">
+                      <img src="素材/宗族/族规家训.jpg" alt="宗族楹联" style="width:100%;height:100%;object-fit:cover;">
+                    </div>
+                    <div class="symbol-label" style="font-family:var(--font-title);color:var(--primary-redwood);font-size:0.85rem;">宗族楹联</div>
+                    <p style="font-size:0.72rem;line-height:1.4;color:var(--primary-text);margin-top:5px;">家训楹联是宗族价值观的重要载体，通常刻在祠堂或民居的柱子上。</p>
+                  </div>
+                  <div class="symbol-item" style="text-align:center;background:rgba(255,255,255,0.6);border:1px solid var(--border-ink);border-radius:var(--radius-sm);padding:10px;">
+                    <div style="width:100%;height:140px;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:8px;">
+                      <img src="素材/宗族/族谱.jpg" alt="族谱" style="width:100%;height:100%;object-fit:cover;">
+                    </div>
+                    <div class="symbol-label" style="font-family:var(--font-title);color:var(--primary-redwood);font-size:0.85rem;">族谱</div>
+                    <p style="font-size:0.72rem;line-height:1.4;color:var(--primary-text);margin-top:5px;">族谱详细记载了宗族的世系、人物、事迹，是宗族文化的重要载体。</p>
+                  </div>
+                  <div class="symbol-item" style="text-align:center;background:rgba(255,255,255,0.6);border:1px solid var(--border-ink);border-radius:var(--radius-sm);padding:10px;">
+                    <div style="width:100%;height:140px;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:8px;">
+                      <img src="素材/宗族/祠堂内部.jpg" alt="祖先牌位" style="width:100%;height:100%;object-fit:cover;">
+                    </div>
+                    <div class="symbol-label" style="font-family:var(--font-title);color:var(--primary-redwood);font-size:0.85rem;">祖先牌位</div>
+                    <p style="font-size:0.72rem;line-height:1.4;color:var(--primary-text);margin-top:5px;">祖先牌位供奉于祠堂寝堂中，是宗族祭祀活动的核心对象。</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 血脉延绵 -->
+        <div class="clan-module" id="genealogy">
+          <h3 class="module-title">血脉延绵</h3>
+          
+          <!-- 时空联动时间轴与谱系树左右布局 -->
+          <div style="display: flex; gap: 20px; margin-bottom: 20px; min-height: 500px; align-items: stretch;">
+            <!-- 左侧：纵向宗族历史时间轴 -->
+            <div style="flex: 0 0 215px; display: flex; flex-direction: column; background: linear-gradient(160deg, rgba(255,251,242,0.97), rgba(250,245,235,0.93)); border: 1px solid rgba(139,69,19,0.22); border-radius: 10px; padding: 16px; box-shadow: 0 3px 14px rgba(139,69,19,0.09);">
+              <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin: 0 0 14px 0; font-size: 0.9rem; text-align: center; letter-spacing: 2px; padding-bottom: 10px; border-bottom: 1px solid rgba(139,69,19,0.18);">宗族历史时间轴</h4>
+              <div style="position: relative; flex: 1;">
+                <div style="position: absolute; left: 11px; top: 10px; bottom: 10px; width: 2px; background: linear-gradient(to bottom, rgba(139,69,19,0.45), rgba(139,69,19,0.08)); border-radius: 1px; pointer-events: none;"></div>
+                <div style="display: flex; flex-direction: column; gap: 3px;">
+                  <div class="timeline-point-v active" data-year="唐" onclick="handleTimelineClick('唐')" style="display: flex; align-items: center; gap: 10px; padding: 8px 6px; cursor: pointer; border-radius: 6px; transition: all 0.25s;">
+                    <div style="width: 24px; height: 24px; border-radius: 50%; background: var(--primary-redwood); border: 2px solid #fffbf5; flex-shrink: 0; display: flex; align-items: center; justify-content: center; z-index: 1; box-shadow: 0 0 0 2px rgba(192,57,43,0.25);"><div style="width: 7px; height: 7px; background: #fff; border-radius: 50%;"></div></div>
+                    <div><div style="font-family: var(--font-title); font-size: 0.82rem; color: var(--primary-redwood); font-weight: bold;">唐代</div><div style="font-size: 0.62rem; color: #a0886e;">618 – 907</div></div>
+                  </div>
+                  <div class="timeline-point-v" data-year="宋" onclick="handleTimelineClick('宋')" style="display: flex; align-items: center; gap: 10px; padding: 8px 6px; cursor: pointer; border-radius: 6px; transition: all 0.25s;">
+                    <div style="width: 24px; height: 24px; border-radius: 50%; background: #c8b89a; border: 2px solid #fffbf5; flex-shrink: 0; display: flex; align-items: center; justify-content: center; z-index: 1;"><div style="width: 7px; height: 7px; background: #fff; border-radius: 50%;"></div></div>
+                    <div><div style="font-family: var(--font-title); font-size: 0.82rem; color: #6b5a42;">宋代</div><div style="font-size: 0.62rem; color: #a0886e;">960 – 1279</div></div>
+                  </div>
+                  <div class="timeline-point-v" data-year="元" onclick="handleTimelineClick('元')" style="display: flex; align-items: center; gap: 10px; padding: 8px 6px; cursor: pointer; border-radius: 6px; transition: all 0.25s;">
+                    <div style="width: 24px; height: 24px; border-radius: 50%; background: #c8b89a; border: 2px solid #fffbf5; flex-shrink: 0; display: flex; align-items: center; justify-content: center; z-index: 1;"><div style="width: 7px; height: 7px; background: #fff; border-radius: 50%;"></div></div>
+                    <div><div style="font-family: var(--font-title); font-size: 0.82rem; color: #6b5a42;">元代</div><div style="font-size: 0.62rem; color: #a0886e;">1271 – 1368</div></div>
+                  </div>
+                  <div class="timeline-point-v" data-year="明" onclick="handleTimelineClick('明')" style="display: flex; align-items: center; gap: 10px; padding: 8px 6px; cursor: pointer; border-radius: 6px; transition: all 0.25s;">
+                    <div style="width: 24px; height: 24px; border-radius: 50%; background: #c8b89a; border: 2px solid #fffbf5; flex-shrink: 0; display: flex; align-items: center; justify-content: center; z-index: 1;"><div style="width: 7px; height: 7px; background: #fff; border-radius: 50%;"></div></div>
+                    <div><div style="font-family: var(--font-title); font-size: 0.82rem; color: #6b5a42;">明代</div><div style="font-size: 0.62rem; color: #a0886e;">1368 – 1644</div></div>
+                  </div>
+                  <div class="timeline-point-v" data-year="清" onclick="handleTimelineClick('清')" style="display: flex; align-items: center; gap: 10px; padding: 8px 6px; cursor: pointer; border-radius: 6px; transition: all 0.25s;">
+                    <div style="width: 24px; height: 24px; border-radius: 50%; background: #c8b89a; border: 2px solid #fffbf5; flex-shrink: 0; display: flex; align-items: center; justify-content: center; z-index: 1;"><div style="width: 7px; height: 7px; background: #fff; border-radius: 50%;"></div></div>
+                    <div><div style="font-family: var(--font-title); font-size: 0.82rem; color: #6b5a42;">清代</div><div style="font-size: 0.62rem; color: #a0886e;">1644 – 1912</div></div>
+                  </div>
+                  <div class="timeline-point-v" data-year="现代" onclick="handleTimelineClick('现代')" style="display: flex; align-items: center; gap: 10px; padding: 8px 6px; cursor: pointer; border-radius: 6px; transition: all 0.25s;">
+                    <div style="width: 24px; height: 24px; border-radius: 50%; background: #c8b89a; border: 2px solid #fffbf5; flex-shrink: 0; display: flex; align-items: center; justify-content: center; z-index: 1;"><div style="width: 7px; height: 7px; background: #fff; border-radius: 50%;"></div></div>
+                    <div><div style="font-family: var(--font-title); font-size: 0.82rem; color: #6b5a42;">现代</div><div style="font-size: 0.62rem; color: #a0886e;">1912 – 至今</div></div>
+                  </div>
+                </div>
+              </div>
+              <div id="timelineInfo" style="margin-top: 12px; padding: 10px 12px; background: linear-gradient(135deg, rgba(139,69,19,0.08), rgba(212,177,106,0.05)); border: 1px solid rgba(139,69,19,0.2); border-radius: 6px; font-size: 0.72rem; min-height: 85px;">
+                <h5 style="margin: 0 0 5px 0; color: var(--primary-redwood); font-family: var(--font-title); font-size: 0.8rem;">唐代</h5>
+                <p style="margin: 0; line-height: 1.5; color: var(--primary-text);">汪华（586-649），徽州汪氏始祖，唐初名将，封越国公。</p>
+              </div>
+            </div>
+            
+            <!-- 右侧：汪氏宗族谱系树 + 家族背景总览 -->
+            <div style="flex: 1; display: flex; gap: 16px; min-width: 0;">
+              <!-- 谱系树区域（缩窄） -->
+              <div style="flex: 0 0 55%; display: flex; flex-direction: column; min-width: 0; background: linear-gradient(160deg, rgba(255,251,242,0.97), rgba(250,245,235,0.93)); border: 1px solid rgba(139,69,19,0.22); border-radius: 10px; overflow: hidden; box-shadow: 0 3px 14px rgba(139,69,19,0.09);">
+                <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin: 0; padding: 12px 16px; font-size: 0.9rem; text-align: center; letter-spacing: 2px; border-bottom: 1px solid rgba(139,69,19,0.18); background: rgba(139,69,19,0.04);">汪氏宗族谱系树</h4>
+                <div style="flex: 1; padding: 15px; overflow: auto; min-height: 0;">
+                  <div id="genealogyTree" style="width: 100%; min-height: 380px;"></div>
+                </div>
+              </div>
+              <!-- 家族背景总览 -->
+              <div style="flex: 0 0 43%; display: flex; flex-direction: column; background: linear-gradient(160deg, rgba(255,251,242,0.97), rgba(250,245,235,0.93)); border: 1px solid rgba(139,69,19,0.22); border-radius: 10px; padding: 18px 20px; box-shadow: 0 3px 14px rgba(139,69,19,0.09);">
+                <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin: 0 0 14px 0; font-size: 0.92rem; text-align: center; letter-spacing: 2px; padding-bottom: 12px; border-bottom: 1px solid rgba(139,69,19,0.18);">家族背景总览</h4>
+                <div style="flex: 1; overflow-y: auto; font-size: 0.78rem; line-height: 1.85; color: var(--primary-text);">
+                  <p style="margin: 0 0 12px 0; text-indent: 2em;">
+                    汪氏家族源远流长，可追溯至<strong>春秋时期</strong>——鲁成公之子出生时手有"汪"字纹，被封于颍川，后世以汪为姓。
+                  </p>
+                  <p style="margin: 0 0 12px 0; text-indent: 2em;">
+                    <strong>东汉末年</strong>，汪文和渡江南迁定居歙县，成为徽州汪氏一世祖。
+                  </p>
+                  <p style="margin: 0 0 12px 0; text-indent: 2em;">
+                    <strong>唐代</strong>汪华封越国公，生九子，后裔遍布徽州及全国各地，形成<span style="color: var(--primary-redwood); font-weight: 500;">"黟歙之人，十姓九汪，皆华之后"</span>的盛况。
+                  </p>
+                  <p style="margin: 0 0 12px 0; text-indent: 2em;">
+                    <strong>明清时期</strong>，汪氏家族在科举、文学、商业等领域均有杰出人物涌现，如明代文学家汪道昆、清代学者汪中、晚清外交官汪大燮等，彰显了汪氏宗族的文化底蕴与社会影响力。
+                  </p>
+                  <div style="margin-top: 14px; padding: 12px; background: linear-gradient(135deg, rgba(139,69,19,0.06), rgba(212,177,106,0.04)); border-radius: 6px; border-left: 3px solid var(--primary-redwood);">
+                    <div style="font-family: var(--font-title); font-size: 0.82rem; color: var(--primary-redwood); margin-bottom: 6px;">◆ 宗族特色</div>
+                    <div style="font-size: 0.74rem; line-height: 1.7;">
+                      崇文重教 · 贾而好儒 · 忠孝传家 · 经世致用
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 家族名人堂 -->
+          <div class="family-hall-of-fame">
+            <h4 class="hall-of-fame-title">家族名人堂</h4>
+            <div class="hall-of-fame-container">
+              <div class="hall-of-fame-card" data-person="wanghua">
+                <div class="card-avatar">
+                  <img src="素材/宗族/宗族祠堂.jpg" alt="汪华">
+                </div>
+                <div class="card-info">
+                  <h5>汪华</h5>
+                  <p class="card-period">唐代</p>
+                  <p class="card-desc">徽州汪氏始祖，唐初名将，封越国公</p>
+                </div>
+              </div>
+              <div class="hall-of-fame-card" data-person="wangdaokun">
+                <div class="card-avatar">
+                  <img src="素材/宗族/徽商文化.jpg" alt="汪道昆">
+                </div>
+                <div class="card-info">
+                  <h5>汪道昆</h5>
+                  <p class="card-period">明代</p>
+                  <p class="card-desc">明代文学家，戏曲家，徽商代表</p>
+                </div>
+              </div>
+              <div class="hall-of-fame-card" data-person="wangzhong">
+                <div class="card-avatar">
+                  <img src="素材/宗族/族谱.jpg" alt="汪中">
+                </div>
+                <div class="card-info">
+                  <h5>汪中</h5>
+                  <p class="card-period">清代</p>
+                  <p class="card-desc">清代学者，骈文家，扬州学派代表</p>
+                </div>
+              </div>
+              <div class="hall-of-fame-card" data-person="wangdaxie">
+                <div class="card-avatar">
+                  <img src="素材/宗族/徽商文化.jpg" alt="汪大燮">
+                </div>
+                <div class="card-info">
+                  <h5>汪大燮</h5>
+                  <p class="card-period">现代</p>
+                  <p class="card-desc">近代政治家，外交家，民国总理</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 宗族文化传承 -->
+          <div class="cultural-inheritance">
+            <h4 class="inheritance-title">宗族文化传承</h4>
+            <div class="inheritance-container">
+              <div class="inheritance-item" data-type="genealogy">
+                <div class="inheritance-icon">
+                  <img src="素材/宗族/族谱.jpg" alt="族谱编纂">
+                </div>
+                <h5>族谱编纂</h5>
+                <p>族谱是宗族记忆的书写，汪氏家族自唐代起便系统修撰《汪氏统宗谱》，以"收族"之功将散居各地的支系串联为"一本千枝"的血缘网络。每三十年一修的规矩恪守不渝，晒谱仪式庄重如仪，让后代铭记"我从何处来"。族谱不仅记录世系传承，更将先祖的功绩德行刻入族人的集体记忆，使宗族认同在笔墨间代代相传。</p>
+              </div>
+              <div class="inheritance-item" data-type="ritual">
+                <div class="inheritance-icon">
+                  <img src="素材/宗族/宗族祠堂.jpg" alt="祠堂祭祀">
+                </div>
+                <h5>祠堂祭祀</h5>
+                <p>祠堂是宗族空间的灵魂，从汪华越国公祠到各村支祠，祠堂不仅是供奉祖先牌位的场所，更是议事、教化、庆典的中心。春祭秋享的仪式将"敬宗收祖"的伦理刻入族人的身体记忆，高大威严的祠堂建筑本身便是宗族力量的视觉宣言。在徽州村落中，祠堂永远是最高的建筑，其五开间的规制、繁复精美的木雕，无一不在昭示着祖先的荣耀与宗族的凝聚力。</p>
+              </div>
+              <div class="inheritance-item" data-type="education">
+                <div class="inheritance-icon">
+                  <img src="素材/宗族/族规家训.jpg" alt="教育传统">
+                </div>
+                <h5>教育传统</h5>
+                <p>教育是宗族绵延的根本，徽州有"十户之村，不废诵读"之说。宗族以族产资助族中子弟读书，汪氏家族自宋代起便涌现大量进士举人，明清时期更以"父子进士""兄弟翰林"传为美谈。宗祠中往往附设书院，将"读书为第一等事"的家训代代相传。族中富商亦将大量利润投入家乡教育，形成"富而教之"的传统，让书香与商贾在徽州大地上交织出独特的文化景观。</p>
+              </div>
+              <div class="inheritance-item" data-type="mutual-aid">
+                <div class="inheritance-icon">
+                  <img src="素材/宗族/徽商文化.jpg" alt="宗族互助">
+                </div>
+                <h5>宗族互助</h5>
+                <p>宗族互助是血脉共同体的保障，族田的收入用于接济孤寡、资助婚丧、修桥铺路。徽商在外经营所得利润大量投入宗族公益，形成"富者捐资、贫者出力"的内部循环。当族人遭遇变故，宗族出面援助；当子弟学业有成，宗族给予奖励。这种互助机制将血缘关系转化为实实在在的生活保障，让"家"的概念从一户一院扩展为整个宗族，构筑起千年不散的温情网络。</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 家风族规卷轴展开按钮 -->
+          <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(139,69,19,0.2);">
+            <button onclick="openScrollModal()" style="background: linear-gradient(135deg, rgba(139,69,19,0.12) 0%, rgba(212,177,106,0.12) 100%); border: 1px solid rgba(139,69,19,0.35); padding: 12px 32px; border-radius: 24px; font-family: 'Ma Shan Zheng', cursive; font-size: 1rem; color: #8B4513; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 10px rgba(139,69,19,0.12); letter-spacing: 2px;">📜 查看家风族规卷轴</button>
+          </div>
+        </div>
+
+        <!-- 祠堂礼制 -->
+        <div class="clan-module" id="shrine">
+          <h3 class="module-title">祠堂礼制</h3>
+          <p style="font-size: 1rem; line-height: 1.6; color: #4a3d2e; margin-bottom: 1.5rem;">
+            祠堂是宗族的核心建筑，体现了严格的礼制等级。通过空间布局和装饰规格，反映了宗族内部的尊卑秩序和社会地位。
+          </p>
+          
+          <!-- 祠堂空间布局 -->
+          <div class="shrine-map" id="shrineMap">
+            <!-- 真实祠堂平面图 -->
+            <img src="素材/宗族/宗族祠堂.jpg" alt="祠堂平面示意图" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+          </div>
+          
+          <!-- 空间功能说明 -->
+          <div class="shrine-spaces" style="margin-top: 20px;">
+            <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin-bottom: 15px;">空间功能说明</h4>
+            <div class="spaces-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+              <div class="space-item" style="background: rgba(255, 255, 255, 0.8); border: 1px solid var(--border-ink); border-radius: var(--radius-sm); padding: 15px; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column;">
+                <h5 style="font-family: var(--font-title); color: var(--secondary-blue); margin-bottom: 8px;">门厅</h5>
+                <div style="height: 120px; margin-bottom: 10px; overflow: hidden; border-radius: var(--radius-sm);">
+                  <img src="素材/宗族/宗族祠堂.jpg" alt="门厅" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <p style="font-size: 0.85rem; line-height: 1.5; color: var(--primary-text); flex-grow: 1;">
+                  门厅是祠堂的入口，象征宗族的门面，通常悬挂堂号匾额，显示宗族身份。
+                </p>
+              </div>
+              <div class="space-item" style="background: rgba(255, 255, 255, 0.8); border: 1px solid var(--border-ink); border-radius: var(--radius-sm); padding: 15px; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column;">
+                <h5 style="font-family: var(--font-title); color: var(--secondary-blue); margin-bottom: 8px;">享堂</h5>
+                <div style="height: 120px; margin-bottom: 10px; overflow: hidden; border-radius: var(--radius-sm);">
+                  <img src="素材/宗族/祠堂内部.jpg" alt="享堂" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <p style="font-size: 0.85rem; line-height: 1.5; color: var(--primary-text); flex-grow: 1;">
+                  享堂是祠堂的核心空间，用于举行祭祀、议事等重大宗族活动，是宗族权力的象征。
+                </p>
+              </div>
+              <div class="space-item" style="background: rgba(255, 255, 255, 0.8); border: 1px solid var(--border-ink); border-radius: var(--radius-sm); padding: 15px; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column;">
+                <h5 style="font-family: var(--font-title); color: var(--secondary-blue); margin-bottom: 8px;">寝堂</h5>
+                <div style="height: 120px; margin-bottom: 10px; overflow: hidden; border-radius: var(--radius-sm);">
+                  <img src="素材/宗族/祠堂内部.jpg" alt="寝堂" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <p style="font-size: 0.85rem; line-height: 1.5; color: var(--primary-text); flex-grow: 1;">
+                  寝堂是供奉祖先牌位的地方，是祠堂最神圣的空间，体现了对祖先的尊敬和崇拜。
+                </p>
+              </div>
+              <div class="space-item" style="background: rgba(255, 255, 255, 0.8); border: 1px solid var(--border-ink); border-radius: var(--radius-sm); padding: 15px; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column;">
+                <h5 style="font-family: var(--font-title); color: var(--secondary-blue); margin-bottom: 8px;">天井</h5>
+                <div style="height: 120px; margin-bottom: 10px; overflow: hidden; border-radius: var(--radius-sm);">
+                  <img src="素材/宗族/祠堂内部.jpg" alt="天井" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <p style="font-size: 0.85rem; line-height: 1.5; color: var(--primary-text); flex-grow: 1;">
+                  天井是祠堂的采光通风空间，也是宗族活动的重要场所，体现了天人合一的理念。
+                </p>
+              </div>
+              <div class="space-item" style="background: rgba(255, 255, 255, 0.8); border: 1px solid var(--border-ink); border-radius: var(--radius-sm); padding: 15px; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column;">
+                <h5 style="font-family: var(--font-title); color: var(--secondary-blue); margin-bottom: 8px;">东厢</h5>
+                <div style="height: 120px; margin-bottom: 10px; overflow: hidden; border-radius: var(--radius-sm);">
+                  <img src="素材/宗族/族规家训.jpg" alt="东厢" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <p style="font-size: 0.85rem; line-height: 1.5; color: var(--primary-text); flex-grow: 1;">
+                  东厢通常用于存放宗族档案、族谱等重要文献，是宗族文化传承的重要场所。
+                </p>
+              </div>
+              <div class="space-item" style="background: rgba(255, 255, 255, 0.8); border: 1px solid var(--border-ink); border-radius: var(--radius-sm); padding: 15px; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column;">
+                <h5 style="font-family: var(--font-title); color: var(--secondary-blue); margin-bottom: 8px;">西厢</h5>
+                <div style="height: 120px; margin-bottom: 10px; overflow: hidden; border-radius: var(--radius-sm);">
+                  <img src="素材/宗族/族规家训.jpg" alt="西厢" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <p style="font-size: 0.85rem; line-height: 1.5; color: var(--primary-text); flex-grow: 1;">
+                  西厢通常用于宗族子弟读书学习，体现了徽州重视教育的传统。
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 礼制对比 -->
+          <div class="ritual-comparison" style="margin-top: 20px;">
+            <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin-bottom: 15px;">祠堂 vs 民居空间对比</h4>
+            <div class="comparison-content visible" style="padding: 20px; background: rgba(245, 240, 232, 0.6); border-radius: var(--radius-sm); border-left: 3px solid var(--primary-redwood);">
+              <div class="comparison-item" style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-ink);">
+                <h5 style="font-family: var(--font-title); color: var(--secondary-blue); margin-bottom: 10px;">享堂 vs 正厅</h5>
+                <div style="display: flex; gap: 20px; margin-top: 10px;">
+                  <div style="flex: 1;">
+                    <strong>祠堂享堂：</strong>
+                    <p style="font-size: 0.85rem; line-height: 1.5; color: var(--primary-text);">面阔三间或五间，进深多进，气势恢宏，装饰华丽，用于宗族公共活动。</p>
+                  </div>
+                  <div style="flex: 1;">
+                    <strong>民居正厅：</strong>
+                    <p style="font-size: 0.85rem; line-height: 1.5; color: var(--primary-text);">面阔三间，进深较浅，装饰简约，主要用于家庭日常活动和接待宾客。</p>
+                  </div>
+                </div>
+              </div>
+              <div class="comparison-item">
+                <h5 style="font-family: var(--font-title); color: var(--secondary-blue); margin-bottom: 10px;">寝堂 vs 内室</h5>
+                <div style="display: flex; gap: 20px; margin-top: 10px;">
+                  <div style="flex: 1;">
+                    <strong>祠堂寝堂：</strong>
+                    <p style="font-size: 0.85rem; line-height: 1.5; color: var(--primary-text);">供奉祖先牌位，神圣庄严，一般人不得随意进入，体现对祖先的尊敬。</p>
+                  </div>
+                  <div style="flex: 1;">
+                    <strong>民居内室：</strong>
+                    <p style="font-size: 0.85rem; line-height: 1.5; color: var(--primary-text);">家庭成员居住空间，注重隐私和舒适，装饰温馨实用。</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 文化内核内容 -->
+          <div class="antique-note" style="margin-top: 1.5rem;">
+            <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin-bottom: 10px;">礼制等级</h4>
+            <p style="font-size: 0.9rem; line-height: 1.6; color: var(--primary-text);">
+              《大明会典》规定："品官祠堂三间，庶人祠堂一间。"徽州宗族通过祠堂的规模、装饰和布局，严格体现等级制度，官祠气势恢宏，私祠小巧精致，支祠则根据族支地位而定。
+            </p>
+          </div>
+        </div>
+
+        <!-- 贾而好儒与枕山环水 -->
+        <div class="clan-module" id="merchant-fengshui">
+          <h3 class="module-title">贾而好儒与枕山环水</h3>
+          
+          <!-- 两栏紧凑布局 -->
+          <div class="merchant-fengshui-grid">
+            <!-- 贾而好儒 -->
+            <div class="merchant-section">
+              <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin-bottom: 10px; text-align: center; font-size: 1rem;">贾而好儒</h4>
+              <div style="height: 300px; margin-bottom: 20px;">
+                <div class="chart-box" id="merchantChart">
+                  <div class="chart-title">徽商发展趋势</div>
+                </div>
+              </div>
+              <div style="height: 300px; margin-bottom: 20px;">
+                <div class="chart-box" id="merchantDistributionChart">
+                  <div class="chart-title">徽商经营范围分布</div>
+                </div>
+              </div>
+              <div class="merchant-slider" style="margin-top: 10px;">
+                <div class="slider-container">
+                  <div class="slider-label left">经商</div>
+                  <input type="range" min="0" max="100" value="50" class="merchant-slider-input" id="merchantSlider">
+                  <div class="slider-label right">科举</div>
+                </div>
+                <div class="slider-value" id="sliderValue">平衡状态: 50%</div>
+              </div>
+              <div style="margin-top: 20px;">
+                <h5 style="font-family: var(--font-title); color: var(--secondary-blue); margin-bottom: 8px; font-size: 0.85rem;">徽商精神</h5>
+                <p style="font-size: 0.75rem; line-height: 1.4; color: var(--primary-text); margin-bottom: 10px;">
+                  徽商秉持"贾而好儒"的理念，在经商致富后，将大量财富投入教育和宗族建设，形成了独特的儒商文化。他们注重诚信经营，强调"以义取利"，同时重视文化教育，鼓励子弟读书入仕。
+                </p>
+                <h5 style="font-family: var(--font-title); color: var(--secondary-blue); margin-bottom: 8px; font-size: 0.85rem;">宗族与商业的结合</h5>
+                <p style="font-size: 0.75rem; line-height: 1.4; color: var(--primary-text); margin-bottom: 10px;">
+                  徽州宗族为徽商提供了强大的支持网络，族人们相互扶持，共同发展。徽商的成功也反哺宗族，修建祠堂、兴办义学、修桥铺路，促进了宗族的繁荣和文化的传承。这种良性互动使得徽州地区形成了独特的"商儒结合"文化。
+                </p>
+                <h5 style="font-family: var(--font-title); color: var(--secondary-blue); margin-bottom: 8px; font-size: 0.85rem;">徽商的历史贡献</h5>
+                <p style="font-size: 0.75rem; line-height: 1.4; color: var(--primary-text);">
+                  徽商不仅在商业领域取得了巨大成功，还对中国文化的发展做出了重要贡献。他们资助文人墨客，收藏古籍字画，修建书院，推动了徽州文化的繁荣。同时，徽商的经营理念和商业道德也对后世产生了深远影响。
+                </p>
+              </div>
+            </div>
+            
+            <!-- 枕山环水 -->
+            <div class="fengshui-section">
+              <h4 style="font-family: var(--font-title); color: var(--primary-redwood); margin-bottom: 10px; text-align: center; font-size: 1rem;">枕山环水</h4>
+              <div class="fengshui-map" style="width:100%; height:200px; border:1px solid var(--border-ink); border-radius:var(--radius-sm); position:relative; overflow:hidden; margin-bottom: 15px;">
+                <img src="素材/宗族/村落布局.jpg" alt="宗族聚落风水布局示意图" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm);">
+                <div style="position:absolute; top:5px; left:5px; background:rgba(51, 51, 51, 0.7); color:white; padding:5px 8px; border-radius:var(--radius-sm); font-size:0.7rem; backdrop-filter:blur(4px);">
+                  <div style="font-family:var(--font-title); margin-bottom:2px; color:var(--secondary-yellow); font-size:0.6rem;">风水布局</div>
+                  <div style="font-size:0.6rem;">左青龙 · 右白虎 · 前朱雀 · 后玄武</div>
+                </div>
+              </div>
+              <div style="height: 300px; margin-bottom: 20px;">
+                <div class="chart-box" id="fengshuiElementsChart">
+                  <div class="chart-title">风水要素重要性</div>
+                </div>
+              </div>
+              <div style="margin-top: 20px;">
+                <h5 style="font-family: var(--font-title); color: var(--secondary-blue); margin-bottom: 8px; font-size: 0.85rem;">风水理念</h5>
+                <p style="font-size: 0.75rem; line-height: 1.4; color: var(--primary-text); margin-bottom: 10px;">
+                  徽派宗族聚落注重风水布局，通常遵循"枕山、环水、面屏"的原则。"枕山"即背靠山脉，寓意有靠山；"环水"即水流环绕，象征财富汇聚；"面屏"即前方有案山，遮挡煞气。
+                </p>
+                <h5 style="font-family: var(--font-title); color: var(--secondary-blue); margin-bottom: 8px; font-size: 0.85rem;">生态智慧</h5>
+                <p style="font-size: 0.75rem; line-height: 1.4; color: var(--primary-text); margin-bottom: 10px;">
+                  这种风水布局不仅体现了宗族对美好生活的向往，也蕴含着科学的生态智慧。靠山可以阻挡寒风，环水可以调节气候，面屏可以抵御风沙，形成了理想的居住环境。同时，水口的设计既美化了环境，又起到了防洪、净化水质的作用。
+                </p>
+                <h5 style="font-family: var(--font-title); color: var(--secondary-blue); margin-bottom: 8px; font-size: 0.85rem;">村落布局的文化内涵</h5>
+                <p style="font-size: 0.75rem; line-height: 1.4; color: var(--primary-text);">
+                  徽州村落的布局不仅仅是一种空间安排，更是一种文化表达。它体现了宗族的凝聚力、对自然的敬畏、对美好生活的向往，以及对传统文化的传承。这种布局方式至今仍被视为中国传统村落规划的典范。
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+
+      </div>
+    </div>
+  </section>
+
+  <script src="zongzu/js/modules/shrineRitual.js"></script>
+  <script src="zongzu/js/modules/familyRules.js"></script>
+  <script src="zongzu/js/modules/merchantConfucian.js"></script>
+  <script src="zongzu/js/modules/bloodline.js"></script>
+  <script src="zongzu/js/modules/villageAnimation.js"></script>
+  <script>
+    // ── 横向滚动导航 ──────────────────────────────
+    var _currentModuleIndex = 0;
+
+    function scrollToModule(index) {
+      var container = document.querySelector('.clan-container');
+      var modules = document.querySelectorAll('.clan-module');
+      if (!container || !modules.length) return;
+      index = Math.max(0, Math.min(index, modules.length - 1));
+      _currentModuleIndex = index;
+      var target = modules[index];
+      container.scrollTo({ left: target.offsetLeft, behavior: 'smooth' });
+      document.querySelectorAll('.nav-dot').forEach(function(dot, i) {
+        dot.classList.toggle('active', i === index);
+      });
+    }
+
+    function scrollModules(dir) {
+      scrollToModule(_currentModuleIndex + dir);
+    }
+
+    // ── 模块可见性 ────────────────────────────────
+    document.addEventListener('DOMContentLoaded', function() {
+      // 立即显示所有模块（horizontal scroll — no vertical IntersectionObserver needed）
+      document.querySelectorAll('.clan-module').forEach(function(m) {
+        m.classList.add('visible');
+      });
+
+      // Sync nav dots on horizontal scroll
+      var container = document.querySelector('.clan-container');
+      if (container) {
+        container.addEventListener('scroll', function() {
+          var modules = document.querySelectorAll('.clan-module');
+          var scrollLeft = container.scrollLeft;
+          var closest = 0;
+          var minDist = Infinity;
+          modules.forEach(function(m, i) {
+            var dist = Math.abs(m.offsetLeft - scrollLeft);
+            if (dist < minDist) { minDist = dist; closest = i; }
+          });
+          _currentModuleIndex = closest;
+          document.querySelectorAll('.nav-dot').forEach(function(dot, i) {
+            dot.classList.toggle('active', i === closest);
+          });
+        });
+      }
+    });
+
+    // ── 页面加载完成后初始化所有模块 ──────────────
+    window.addEventListener('load', function() {
+      console.log('页面加载完成，初始化所有模块');
+      // 确保血脉延绵模块初始化
+      if (typeof initBloodlineModule === 'function') {
+        console.log('调用initBloodlineModule');
+        initBloodlineModule();
+      }
+    });
+  </script>
+  <script>
+
+
+
+
+    // 血脉延绵模块交互
+    document.addEventListener('DOMContentLoaded', function() {
+      // 血脉数据
+      const bloodlineData = {
+        main: {
+          name: '汪氏核心血脉',
+          descendants: 10000,
+          years: 1400,
+          stories: [
+            {
+              title: '汪华封王',
+              text: '唐代汪华因护境安民被封为越国公，成为汪氏宗族始祖，奠定了徽州汪氏的显赫地位。',
+              image: '素材/宗族/宗族祠堂.jpg',
+              audio: ''
+            },
+            {
+              title: '徽商崛起',
+              text: '明代汪氏子弟通过经商致富，成为徽商中的重要力量，为宗族建设做出巨大贡献。',
+              image: '素材/宗族/徽商文化.jpg',
+              audio: ''
+            }
+          ]
+        },
+        branch1: {
+          name: '江南刺绣支系',
+          descendants: 1500,
+          years: 500,
+          stories: [
+            {
+              title: '迁徙江南',
+              text: '明代中期，汪氏一支迁徙至江南苏州，开始从事刺绣技艺，逐渐成为当地名门望族。',
+              image: '素材/宗族/村落布局.jpg',
+              audio: ''
+            }
+          ]
+        },
+        branch2: {
+          name: '抗战守护支系',
+          descendants: 800,
+          years: 300,
+          stories: [
+            {
+              title: '守护文脉',
+              text: '抗日战争期间，汪氏子弟冒着生命危险守护宗族文献和文物，确保家族文脉得以延续。',
+              image: '素材/宗族/族谱.jpg',
+              audio: ''
+            }
+          ]
+        }
+      };
+
+      // 获取元素
+      const bloodlineCanvas = document.getElementById('bloodlineCanvas');
+      const bloodlinePopup = document.getElementById('bloodlinePopup');
+      const bloodlinePopupTitle = document.getElementById('bloodlinePopupTitle');
+      const bloodlinePopupContent = document.getElementById('bloodlinePopupContent');
+      const bloodlinePopupClose = document.getElementById('bloodlinePopupClose');
+      const storyImage = document.getElementById('storyImage');
+      const storyText = document.getElementById('storyText');
+      const storyAudio = document.getElementById('storyAudio');
+      const searchInput = document.getElementById('genealogySearch');
+      const searchBtn = document.querySelector('.search-btn');
+      const zoomInBtn = document.querySelector('.zoom-in');
+      const zoomOutBtn = document.querySelector('.zoom-out');
+      const resetBtn = document.querySelector('.reset');
+      const branchItems = document.querySelectorAll('.branch-item');
+      const keywords = document.querySelectorAll('.keyword');
+      const uploadBtn = document.querySelector('.upload-btn');
+      const uploadInput = document.querySelector('.upload-input');
+
+      // 初始化Canvas
+      if (bloodlineCanvas) {
+        const ctx = bloodlineCanvas.getContext('2d');
+        let scale = 1;
+        let offsetX = 0;
+        let offsetY = 0;
+        let isDragging = false;
+        let startX, startY;
+
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+          bloodlineCanvas.width = bloodlineCanvas.offsetWidth;
+          bloodlineCanvas.height = bloodlineCanvas.offsetHeight;
+          drawBloodline();
+        }
+
+        // 绘制血脉流
+        function drawBloodline() {
+          ctx.clearRect(0, 0, bloodlineCanvas.width, bloodlineCanvas.height);
+          
+          // 保存当前状态
+          ctx.save();
+          ctx.translate(offsetX, offsetY);
+          ctx.scale(scale, scale);
+
+          // 绘制主血脉
+          ctx.beginPath();
+          ctx.moveTo(50, bloodlineCanvas.height / 2);
+          ctx.bezierCurveTo(
+            bloodlineCanvas.width / 4, bloodlineCanvas.height / 4,
+            bloodlineCanvas.width * 3 / 4, bloodlineCanvas.height * 3 / 4,
+            bloodlineCanvas.width - 50, bloodlineCanvas.height / 2
+          );
+          ctx.strokeStyle = 'linear-gradient(to right, #8B4513, #D4B16A)';
+          ctx.lineWidth = 4;
+          ctx.stroke();
+
+          // 绘制分支血脉
+          // 分支1
+          ctx.beginPath();
+          ctx.moveTo(bloodlineCanvas.width / 3, bloodlineCanvas.height / 2);
+          ctx.bezierCurveTo(
+            bloodlineCanvas.width / 2, bloodlineCanvas.height / 3,
+            bloodlineCanvas.width * 2 / 3, bloodlineCanvas.height / 4,
+            bloodlineCanvas.width * 3 / 4, bloodlineCanvas.height / 3
+          );
+          ctx.strokeStyle = 'rgba(139, 69, 19, 0.6)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // 分支2
+          ctx.beginPath();
+          ctx.moveTo(bloodlineCanvas.width * 2 / 3, bloodlineCanvas.height / 2);
+          ctx.bezierCurveTo(
+            bloodlineCanvas.width * 5 / 6, bloodlineCanvas.height * 2 / 3,
+            bloodlineCanvas.width * 7 / 8, bloodlineCanvas.height * 3 / 4,
+            bloodlineCanvas.width - 100, bloodlineCanvas.height * 2 / 3
+          );
+          ctx.strokeStyle = 'rgba(139, 69, 19, 0.6)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // 绘制时间节点
+          const nodes = [
+            { x: 100, y: bloodlineCanvas.height / 2, year: '唐代', event: '汪华封王' },
+            { x: bloodlineCanvas.width / 2, y: bloodlineCanvas.height / 2, year: '明代', event: '徽商崛起' },
+            { x: bloodlineCanvas.width - 150, y: bloodlineCanvas.height / 2, year: '清代', event: '宗族鼎盛' }
+          ];
+
+          nodes.forEach(node => {
+            // 绘制节点
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, 8, 0, Math.PI * 2);
+            ctx.fillStyle = '#D4B16A';
+            ctx.fill();
+            ctx.strokeStyle = '#8B4513';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // 绘制节点信息
+            ctx.fillStyle = '#333333';
+            ctx.font = '12px Noto Serif SC';
+            ctx.textAlign = 'center';
+            ctx.fillText(node.year, node.x, node.y - 15);
+            ctx.fillText(node.event, node.x, node.y + 25);
+          });
+
+          // 恢复状态
+          ctx.restore();
+        }
+
+        // 事件监听
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // 鼠标事件
+        bloodlineCanvas.addEventListener('mousedown', function(e) {
+          isDragging = true;
+          startX = e.clientX - offsetX;
+          startY = e.clientY - offsetY;
+        });
+
+        bloodlineCanvas.addEventListener('mousemove', function(e) {
+          if (isDragging) {
+            offsetX = e.clientX - startX;
+            offsetY = e.clientY - startY;
+            drawBloodline();
+          }
+        });
+
+        bloodlineCanvas.addEventListener('mouseup', function() {
+          isDragging = false;
+        });
+
+        bloodlineCanvas.addEventListener('mouseleave', function() {
+          isDragging = false;
+        });
+
+        // 缩放控制
+        zoomInBtn.addEventListener('click', function() {
+          scale *= 1.2;
+          drawBloodline();
+        });
+
+        zoomOutBtn.addEventListener('click', function() {
+          scale /= 1.2;
+          drawBloodline();
+        });
+
+        resetBtn.addEventListener('click', function() {
+          scale = 1;
+          offsetX = 0;
+          offsetY = 0;
+          drawBloodline();
+        });
+
+        // 点击节点
+        bloodlineCanvas.addEventListener('click', function(e) {
+          const rect = bloodlineCanvas.getBoundingClientRect();
+          const x = (e.clientX - rect.left - offsetX) / scale;
+          const y = (e.clientY - rect.top - offsetY) / scale;
+
+          // 检查是否点击了节点
+          const nodes = [
+            { x: 100, y: bloodlineCanvas.height / 2, story: bloodlineData.main.stories[0] },
+            { x: bloodlineCanvas.width / 2, y: bloodlineCanvas.height / 2, story: bloodlineData.main.stories[1] }
+          ];
+
+          nodes.forEach(node => {
+            const distance = Math.sqrt((x - node.x) ** 2 + (y - node.y) ** 2);
+            if (distance < 15) {
+              showBloodlinePopup(node.story);
+            }
+          });
+        });
+      }
+
+      // 显示血脉故事弹窗
+      function showBloodlinePopup(story) {
+        if (bloodlinePopupTitle && storyImage && storyText && storyAudio && bloodlinePopup) {
+          bloodlinePopupTitle.textContent = story.title;
+          storyImage.src = story.image;
+          storyText.textContent = story.text;
+          if (story.audio) {
+            storyAudio.src = story.audio;
+            storyAudio.style.display = 'block';
+          } else {
+            storyAudio.style.display = 'none';
+          }
+          bloodlinePopup.classList.add('visible');
+        }
+      }
+
+      // 关闭弹窗
+      if (bloodlinePopupClose && bloodlinePopup) {
+        bloodlinePopupClose.addEventListener('click', function() {
+          bloodlinePopup.classList.remove('visible');
+        });
+
+        // 点击空白处关闭弹窗
+        document.addEventListener('click', function(event) {
+          if (bloodlinePopup && bloodlineCanvas && !bloodlinePopup.contains(event.target) && event.target !== bloodlineCanvas) {
+            bloodlinePopup.classList.remove('visible');
+          }
+        });
+      }
+
+      // 分支故事点击
+      if (branchItems.length > 0) {
+        branchItems.forEach(item => {
+          item.addEventListener('click', function() {
+            const branch = this.getAttribute('data-branch');
+            const branchData = bloodlineData[branch];
+            if (branchData && branchData.stories && branchData.stories.length > 0) {
+              showBloodlinePopup(branchData.stories[0]);
+            }
+          });
+        });
+      }
+
+      // 关键词点击
+      if (keywords.length > 0) {
+        keywords.forEach(keyword => {
+          keyword.addEventListener('click', function() {
+            const keywordText = this.getAttribute('data-keyword');
+            // 这里可以添加关键词对应的故事展示逻辑
+            alert(`关键词：${keywordText}\n点击查看相关家族精神解读`);
+          });
+        });
+      }
+
+      // 搜索功能
+      if (searchBtn && searchInput) {
+        searchBtn.addEventListener('click', function() {
+          const searchTerm = searchInput.value.trim();
+          if (searchTerm) {
+            // 这里可以添加搜索逻辑
+            alert(`搜索：${searchTerm}\n正在搜索相关家族信息...`);
+          }
+        });
+      }
+
+      // 上传功能
+      if (uploadBtn && uploadInput) {
+        uploadBtn.addEventListener('click', function() {
+          uploadInput.click();
+        });
+
+        uploadInput.addEventListener('change', function(e) {
+          if (e.target.files.length > 0) {
+            const file = e.target.files[0];
+            alert(`上传文件：${file.name}\n正在处理...`);
+            // 这里可以添加文件上传逻辑
+          }
+        });
+      }
+    });
+
+    // 祠堂礼制模块交互
+    document.addEventListener('DOMContentLoaded', function() {
+      // 祠堂热点交互
+      const hotspots = document.querySelectorAll('.shrine-hotspot');
+      const infoOverlay = document.getElementById('infoOverlay');
+      const infoContent = document.getElementById('infoContent');
+      const firstPersonModal = document.getElementById('firstPersonModal');
+      const viewImage = document.getElementById('viewImage');
+      const viewInfo = document.getElementById('viewInfo');
+      const modalTitle = document.getElementById('modalTitle');
+      const prevView = document.getElementById('prevView');
+      const nextView = document.getElementById('nextView');
+      const closeModal = document.querySelector('.close-modal');
+      
+      // 祠堂空间数据
+      const shrineSpaces = [
+        { area: '门厅', info: '门厅是祠堂的入口，象征宗族的门面，通常悬挂堂号匀额，显示宗族身份。', image: '素材/宗族/宗族祠堂.jpg' },
+        { area: '享堂', info: '享堂是祠堂的核心空间，用于举行祭祀、议事等重大宗族活动，是宗族权力的象征。', image: '素材/宗族/祠堂内部.jpg' },
+        { area: '寝堂', info: '寝堂是供奉祖先牌位的地方，是祠堂最神圣的空间，体现了对祖先的尊敬和崇拜。', image: '素材/宗族/祠堂内部.jpg' },
+        { area: '天井', info: '天井是祠堂的采光通风空间，也是宗族活动的重要场所，体现了天人合一的理念。', image: '素材/宗族/祠堂内部.jpg' },
+        { area: '东厢', info: '东厢通常用于存放宗族档案、族谱等重要文献，是宗族文化传承的重要场所。', image: '素材/宗族/族规家训.jpg' },
+        { area: '西厢', info: '西厢通常用于宗族子弟读书学习，体现了徽州重视教育的传统。', image: '素材/宗族/族规家训.jpg' }
+      ];
+      
+      let currentSpaceIndex = 0;
+      
+      // 显示第一视角漫游模态框
+      function showFirstPersonModal(spaceIndex = 0) {
+        currentSpaceIndex = spaceIndex;
+        const space = shrineSpaces[spaceIndex];
+        viewImage.src = space.image;
+        viewInfo.innerHTML = `<strong>${space.area}</strong><br>${space.info}`;
+        modalTitle.textContent = `祠堂第一视角漫游 - ${space.area}`;
+        firstPersonModal.style.display = 'flex';
+      }
+      
+      // 关闭模态框
+      if (closeModal && firstPersonModal) {
+        closeModal.addEventListener('click', function() {
+          firstPersonModal.style.display = 'none';
+        });
+        
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(event) {
+          if (firstPersonModal && event.target === firstPersonModal) {
+            firstPersonModal.style.display = 'none';
+          }
+        });
+      }
+      
+      // 上一个空间
+      if (prevView) {
+        prevView.addEventListener('click', function() {
+          currentSpaceIndex = (currentSpaceIndex - 1 + shrineSpaces.length) % shrineSpaces.length;
+          showFirstPersonModal(currentSpaceIndex);
+        });
+      }
+      
+      // 下一个空间
+      if (nextView) {
+        nextView.addEventListener('click', function() {
+          currentSpaceIndex = (currentSpaceIndex + 1) % shrineSpaces.length;
+          showFirstPersonModal(currentSpaceIndex);
+        });
+      }
+      
+      // 祠堂热点交互
+      hotspots.forEach((hotspot, index) => {
+        hotspot.addEventListener('mouseenter', function() {
+          const name = this.dataset.name;
+          infoContent.innerHTML = `<strong>${name}</strong>`;
+          infoOverlay.style.display = 'block';
+          
+          // 添加光晕效果
+          this.style.boxShadow = '0 0 20px rgba(212, 177, 106, 0.6)';
+        });
+        
+        hotspot.addEventListener('mouseleave', function() {
+          infoOverlay.style.display = 'none';
+          this.style.boxShadow = '0 0 0 4px rgba(139, 69, 19, 0.18)';
+        });
+        
+        hotspot.addEventListener('click', function() {
+          // 添加跳动效果
+          this.style.animation = 'none';
+          void this.offsetWidth; // 触发重排
+          this.style.animation = 'pulse 0.5s ease-in-out';
+        });
+      });
+      
+      // 第一视角漫游按钮
+      const firstPersonBtn = document.getElementById('firstPersonBtn');
+      if (firstPersonBtn) {
+        firstPersonBtn.addEventListener('click', function() {
+          showFirstPersonModal();
+        });
+      }
+      
+      // 礼制对比开关
+      const comparisonToggle = document.getElementById('comparisonToggle');
+      const comparisonContent = document.getElementById('comparisonContent');
+      
+      if (comparisonToggle && comparisonContent) {
+        comparisonToggle.addEventListener('change', function() {
+          if (this.checked) {
+            comparisonContent.style.display = 'block';
+            comparisonContent.classList.add('visible');
+          } else {
+            comparisonContent.style.display = 'none';
+            comparisonContent.classList.remove('visible');
+          }
+        });
+      }
+      
+      // 宗族文化符号模块交互
+      const symbolItems = document.querySelectorAll('.symbol-item');
+      
+      // 创建拓片效果弹窗
+      const rubbingModal = document.createElement('div');
+      rubbingModal.className = 'rubbing-modal';
+      rubbingModal.innerHTML = `
+        <div class="rubbing-content">
+          <button class="close-modal">×</button>
+          <img class="rubbing-image" src="" alt="拓片效果">
+          <div class="rubbing-info">
+            <h4></h4>
+            <p></p>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(rubbingModal);
+      
+      const rubbingCloseModal = rubbingModal.querySelector('.close-modal');
+      rubbingCloseModal.addEventListener('click', function() {
+        rubbingModal.classList.remove('visible');
+      });
+      
+      symbolItems.forEach(item => {
+        item.addEventListener('click', function() {
+          const type = this.dataset.type;
+          const info = this.dataset.info;
+          const imageSrc = this.querySelector('.symbol-image').src;
+          
+          // 更新弹窗内容
+          rubbingModal.querySelector('.rubbing-image').src = imageSrc;
+          rubbingModal.querySelector('.rubbing-info h4').textContent = type + '拓片';
+          rubbingModal.querySelector('.rubbing-info p').textContent = info;
+          
+          // 显示弹窗
+          rubbingModal.classList.add('visible');
+        });
+      });
+      
+      // 虚拟正厅拖拽功能
+      const hallCanvas = document.getElementById('hallCanvas');
+      if (hallCanvas) {
+        const placeholders = hallCanvas.querySelectorAll('.plaque-placeholder, .couplet-placeholder');
+        
+        placeholders.forEach(placeholder => {
+          placeholder.addEventListener('click', function() {
+            const position = this.dataset.position;
+            alert(`您点击了${this.textContent}，可以在此放置${position.includes('plaque') ? '匾额' : '楹联'}`);
+          });
+        });
+      }
+      
+      // 贾而好儒模块交互
+      // 墨块演化图表
+      const clanChart = echarts.init(document.getElementById('clanChart'));
+      const educationChart = echarts.init(document.getElementById('educationChart'));
+      const merchantChart = echarts.init(document.getElementById('merchantChart'));
+      
+      // 宗族建设投资比例图表
+      const clanOption = {
+        title: {
+          show: false
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{b}: {c}%'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 'left',
+          textStyle: {
+            fontFamily: 'var(--font-body)',
+            color: 'var(--primary-text)'
+          }
+        },
+        series: [
+          {
+            name: '宗族建设投资',
+            type: 'pie',
+            radius: ['40%', '70%'],
+            avoidLabelOverlap: false,
+            itemStyle: {
+              borderRadius: 10,
+              borderColor: '#fff',
+              borderWidth: 2,
+              color: function(params) {
+                const colors = ['#8B4513', '#4A6F8C', '#D4B16A', '#707070'];
+                return colors[params.dataIndex];
+              }
+            },
+            label: {
+              show: false,
+              position: 'center'
+            },
+            emphasis: {
+              label: {
+                show: true,
+                fontSize: '18',
+                fontWeight: 'bold',
+                fontFamily: 'var(--font-title)'
+              }
+            },
+            labelLine: {
+              show: false
+            },
+            data: [
+              { value: 40, name: '祠堂修建' },
+              { value: 25, name: '族学教育' },
+              { value: 20, name: '义庄救济' },
+              { value: 15, name: '其他' }
+            ],
+            animationType: 'scale',
+            animationEasing: 'elasticOut',
+            animationDelay: function(idx) {
+              return idx * 100;
+            }
+          }
+        ]
+      };
+      
+      // 教育投资比例图表
+      const educationOption = {
+        title: {
+          show: false
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{b}: {c}%'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 'left',
+          textStyle: {
+            fontFamily: 'var(--font-body)',
+            color: 'var(--primary-text)'
+          }
+        },
+        series: [
+          {
+            name: '教育投资',
+            type: 'pie',
+            radius: ['40%', '70%'],
+            avoidLabelOverlap: false,
+            itemStyle: {
+              borderRadius: 10,
+              borderColor: '#fff',
+              borderWidth: 2,
+              color: function(params) {
+                const colors = ['#4A6F8C', '#8B4513', '#D4B16A', '#707070'];
+                return colors[params.dataIndex];
+              }
+            },
+            label: {
+              show: false,
+              position: 'center'
+            },
+            emphasis: {
+              label: {
+                show: true,
+                fontSize: '18',
+                fontWeight: 'bold',
+                fontFamily: 'var(--font-title)'
+              }
+            },
+            labelLine: {
+              show: false
+            },
+            data: [
+              { value: 35, name: '科举考试' },
+              { value: 30, name: '族学建设' },
+              { value: 20, name: '藏书楼' },
+              { value: 15, name: '其他' }
+            ],
+            animationType: 'scale',
+            animationEasing: 'elasticOut',
+            animationDelay: function(idx) {
+              return idx * 100;
+            }
+          }
+        ]
+      };
+      
+      // 徽商发展趋势图表
+      const merchantOption = {
+        title: {
+          show: false
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          data: ['唐代', '宋代', '元代', '明代', '清代'],
+          axisLabel: {
+            fontFamily: 'var(--font-body)',
+            color: 'var(--primary-text)'
+          }
+        },
+        yAxis: {
+          type: 'value',
+          axisLabel: {
+            fontFamily: 'var(--font-body)',
+            color: 'var(--primary-text)'
+          }
+        },
+        series: [
+          {
+            name: '徽商发展',
+            type: 'line',
+            data: [10, 30, 20, 80, 100],
+            smooth: true,
+            lineStyle: {
+              color: '#8B4513',
+              width: 3
+            },
+            itemStyle: {
+              color: '#8B4513'
+            },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: 'rgba(139, 69, 19, 0.3)' },
+                { offset: 1, color: 'rgba(139, 69, 19, 0.1)' }
+              ])
+            },
+            animationType: 'path',
+            animationEasing: 'elasticOut',
+            animationDelay: function(idx) {
+              return idx * 100;
+            }
+          }
+        ]
+      };
+      
+      // 渲染图表
+      clanChart.setOption(clanOption);
+      educationChart.setOption(educationOption);
+      merchantChart.setOption(merchantOption);
+      
+      // 儒商平衡滑块交互
+      const merchantSlider = document.getElementById('merchantSlider');
+      const sliderValue = document.getElementById('sliderValue');
+      
+      merchantSlider.addEventListener('input', function() {
+        const value = parseInt(this.value);
+        sliderValue.textContent = `平衡状态: ${value}%`;
+        
+        // 这里可以添加根据滑块值更新图表的逻辑
+      });
+      
+      // 响应式调整
+      window.addEventListener('resize', function() {
+        clanChart.resize();
+        educationChart.resize();
+        merchantChart.resize();
+      });
+    });
+
+    // 内部导航点击事件
+    document.querySelectorAll('.nav-pin').forEach(pin => {
+      pin.addEventListener('click', function() {
+        const targetId = this.dataset.target;
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          targetElement.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+
+    // 滚动进度条
+    window.addEventListener('scroll', function() {
+      const scrollTop = window.pageYOffset;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = scrollTop / docHeight;
+      const progressBar = document.getElementById('scrollProgress');
+      if (progressBar) {
+        progressBar.style.width = (scrollPercent * 100) + '%';
+      }
+
+      // 更新内部导航状态
+      document.querySelectorAll('.clan-module').forEach(module => {
+        const rect = module.getBoundingClientRect();
+        if (rect.top <= 100 && rect.bottom >= 100) {
+          const moduleId = module.id;
+          document.querySelectorAll('.nav-pin').forEach(pin => {
+            if (pin.dataset.target === moduleId) {
+              pin.classList.add('active');
+            } else {
+              pin.classList.remove('active');
+            }
+          });
+        }
+      });
+    });
+
+
+    // 卷轴展开/收起功能
+    function toggleScroll() {
+      const scrollPaper = document.getElementById('scrollPaper');
+      const leftPole = document.querySelector('.pole-left');
+      const rightPole = document.querySelector('.pole-right');
+      const scrollBtn = document.querySelector('.scroll-btn');
+      const scrollSeal = scrollPaper.querySelector('.scroll-seal');
+      const scrollContent = scrollPaper.querySelector('.scroll-content-inner');
+      const scrollFooter = scrollPaper.querySelector('.scroll-footer');
+      
+      if (scrollPaper.classList.contains('expanded')) {
+        // 收起卷轴
+        scrollPaper.classList.remove('expanded');
+        leftPole.classList.remove('rotated-left');
+        rightPole.classList.remove('rotated-right');
+        scrollBtn.textContent = '展开卷轴';
+        
+        // 收起动画
+        scrollSeal.style.opacity = '0';
+        scrollSeal.style.transform = 'rotate(15deg) scale(0.5)';
+        scrollContent.style.opacity = '0';
+        scrollContent.style.transform = 'translateX(-20px)';
+        scrollFooter.style.opacity = '0';
+        scrollFooter.style.transform = 'translateY(10px)';
+      } else {
+        // 展开卷轴
+        scrollPaper.classList.add('expanded');
+        leftPole.classList.add('rotated-left');
+        rightPole.classList.add('rotated-right');
+        scrollBtn.textContent = '收起卷轴';
+        
+        // 展开动画
+        setTimeout(() => {
+          scrollContent.style.opacity = '1';
+          scrollContent.style.transform = 'translateX(0)';
+        }, 1000);
+        
+        setTimeout(() => {
+          scrollSeal.style.opacity = '0.8';
+          scrollSeal.style.transform = 'rotate(15deg) scale(1)';
+        }, 2000);
+        
+        setTimeout(() => {
+          scrollFooter.style.opacity = '1';
+          scrollFooter.style.transform = 'translateY(0)';
+        }, 2500);
+      }
+    }
+
+    // 横向滚动导航功能
+    let currentModuleIndex = 0;
+    const modules = document.querySelectorAll('.clan-module');
+    const navDots = document.querySelectorAll('.nav-dot');
+    const clanContainer = document.querySelector('.clan-container');
+    const horizontalScrollProgress = document.getElementById('horizontalScrollProgress');
+
+    // 滚动到下一个/上一个模块
+    function scrollModules(direction) {
+      currentModuleIndex += direction;
+      if (currentModuleIndex < 0) currentModuleIndex = 0;
+      if (currentModuleIndex >= modules.length) currentModuleIndex = modules.length - 1;
+      scrollToModule(currentModuleIndex);
+    }
+
+    // 滚动到指定模块
+    function scrollToModule(index) {
+      currentModuleIndex = index;
+      // 确保滚动位置准确，避免模块之间的重叠
+      const scrollPosition = index * window.innerWidth;
+
+      // 立即设置滚动位置，确保模块完全对齐
+      clanContainer.scrollLeft = scrollPosition;
+
+      // 更新导航点状态
+      navDots.forEach((dot, i) => {
+        if (i === index) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+    }
+
+    // 监听横向滚动事件
+    clanContainer.addEventListener('scroll', function() {
+      const scrollLeft = this.scrollLeft;
+      const scrollWidth = this.scrollWidth - this.clientWidth;
+      const scrollPercent = (scrollLeft / scrollWidth) * 100;
+
+      // 更新横向滚动进度条
+      if (horizontalScrollProgress) {
+        horizontalScrollProgress.style.width = scrollPercent + '%';
+      }
+
+      // 更新当前模块索引
+      const containerWidth = window.innerWidth;
+      currentModuleIndex = Math.round(scrollLeft / containerWidth);
+      if (currentModuleIndex < 0) currentModuleIndex = 0;
+      if (currentModuleIndex >= modules.length) currentModuleIndex = modules.length - 1;
+
+      // 更新导航点状态
+      navDots.forEach((dot, i) => {
+        if (i === currentModuleIndex) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+    });
+
+    // 时空联动：时间轴与谱系树交互
+    const timelineSlider = document.getElementById('timelineSlider');
+    const timelineMarkers = document.querySelectorAll('.timeline-marker');
+    
+    // 时间轴数据映射
+    const timePeriods = [
+      { name: '唐代', years: '618-907', members: ['汪华（始祖）', '汪建（二世）', '汪璨（二世）', '汪达（二世）', '汪广（二世）', '汪逊（二世）'] },
+      { name: '宋代', years: '960-1279', members: ['汪处哲（三世）', '汪处惠（三世）', '汪处澄（三世）', '汪处休（三世）', '汪处崇（三世）', '汪处恭（三世）', '汪处俭（三世）', '汪处立（三世）', '汪处易（三世）', '汪处则（三世）'] },
+      { name: '明代', years: '1368-1644', members: ['汪道昆'] },
+      { name: '清代', years: '1644-1912', members: ['汪士慎', '汪中'] }
+    ];
+
+    // 只有当timelineSlider存在时才执行相关代码
+    if (timelineSlider) {
+      // 时间轴滑块事件
+      timelineSlider.addEventListener('input', function() {
+        const index = parseInt(this.value);
+        const period = timePeriods[index];
+        
+        // 更新时间轴标记
+        timelineMarkers.forEach((marker, i) => {
+          if (i === index) {
+            marker.classList.add('active');
+            marker.style.transform = 'translateY(-5px) scale(1.1)';
+          } else {
+            marker.classList.remove('active');
+            marker.style.transform = 'translateY(0) scale(1)';
+          }
+        });
+        
+        // 筛选谱系树节点（添加动画效果）
+        filterGenealogyTree(period.members);
+        
+        // 更新宗族名人榜显示
+        updateFamousMembers(period.name);
+      });
+
+      // 时间轴标记点击事件
+      timelineMarkers.forEach((marker, index) => {
+        marker.addEventListener('click', function() {
+          timelineSlider.value = index;
+          const period = timePeriods[index];
+          
+          // 更新时间轴标记
+          timelineMarkers.forEach((m, i) => {
+            if (i === index) {
+              m.classList.add('active');
+              m.style.transform = 'translateY(-5px) scale(1.1)';
+            } else {
+              m.classList.remove('active');
+              m.style.transform = 'translateY(0) scale(1)';
+            }
+          });
+          
+          // 筛选谱系树节点
+          filterGenealogyTree(period.members);
+          
+          // 更新宗族名人榜显示
+          updateFamousMembers(period.name);
+        });
+      });
+    }
+
+    // 筛选谱系树节点
+    function filterGenealogyTree(members) {
+      // 重置所有节点样式
+      d3.selectAll('.node')
+        .transition()
+        .duration(500)
+        .style('opacity', 1)
+        .style('transform', 'scale(1)');
+      
+      d3.selectAll('.link')
+        .transition()
+        .duration(500)
+        .style('opacity', 1)
+        .style('stroke', 'var(--secondary-gray)')
+        .style('stroke-width', '1.5px');
+      
+      // 筛选节点
+      d3.selectAll('.node').each(function(d) {
+        const nodeName = d.data.name;
+        const isMember = members.some(member => nodeName.includes(member));
+        const isAncestor = isAncestorOfMember(d, members);
+        
+        if (isMember) {
+          // 高亮显示当前时期的成员
+          d3.select(this).select('circle')
+            .transition()
+            .duration(500)
+            .attr('r', 8)
+            .style('fill', 'var(--primary-redwood)')
+            .style('stroke', 'white')
+            .style('stroke-width', 2)
+            .style('filter', 'drop-shadow(0 0 10px rgba(139, 69, 19, 0.5))');
+          
+          d3.select(this).select('text')
+            .transition()
+            .duration(500)
+            .style('font-weight', 'bold')
+            .style('font-size', '14px')
+            .style('fill', 'var(--primary-redwood)')
+            .style('text-shadow', '0 0 5px rgba(139, 69, 19, 0.3)');
+          
+          // 添加脉冲动画
+          d3.select(this)
+            .transition()
+            .duration(1000)
+            .ease(d3.easeBounceOut)
+            .style('transform', 'scale(1.1)')
+            .transition()
+            .duration(500)
+            .style('transform', 'scale(1)');
+        } else if (isAncestor) {
+          // 半透明显示祖先
+          d3.select(this)
+            .transition()
+            .duration(500)
+            .style('opacity', 0.6)
+            .style('transform', 'scale(0.95)');
+        } else {
+          // 隐藏非相关节点
+          d3.select(this)
+            .transition()
+            .duration(500)
+            .style('opacity', 0.2)
+            .style('transform', 'scale(0.8)');
+        }
+      });
+      
+      // 筛选连接线
+      d3.selectAll('.link').each(function(d) {
+        const sourceName = d.source.data.name;
+        const targetName = d.target.data.name;
+        const isSourceMember = members.some(member => sourceName.includes(member));
+        const isTargetMember = members.some(member => targetName.includes(member));
+        const isAncestor = isAncestorOfMember(d.source, members) || isAncestorOfMember(d.target, members);
+        
+        if (isSourceMember || isTargetMember || isAncestor) {
+          d3.select(this)
+            .transition()
+            .duration(500)
+            .style('opacity', 0.8);
+          
+          if (isSourceMember || isTargetMember) {
+            d3.select(this)
+              .transition()
+              .duration(500)
+              .style('stroke', 'var(--primary-redwood)')
+              .style('stroke-width', '2px')
+              .style('filter', 'drop-shadow(0 0 5px rgba(139, 69, 19, 0.3))');
+          }
+        } else {
+          d3.select(this)
+            .transition()
+            .duration(500)
+            .style('opacity', 0.2)
+            .style('stroke', 'var(--secondary-gray)')
+            .style('stroke-width', '1px');
+        }
+      });
+    }
+
+    // 检查节点是否是指定成员的祖先
+    function isAncestorOfMember(node, members) {
+      if (!node) return false;
+      
+      // 检查当前节点是否有后代在成员列表中
+      function hasMemberDescendant(n) {
+        if (!n.children && !n._children) return false;
+        
+        const children = n.children || n._children;
+        for (const child of children) {
+          const childName = child.data.name;
+          if (members.some(member => childName.includes(member))) {
+            return true;
+          }
+          if (hasMemberDescendant(child)) {
+            return true;
+          }
+        }
+        return false;
+      }
+      
+      return hasMemberDescendant(node);
+    }
+
+    // 更新宗族名人榜显示
+    function updateFamousMembers(period) {
+      const famousItems = document.querySelectorAll('.famous-item');
+      
+      famousItems.forEach(item => {
+        const name = item.querySelector('.famous-info h4').textContent;
+        let showItem = false;
+        
+        switch(period) {
+          case '唐代':
+            showItem = name === '汪华';
+            break;
+          case '宋代':
+            showItem = false; // 宋代名人未列出
+            break;
+          case '明代':
+            showItem = name === '汪道昆';
+            break;
+          case '清代':
+            showItem = name === '汪士慎' || name === '汪中';
+            break;
+        }
+        
+        if (showItem) {
+          item.style.opacity = '1';
+          item.style.transform = 'translateY(0) scale(1)';
+          item.style.boxShadow = '0 10px 20px rgba(139, 69, 19, 0.2)';
+        } else {
+          item.style.opacity = '0.3';
+          item.style.transform = 'translateY(20px) scale(0.9)';
+          item.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+        }
+      });
+    }
+
+    // 增强的谱系数据，包含对建筑的影响
+    const data = {
+      name: "汪华（始祖）",
+      description: "唐代歙州刺史，汪氏家族始祖",
+      impact: "创建了汪氏宗祠，奠定了徽州宗族建筑的基础",
+      children: [
+        {
+          name: "汪建（二世）",
+          description: "汪华长子，袭封越国公",
+          impact: "扩建了汪氏宗祠，增加了享堂和寝堂",
+          children: [
+            { 
+              name: "汪处哲（三世）",
+              description: "汪建长子，官至歙州司马",
+              impact: "在歙州修建了支祠，形成了宗族分支"
+            },
+            { 
+              name: "汪处惠（三世）",
+              description: "汪建次子，任宣州刺史",
+              impact: "在宣州建立了汪氏分支祠堂"
+            }
+          ]
+        },
+        {
+          name: "汪璨（二世）",
+          description: "汪华次子，任左卫将军",
+          impact: "设计了宗族村落的布局，以祠堂为中心",
+          children: [
+            { 
+              name: "汪处澄（三世）",
+              description: "汪璨长子，任池州刺史",
+              impact: "在池州修建了宗族聚居村落"
+            },
+            { 
+              name: "汪处休（三世）",
+              description: "汪璨次子，任湖州刺史",
+              impact: "在湖州建立了汪氏支祠"
+            }
+          ]
+        },
+        {
+          name: "汪达（二世）",
+          description: "汪华三子，任右卫将军",
+          impact: "制定了宗族建筑的等级制度",
+          children: [
+            { 
+              name: "汪处崇（三世）",
+              description: "汪达长子，任杭州刺史",
+              impact: "在杭州修建了豪华的宗族祠堂"
+            },
+            { 
+              name: "汪处恭（三世）",
+              description: "汪达次子，任睦州刺史",
+              impact: "在睦州建立了宗族学塾"
+            }
+          ]
+        },
+        {
+          name: "汪广（二世）",
+          description: "汪华四子，任左卫中郎将",
+          impact: "推动了徽派建筑的发展",
+          children: [
+            { 
+              name: "汪处俭（三世）",
+              description: "汪广长子，任婺州刺史",
+              impact: "在婺州修建了具有徽派特色的祠堂"
+            },
+            { 
+              name: "汪处立（三世）",
+              description: "汪广次子，任衢州刺史",
+              impact: "在衢州建立了宗族义庄"
+            }
+          ]
+        },
+        {
+          name: "汪逊（二世）",
+          description: "汪华五子，任右卫中郎将",
+          impact: "完善了宗族建筑的礼制规范",
+          children: [
+            { 
+              name: "汪处易（三世）",
+              description: "汪逊长子，任台州刺史",
+              impact: "在台州修建了符合礼制的祠堂"
+            },
+            { 
+              name: "汪处则（三世）",
+              description: "汪逊次子，任温州刺史",
+              impact: "在温州建立了宗族议事堂"
+            }
+          ]
+        }
+      ]
+    };
+
+    const width = 600;
+    const height = 450;
+    const tree = d3.tree().size([height - 100, width - 200]);
+    const root = d3.hierarchy(data);
+    tree(root);
+
+    const svg = d3.select("#genealogyTree").append("svg")
+      .attr("width", "100%")
+      .attr("height", height)
+      .append("g")
+      .attr("transform", "translate(100,50)");
+
+    // 创建工具提示
+    const tooltip = d3.select("#genealogyTree").append("div")
+      .attr("class", "tooltip")
+      .style("position", "absolute")
+      .style("background", "rgba(26, 20, 16, 0.85)")
+      .style("color", "white")
+      .style("padding", "10px")
+      .style("border-radius", "4px")
+      .style("pointer-events", "none")
+      .style("opacity", "0")
+      .style("transition", "opacity 0.3s")
+      .style("z-index", "1000");
+
+    // 绘制连接线
+    const link = svg.selectAll(".link")
+      .data(root.links())
+      .enter().append("path")
+      .attr("class", "link")
+      .attr("d", d3.linkHorizontal().x(d => d.y).y(d => d.x))
+      .style("stroke", "var(--secondary-gray)")
+      .style("stroke-width", d => d.target.depth === 0 ? 4 : d.target.depth === 1 ? 3 : 2)
+      .style("opacity", 0)
+      .style("stroke-linecap", "round")
+      .style("stroke-linejoin", "round")
+      .style("transition", "stroke 0.3s, stroke-width 0.3s");
+
+    // 绘制节点
+    const node = svg.selectAll(".node")
+      .data(root.descendants())
+      .enter().append("g")
+      .attr("class", "node")
+      .attr("transform", d => `translate(${d.y},${d.x})`)
+      .style("opacity", 0)
+      .on("click", function(event, d) {
+        // 显示族谱信息
+        updateGenealogyScroll(d);
+        
+        // 切换子节点的显示/隐藏
+        if (d.children) {
+          d._children = d.children;
+          d.children = null;
+        } else if (d._children) {
+          d.children = d._children;
+          d._children = null;
+          // 播放流觞曲水动画
+          animateLinks(d);
+        }
+        
+        // 更新树
+        updateTree(root);
+      })
+      .on("mouseover", function(event, d) {
+        // 显示工具提示
+        tooltip.transition()
+          .duration(200)
+          .style("opacity", 1);
+        tooltip.html(`<strong>${d.data.name}</strong><br>${d.data.description || '无详细信息'}<br><small style="color: var(--secondary-yellow);">${d.data.impact || ''}</small>`)
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 28) + "px");
+        
+        // 高亮当前节点
+        d3.select(this).select("circle")
+          .attr("r", d.depth === 0 ? 12 : 10)
+          .style("fill", "var(--secondary-yellow)")
+          .style("stroke", "var(--primary-redwood)")
+          .style("stroke-width", 3)
+          .style("filter", "drop-shadow(0 4px 8px rgba(212, 177, 106, 0.6)");
+        
+        // 高亮相关连接线
+        svg.selectAll(".link").each(function(linkData) {
+          if (linkData.source === d || linkData.target === d) {
+            d3.select(this)
+              .style("stroke", "var(--primary-redwood)")
+              .style("stroke-width", linkData.target.depth === 0 ? 4 : linkData.target.depth === 1 ? 3 : 2)
+              .style("filter", "drop-shadow(0 2px 4px rgba(212, 177, 106, 0.4)");
+          }
+        });
+      })
+      .on("mouseout", function(event, d) {
+        // 隐藏工具提示
+        tooltip.transition()
+          .duration(500)
+          .style("opacity", 0);
+        
+        // 恢复节点样式
+        d3.select(this).select("circle")
+          .attr("r", d => d.depth === 0 ? 10 : d.depth === 1 ? 8 : 6)
+          .style("fill", d => d.children || d._children ? "var(--cinnabar)" : "var(--ink-deep)")
+          .style("stroke", "var(--paper)")
+          .style("stroke-width", 2)
+          .style("filter", "drop-shadow(0 2px 4px rgba(0,0,0,0.2)");
+        
+        // 恢复连接线样式
+        svg.selectAll(".link")
+          .style("stroke", "var(--secondary-gray)")
+          .style("stroke-width", d => d.target.depth === 0 ? 4 : d.target.depth === 1 ? 3 : 2)
+          .style("filter", "none");
+      });
+
+    // 添加节点圆圈
+    node.append("circle")
+      .attr("r", d => d.depth === 0 ? 10 : d.depth === 1 ? 8 : 6)
+      .style("fill", d => d.children || d._children ? "var(--cinnabar)" : "var(--ink-deep)")
+      .style("stroke", "var(--paper)")
+      .style("stroke-width", 2)
+      .style("filter", "drop-shadow(0 2px 4px rgba(0,0,0,0.2)")
+      .style("transition", "r 0.3s, fill 0.3s, stroke 0.3s");
+
+    // 添加节点文本
+    node.append("text")
+      .attr("dy", ".31em")
+      .attr("x", d => d.children || d._children ? -25 : 15)
+      .style("text-anchor", d => d.children || d._children ? "end" : "start")
+      .style("font-size", d => d.depth === 0 ? "18px" : d.depth === 1 ? "16px" : "14px")
+      .style("font-weight", d => d.depth === 0 ? "bold" : d.depth === 1 ? "600" : "normal")
+      .style("fill", d => d.depth === 0 ? "var(--cinnabar)" : d.depth === 1 ? "var(--ink-deep)" : "var(--ink-medium)")
+      .style("font-family", "var(--font-body)")
+      .style("transition", "font-size 0.3s, font-weight 0.3s")
+      .text(d => d.data.name);
+
+    // 添加展开/折叠指示器
+    node.filter(d => d.children || d._children)
+      .append("path")
+      .attr("d", d => d.children ? "M -8 0 L 0 -6 L 8 0" : "M -8 0 L 0 6 L 8 0")
+      .attr("transform", d => `translate(${d.children ? -28 : 18}, 0)`) 
+      .style("fill", "none")
+      .style("stroke", "var(--primary-redwood)")
+      .style("stroke-width", 2)
+      .style("stroke-linecap", "round")
+      .style("stroke-linejoin", "round")
+      .style("transition", "transform 0.3s");
+
+    // 流觞曲水动画
+    function animateLinks(source) {
+      const links = svg.selectAll(".link").filter(function(d) {
+        return d.source === source;
+      });
+      
+      links.each(function(d) {
+        const path = d3.select(this);
+        const length = path.node().getTotalLength();
+        
+        path
+          .style("stroke-dasharray", length + " " + length)
+          .style("stroke-dashoffset", length)
+          .transition()
+          .duration(1500)
+          .ease(d3.easeCubicOut)
+          .style("stroke-dashoffset", 0)
+          .style("stroke", "var(--primary-redwood)")
+          .style("stroke-width", d.target.depth === 0 ? 4 : d.target.depth === 1 ? 3 : 2)
+          .style("filter", "drop-shadow(0 2px 4px rgba(212, 177, 106, 0.4)");
+      });
+    }
+
+    // 更新树的函数
+    function updateTree(source) {
+      // 重新计算布局
+      const treeData = tree(root);
+      
+      // 更新连接线
+      const linkUpdate = svg.selectAll(".link")
+        .data(treeData.links());
+      
+      linkUpdate.enter()
+        .append("path")
+        .attr("class", "link")
+        .attr("d", d3.linkHorizontal().x(d => d.y).y(d => d.x))
+        .style("stroke", "var(--secondary-gray)")
+        .style("stroke-width", d => d.target.depth === 0 ? 4 : d.target.depth === 1 ? 3 : 2)
+        .style("stroke-linecap", "round")
+        .style("stroke-linejoin", "round")
+        .style("opacity", 0)
+        .transition()
+        .duration(500)
+        .style("opacity", 1);
+      
+      linkUpdate
+        .transition()
+        .duration(500)
+        .attr("d", d3.linkHorizontal().x(d => d.y).y(d => d.x));
+      
+      linkUpdate.exit()
+        .transition()
+        .duration(300)
+        .style("opacity", 0)
+        .remove();
+      
+      // 更新节点
+      const nodeUpdate = svg.selectAll(".node")
+        .data(treeData.descendants());
+      
+      const nodeEnter = nodeUpdate.enter()
+        .append("g")
+        .attr("class", "node")
+        .attr("transform", d => `translate(${source.y},${source.x})`)
+        .style("opacity", 0)
+        .on("click", function(event, d) {
+          if (d.children) {
+            d._children = d.children;
+            d.children = null;
+          } else if (d._children) {
+            d.children = d._children;
+            d._children = null;
+            animateLinks(d);
+          }
+          updateTree(d);
+        })
+        .on("mouseover", function(event, d) {
+          tooltip.transition()
+            .duration(200)
+            .style("opacity", 1);
+          tooltip.html(`<strong>${d.data.name}</strong><br>${d.data.description || '无详细信息'}<br><small style="color: var(--secondary-yellow);">${d.data.impact || ''}</small>`)
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 28) + "px");
+          
+          d3.select(this).select("circle")
+            .attr("r", d.depth === 0 ? 12 : 10)
+            .style("fill", "var(--secondary-yellow)")
+            .style("stroke", "var(--primary-redwood)")
+            .style("stroke-width", 3);
+        })
+        .on("mouseout", function(event, d) {
+          tooltip.transition()
+            .duration(500)
+            .style("opacity", 0);
+          
+          d3.select(this).select("circle")
+            .attr("r", d => d.depth === 0 ? 8 : 6)
+            .style("fill", d => d.children || d._children ? "var(--cinnabar)" : "var(--ink-deep)")
+            .style("stroke", "var(--paper)")
+            .style("stroke-width", 2);
+        });
+      
+      nodeEnter.append("circle")
+        .attr("r", 0)
+        .style("fill", d => d.children || d._children ? "var(--cinnabar)" : "var(--ink-deep)")
+        .style("stroke", "var(--paper)")
+        .style("stroke-width", 2)
+        .style("filter", "drop-shadow(0 2px 4px rgba(0,0,0,0.2)")
+        .transition()
+        .duration(500)
+        .attr("r", d => d.depth === 0 ? 8 : 6);
+      
+      nodeEnter.append("text")
+        .attr("dy", ".31em")
+        .attr("x", d => d.children || d._children ? -20 : 12)
+        .style("text-anchor", d => d.children || d._children ? "end" : "start")
+        .style("font-size", d => d.depth === 0 ? "16px" : "13px")
+        .style("font-weight", d => d.depth === 0 ? "bold" : "normal")
+        .style("fill", d => d.depth === 0 ? "var(--cinnabar)" : "var(--ink-medium)")
+        .style("font-family", "var(--font-body)")
+        .text(d => d.data.name)
+        .style("opacity", 0)
+        .style("transform", "translateX(10px)")
+        .transition()
+        .duration(500)
+        .style("opacity", 1)
+        .style("transform", "translateX(0)");
+      
+      // 添加展开/折叠指示器
+      nodeEnter.filter(d => d.children || d._children)
+        .append("path")
+        .attr("d", d => d.children ? "M -8 0 L 0 -6 L 8 0" : "M -8 0 L 0 6 L 8 0")
+        .attr("transform", d => `translate(${d.children ? -22 : 14}, 0)`) 
+        .style("fill", "none")
+        .style("stroke", "var(--primary-redwood)")
+        .style("stroke-width", 2)
+        .style("stroke-linecap", "round")
+        .style("stroke-linejoin", "round")
+        .style("opacity", 0)
+        .transition()
+        .duration(300)
+        .style("opacity", 1);
+    }
+
+    // 初始化动画
+    function initAnimation() {
+      // 简化动画，直接显示所有节点和连接线
+      d3.selectAll(".node").style("opacity", 1);
+      d3.selectAll(".link").style("opacity", 1);
+    }
+
+    // 调用初始化动画
+    initAnimation();
+
+    // 更新仿古族谱页
+    function updateGenealogyScroll(d) {
+      document.getElementById('personName').textContent = d.data.name;
+      document.getElementById('personDesc').textContent = d.data.description || '无详细信息';
+      document.getElementById('personImpact').innerHTML = '<h5>对建筑的影响</h5><p>' + (d.data.impact || '无相关信息') + '</p>';
+      
+      // 简化动画
+      const scroll = document.getElementById('genealogyScroll');
+      scroll.style.opacity = '1';
+      scroll.style.transform = 'translateY(0)';
+    }
+
+    // 村落生长动画逻辑
+    document.addEventListener('DOMContentLoaded', function() {
+      // 简化动画，直接显示所有元素
+      function showElements() {
+        // 直接显示所有模块
+        document.querySelectorAll('.clan-module').forEach(module => {
+          module.classList.add('visible');
+        });
+        
+        // 直接显示所有历史线条
+        document.querySelectorAll('.history-line').forEach(line => {
+          line.classList.add('visible');
+        });
+        
+        // 直接显示所有时间轴项目
+        document.querySelectorAll('.timeline-item').forEach(item => {
+          item.classList.add('visible');
+        });
+        
+        // 直接显示所有名人项
+        document.querySelectorAll('.famous-item').forEach(item => {
+          item.classList.add('visible');
+        });
+        
+        // 直接显示所有风水热点
+        document.querySelectorAll('.map-spot').forEach(spot => {
+          spot.classList.add('spot-visible');
+        });
+        
+        // 直接显示所有图表容器
+        document.querySelectorAll('.chart-box').forEach(chart => {
+          chart.classList.add('chart-visible');
+        });
+        
+        // 直接显示所有案例项目
+        document.querySelectorAll('.case-item').forEach(item => {
+          item.classList.add('case-visible');
+        });
+      }
+
+      // 立即显示所有元素
+      showElements();
+
+      // 村落生长动画 - 简化版本
+      const villageAnimation = document.getElementById('villageAnimation');
+      const playPauseBtn = document.getElementById('playPauseBtn');
+      const growthProgress = document.getElementById('growthProgress');
+      const villageElements = [
+        document.querySelector('.ancestral-hall'),
+        document.querySelector('.branch-hall'),
+        document.querySelector('.residence'),
+        document.querySelector('.water-system'),
+        document.querySelector('.alley'),
+        document.querySelector('.water-entrance')
+      ];
+
+      let isPlaying = false;
+      let currentStep = 0;
+      let animationInterval;
+
+      // 开始生长动画
+      function startGrowthAnimation() {
+        if (isPlaying) return;
+        
+        isPlaying = true;
+        playPauseBtn.textContent = '暂停生长';
+        
+        animationInterval = setInterval(() => {
+          if (currentStep < villageElements.length) {
+            const element = villageElements[currentStep];
+            element.classList.add('visible');
+            
+            // 更新进度条
+            const progress = ((currentStep + 1) / villageElements.length) * 100;
+            growthProgress.style.width = progress + '%';
+            
+            currentStep++;
+          } else {
+            clearInterval(animationInterval);
+            playPauseBtn.textContent = '重新生长';
+            isPlaying = false;
+          }
+        }, 500); // 加快动画速度
+      }
+
+      // 暂停生长动画
+      function pauseGrowthAnimation() {
+        if (!isPlaying) return;
+        
+        isPlaying = false;
+        playPauseBtn.textContent = '继续生长';
+        clearInterval(animationInterval);
+      }
+
+      // 重置生长动画
+      function resetGrowthAnimation() {
+        clearInterval(animationInterval);
+        isPlaying = false;
+        currentStep = 0;
+        growthProgress.style.width = '0%';
+        playPauseBtn.textContent = '开始生长';
+        
+        villageElements.forEach(element => {
+          element.classList.remove('visible');
+        });
+      }
+
+      // 播放/暂停按钮点击事件
+      if (playPauseBtn) {
+        playPauseBtn.addEventListener('click', function() {
+          if (currentStep === 0) {
+            startGrowthAnimation();
+          } else if (currentStep < villageElements.length) {
+            if (isPlaying) {
+              pauseGrowthAnimation();
+            } else {
+              startGrowthAnimation();
+            }
+          } else {
+            resetGrowthAnimation();
+          }
+        });
+      }
+
+      // 鼠标悬停显示活动剪影
+      villageElements.forEach(element => {
+        if (element) {
+          element.addEventListener('mouseenter', function() {
+            const silhouette = this.querySelector('.activity-silhouette');
+            if (silhouette) {
+              silhouette.style.opacity = '1';
+              silhouette.style.bottom = '-60px';
+            }
+          });
+          
+          element.addEventListener('mouseleave', function() {
+            const silhouette = this.querySelector('.activity-silhouette');
+            if (silhouette) {
+              silhouette.style.opacity = '0';
+              silhouette.style.bottom = '-100px';
+            }
+          });
+        }
+      });
+
+      // 层级透视交互
+      const layers = {
+        0: 'geo-layer',
+        1: 'building-layer',
+        2: 'activity-layer'
+      };
+      const layerElements = document.querySelectorAll('.village-layer');
+      const mask = document.querySelector('.ink-mask');
+      const slider = document.getElementById('layerSlider');
+      const buttons = document.querySelectorAll('.layer-btn');
+      const indicators = document.querySelectorAll('.layer-indicator');
+
+      // 切换层级核心函数
+      function switchLayer(targetIndex) {
+        // 显示水墨蒙版过渡
+        if (mask) {
+          mask.style.opacity = 1;
+        }
+        
+        // 隐藏所有层
+        layerElements.forEach(layer => {
+          layer.style.opacity = 0;
+        });
+        
+        // 延迟400ms显示目标层（蒙版峰值时切换）
+        setTimeout(() => {
+          const targetLayer = document.querySelector(`.${layers[targetIndex]}`);
+          if (targetLayer) {
+            targetLayer.style.opacity = 1;
+            
+            // 隐藏蒙版
+            setTimeout(() => {
+              if (mask) {
+                mask.style.opacity = 0;
+              }
+              
+              // 活动层添加动态光点
+              if (targetIndex === 2) {
+                createActivityPoints();
+              }
+            }, 400);
+          }
+        }, 400);
+        
+        // 更新按钮状态
+        if (buttons[targetIndex]) {
+          buttons.forEach(btn => btn.classList.remove('active'));
+          buttons[targetIndex].classList.add('active');
+        }
+        
+        // 更新指示器状态
+        if (indicators[targetIndex]) {
+          indicators.forEach(indicator => indicator.classList.remove('active'));
+          indicators[targetIndex].classList.add('active');
+        }
+        
+        // 更新滑块值
+        if (slider) {
+          slider.value = targetIndex;
+        }
+      }
+
+      // 滑块控制（添加阻尼感）
+      let isSliding = false;
+      if (slider) {
+        slider.addEventListener('input', (e) => {
+          if (!isSliding) {
+            isSliding = true;
+            // 阻尼延迟，避免快速切换
+            setTimeout(() => {
+              switchLayer(e.target.value);
+              isSliding = false;
+            }, 200);
+          }
+        });
+      }
+
+      // 按钮控制
+      buttons.forEach((btn, index) => {
+        btn.addEventListener('click', () => {
+          switchLayer(index);
+        });
+      });
+
+      // 指示器点击控制
+      indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+          switchLayer(index);
+        });
+      });
+
+      // 创建活动层动态光点
+      function createActivityPoints() {
+        const pointsContainer = document.querySelector('.activity-points');
+        pointsContainer.innerHTML = ''; // 清空原有光点
+        
+        // 祠堂/民居/水口位置的光点（示例坐标）
+        const pointPositions = [
+          {x: 50, y: 50}, // 祠堂
+          {x: 30, y: 70}, // 民居1
+          {x: 70, y: 60}, // 民居2
+          {x: 20, y: 80}, // 水口
+          {x: 80, y: 30}, // 支祠
+          {x: 40, y: 40}  // 巷弄
+        ];
+        
+        pointPositions.forEach(pos => {
+          const point = document.createElement('div');
+          point.style.position = 'absolute';
+          point.style.left = `${pos.x}%`;
+          point.style.top = `${pos.y}%`;
+          point.style.width = '6px';
+          point.style.height = '6px';
+          point.style.borderRadius = '50%';
+          point.style.background = '#D4B16A';
+          point.style.opacity = 0.8;
+          point.style.animation = 'pulse 3s infinite ease-in-out';
+          point.style.transform = 'translate(-50%, -50%)';
+          
+          // 随机动画延迟
+          point.style.animationDelay = Math.random() * 3 + 's';
+          
+          pointsContainer.appendChild(point);
+        });
+      }
+
+      // 初始化层级显示
+      switchLayer(1);
+    });
+  </script>
+
+  <!-- ===== 弹窗（置于body层，避免clan-module的will-change创建新层叠上下文） ===== -->
+
+  <!-- 名人详情弹窗 -->
+  <div class="person-modal" id="personModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(20,15,10,0.72); backdrop-filter:blur(4px); justify-content:center; align-items:center;">
+    <div class="modal-content" style="background:linear-gradient(160deg,#fdf8f2,#f5ede0); max-width:700px; width:90%; max-height:82vh; overflow-y:auto; border-radius:14px; position:relative; box-shadow:0 20px 60px rgba(0,0,0,0.4); border:1px solid rgba(139,69,19,0.25); padding:0;">
+      <button class="close-modal" style="position:absolute; top:14px; right:16px; background:none; border:none; font-size:1.6rem; color:#8B4513; cursor:pointer; line-height:1; z-index:1; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:50%; transition:background 0.2s;">×</button>
+      <div class="modal-header" style="padding:24px 28px 16px; border-bottom:1px solid rgba(139,69,19,0.18);">
+        <h3 id="modalTitle" style="font-family:'Ma Shan Zheng',cursive; color:#4a3d2e; margin:0; font-size:1.4rem; letter-spacing:2px;">名人详情</h3>
+      </div>
+      <div class="modal-body" style="padding:20px 28px; display:flex; gap:20px; align-items:flex-start;">
+        <div class="modal-image" style="flex:0 0 160px; height:160px; border-radius:8px; overflow:hidden; border:1px solid rgba(139,69,19,0.2);">
+          <img id="modalImage" src="" alt="名人肖像" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+        <div class="modal-text" style="flex:1; min-width:0;">
+          <p id="modalText" style="font-family:'Noto Serif SC',serif; font-size:0.88rem; line-height:1.85; color:#4a3d2e; margin:0;"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 文化传承详情弹窗 -->
+  <div class="inheritance-modal" id="inheritanceModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(20,15,10,0.72); backdrop-filter:blur(4px); justify-content:center; align-items:center;">
+    <div class="modal-content" style="background:linear-gradient(160deg,#fdf8f2,#f5ede0); max-width:700px; width:90%; max-height:82vh; overflow-y:auto; border-radius:14px; position:relative; box-shadow:0 20px 60px rgba(0,0,0,0.4); border:1px solid rgba(139,69,19,0.25); padding:0;">
+      <button class="close-modal" style="position:absolute; top:14px; right:16px; background:none; border:none; font-size:1.6rem; color:#8B4513; cursor:pointer; line-height:1; z-index:1; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:50%; transition:background 0.2s;">×</button>
+      <div class="modal-header" style="padding:24px 28px 16px; border-bottom:1px solid rgba(139,69,19,0.18);">
+        <h3 id="inheritanceModalTitle" style="font-family:'Ma Shan Zheng',cursive; color:#4a3d2e; margin:0; font-size:1.4rem; letter-spacing:2px;">文化传承详情</h3>
+      </div>
+      <div class="modal-body" style="padding:20px 28px; display:flex; gap:20px; align-items:flex-start;">
+        <div class="modal-image" style="flex:0 0 160px; height:160px; border-radius:8px; overflow:hidden; border:1px solid rgba(139,69,19,0.2);">
+          <img id="inheritanceModalImage" src="" alt="文化传承" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+        <div class="modal-text" style="flex:1; min-width:0;">
+          <p id="inheritanceModalText" style="font-family:'Noto Serif SC',serif; font-size:0.88rem; line-height:1.85; color:#4a3d2e; margin:0;"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 家风族规卷轴弹窗 -->
+  <div id="scrollModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(20,15,10,0.75); backdrop-filter:blur(4px); justify-content:center; align-items:center;">
+    <div style="background:linear-gradient(to bottom,#f5f0e8,#faf6f0); width:96%; max-width:980px; max-height:96vh; overflow:hidden; border-radius:14px; position:relative; padding:28px 20px 16px; border:2px solid rgba(139,69,19,0.28); box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+      <button onclick="closeScrollModal()" style="position:absolute; top:10px; right:14px; background:rgba(139,69,19,0.08); border:1px solid rgba(139,69,19,0.2); font-size:1.4rem; color:#8B4513; cursor:pointer; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:background 0.2s; line-height:1;">×</button>
+      <h3 style="text-align:center; font-family:'Ma Shan Zheng',cursive; color:#4a3d2e; font-size:1.5rem; margin:0 0 14px; letter-spacing:4px;">家风族规卷轴</h3>
+      <div class="scroll-container" style="margin:0;">
+        <div class="scroll-pole pole-left"><div class="pole-cap"></div><div class="pole-base"></div></div>
+        <div class="scroll-paper" id="genealogyScrollPaper">
+          <div class="scroll-seal">汪氏家训</div>
+          <div class="scroll-content-inner">
+            <div class="scroll-column">
+              <p class="rule-title">第一款 孝父母</p>
+              <p>父母养育之恩，昊天罔极。为人子女者，当尽孝道，晨昏定省，冬温夏凊，使父母安享天伦之乐。父母在，不远游，游必有方。父母之年，不可不知也，一则以喜，一则以惧。</p>
+              <p class="rule-title">第二款 和兄弟</p>
+              <p>兄弟本是同根生，当和睦相处，互敬互爱，患难与共，勿因小利而伤手足之情。兄友弟恭，长幼有序，家族方能兴旺。</p>
+              <p class="rule-title">第三款 睦宗族</p>
+              <p>宗族一脉相承，当团结互助，守望相助，共荣共辱，维护宗族声誉。宗族事务，当群策群力，共同参与，共建和谐宗族。</p>
+            </div>
+            <div class="scroll-column">
+              <p class="rule-title">第四款 勤职业</p>
+              <p>业精于勤，荒于嬉。无论士农工商，当勤奋敬业，精益求精，创造家业。职业无贵贱，敬业则崇高，懒惰则可耻。</p>
+              <p class="rule-title">第五款 崇节俭</p>
+              <p>俭以养德，奢则败家。当厉行节约，反对浪费，量入为出，积累家业。一粥一饭，当思来之不易；半丝半缕，恒念物力维艰。</p>
+              <p class="rule-title">第六款 严教训</p>
+              <p>子女教育，关系家族兴衰。当严格管教，导之以正，培养良好品德。因材施教，循序渐进，不可溺爱，不可苛责，使子女成为有用之才。</p>
+            </div>
+            <div class="scroll-column">
+              <p class="rule-title">第七款 禁赌博</p>
+              <p>赌博害人害己，败家丧志。当严禁赌博，远离恶习，保持清白家风。赌博之人，轻则倾家荡产，重则家破人亡，不可不戒。</p>
+              <p class="rule-title">第八款 慎祭奠</p>
+              <p>祖先祭祀，慎终追远。当恭敬虔诚，按时祭扫，传承家族文化。祭祀之时，当心怀敬畏，至诚至敬，表达对祖先的追思之情。</p>
+              <p class="rule-title">第九款 重教育</p>
+              <p>教育为本，知识为宝。当重视子女教育，不惜重金，培养人才。万般皆下品，唯有读书高，读书则明理，明理则修身。</p>
+            </div>
+          </div>
+          <div class="scroll-footer">
+            <div class="scroll-footer-line"></div>
+            <div class="scroll-footer-text">大清乾隆年间 汪氏宗族立</div>
+          </div>
+        </div>
+        <div class="scroll-pole pole-right"><div class="pole-cap"></div><div class="pole-base"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openScrollModal() {
+      const m = document.getElementById('scrollModal');
+      m.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      const paper = document.getElementById('genealogyScrollPaper');
+      if (paper) {
+        paper.classList.remove('expanded');
+        requestAnimationFrame(() => requestAnimationFrame(() => paper.classList.add('expanded')));
+      }
+    }
+    function closeScrollModal() {
+      const m = document.getElementById('scrollModal');
+      m.style.display = 'none';
+      document.body.style.overflow = '';
+      const paper = document.getElementById('genealogyScrollPaper');
+      if (paper) paper.classList.remove('expanded');
+    }
+    document.addEventListener('click', function(e) {
+      const modal = document.getElementById('scrollModal');
+      if (e.target === modal) closeScrollModal();
+    });
+  </script>
+  <script src="i18n.js"></script>
+</body>
+</html>
