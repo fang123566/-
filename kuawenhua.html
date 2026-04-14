@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
+  <script
+    type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
   <style>
     :root {
       --ink: #1a1a2e;
@@ -515,8 +517,13 @@
     .p1-right {
       display: grid;
       grid-template-columns: 1fr 0px;
+      transition: grid-template-columns .45s cubic-bezier(.4, 0, .2, 1);
       gap: var(--gap);
       min-height: 0;
+    }
+
+    .p1-right.model-open {
+      grid-template-columns: 1fr 500px;
     }
 
     .radar-card {
@@ -537,6 +544,12 @@
       letter-spacing: .06em;
       text-align: center;
       flex-shrink: 0;
+    }
+
+    .radar-card svg {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
     }
 
     .radar-hint {
@@ -571,6 +584,172 @@
       width: 8px;
       height: 8px;
       border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .ra-poly {
+      stroke-width: 2;
+      cursor: pointer;
+      transition: opacity .3s, stroke-width .3s;
+    }
+
+    /* 3D面板 */
+    .model-panel {
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity .3s .1s;
+      min-width: 0;
+    }
+
+    .p1-right.model-open .model-panel {
+      opacity: 1;
+    }
+
+    .model-inner {
+      padding: 8px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      height: 100%;
+      background: linear-gradient(160deg, rgba(22, 18, 42, .97), rgba(14, 12, 26, .98));
+      border: 1.5px solid rgba(201, 168, 76, .18);
+      border-radius: var(--r);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .28);
+    }
+
+    .mp-row1 {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-shrink: 0;
+    }
+
+    .mp-head {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 1.25rem;
+      color: var(--gold-lt);
+      line-height: 1.2;
+    }
+
+    .mp-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: .66rem;
+      color: rgba(201, 168, 76, .55);
+      font-style: italic;
+      letter-spacing: .08em;
+    }
+
+    .mp-close {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1px solid rgba(201, 168, 76, .3);
+      background: rgba(201, 168, 76, .08);
+      color: rgba(201, 168, 76, .7);
+      font-size: .7rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s;
+    }
+
+    .mp-close:hover {
+      background: var(--red);
+      color: #fff;
+      border-color: var(--red);
+    }
+
+    #threeCanvas {
+      width: 100%;
+      flex: 1;
+      min-height: 180px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0d0c1a, #1a1628);
+      border: 1px solid rgba(201, 168, 76, .14);
+      cursor: grab;
+      display: block;
+      position: relative;
+    }
+
+    #threeCanvas:active {
+      cursor: grabbing;
+    }
+
+    .mp-canvas-hint {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, .45);
+      color: rgba(245, 240, 232, .6);
+      font-size: .6rem;
+      padding: 2px 10px;
+      border-radius: 12px;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .mp-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .mp-stat {
+      padding: 7px 10px;
+      background: rgba(201, 168, 76, .06);
+      border: 1px solid rgba(201, 168, 76, .12);
+      border-radius: 7px;
+    }
+
+    .mp-stat-n {
+      font-family: 'Playfair Display', serif;
+      font-size: .95rem;
+      font-weight: 900;
+      color: var(--gold);
+    }
+
+    .mp-stat-l {
+      font-size: .58rem;
+      color: rgba(245, 240, 232, .38);
+      margin-top: 1px;
+    }
+
+    .mp-desc {
+      font-size: .69rem;
+      color: rgba(245, 240, 232, .62);
+      line-height: 1.75;
+      font-family: 'Noto Serif SC', serif;
+      flex-shrink: 0;
+    }
+
+    .mp-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .mp-tag {
+      padding: 3px 8px;
+      border: 1px solid rgba(201, 168, 76, .28);
+      border-radius: 10px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: .63rem;
+      color: rgba(201, 168, 76, .82);
+    }
+
+    .mp-hint {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: .6rem;
+      color: rgba(245, 240, 232, .2);
+      text-align: center;
       flex-shrink: 0;
     }
 
@@ -1868,8 +2047,26 @@
               <polygon class="ra-poly" id="rp3" fill="rgba(52,152,219,.11)" stroke="#3498db" />
             </svg>
             <div class="radar-scores" id="radarScores"></div>
-            <div class="radar-hint" data-zh="点击图例查看详情" data-en="Click legend for details"
-              data-ru="Нажмите на легенду для подробностей">点击图例查看详情</div>
+            <div class="radar-hint" data-zh="点击图例或雷达多边形查看3D模型" data-en="Click legend or polygon to view 3D model"
+              data-ru="Нажмите на легенду для 3D-модели">点击图例或雷达多边形查看3D模型</div>
+          </div>
+          <div class="model-panel card-dark" id="modelPanel">
+            <div class="model-inner">
+              <div class="mp-row1">
+                <div>
+                  <div class="mp-head" id="mpHead">徽派民居</div>
+                  <div class="mp-en" id="mpEn">Huizhou Vernacular · China</div>
+                </div>
+                <button class="mp-close" onclick="closeModel()">✕</button>
+              </div>
+              <div id="threeCanvas" style="position:relative;">
+                <div class="mp-canvas-hint" id="mpCanvasHint">拖拽旋转 · 滚轮缩放</div>
+              </div>
+              <div class="mp-stats" id="mpStats"></div>
+              <div class="mp-desc" id="mpDesc">以天井为核心，内聚型空间，黑白美学。</div>
+              <div class="mp-tags" id="mpTags"></div>
+              <div class="mp-hint">拖动旋转 · 滚轮缩放</div>
+            </div>
           </div>
         </div>
       </div>
@@ -1902,7 +2099,7 @@
           <p class="cp-body"
             data-zh='天井是徽派民居的"呼吸之孔"——四面高墙围合，仅留中央一方天空。极度内聚的空间哲学源于"聚族而居"的宗族文化：高墙隔绝外界，天井将雨水与光线引入宅院，象征"肥水不流外人田"的财富积聚观念。天井不仅调节采光通风，更是家族仪礼举行的神圣场所——婚丧嫁娶、祭祀祖先，皆于此天地交汇之处完成。'
             data-en='The skywell is the "breathing pore" of Huizhou dwellings — four high walls enclose a single patch of sky. This inward philosophy stems from clan culture: walls block the outside while the skywell channels rain and light inward, symbolising wealth retention. Beyond regulating light and ventilation, the skywell is the sacred stage for family ceremonies.'
-            data-ru='Небесный колодец — "дыхательная пора" жилища: четыре высокие стены окружают небо. Клановая культура замкнутости и накопления богатства. Помимо регулирования света и вентиляции, колодец — священная сцена семейных церемоний.'>
+            data-ru='Небесный колодец — «дыхательная пора» жилища: четыре высокие стены окружают небо. Клановая культура замкнутости и накопления богатства. Помимо регулирования света и вентиляции, колодец — священная сцена семейных церемоний.'>
             天井是徽派民居的"呼吸之孔"——四面高墙围合，仅留中央一方天空。极度内聚的空间哲学源于"聚族而居"的宗族文化，天井不仅调节采光通风，更是家族仪礼举行的神圣场所——婚丧嫁娶、祭祀祖先，皆于此天地交汇之处完成。</p>
           <div class="tag-row"><span class="tag">四水归堂</span><span class="tag">阴翳美学</span><span
               class="tag">风水格局</span><span class="tag">内向聚合</span><span class="tag">宗族记忆</span></div>
@@ -2262,6 +2459,10 @@
   </div>
 
   <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
     /* ═══ TAB ═══ */
     window.goTab = function (idx, btn) {
       document.querySelectorAll('.panel').forEach((p, i) => p.classList.toggle('active', i === idx));
@@ -2315,14 +2516,18 @@
       ax.setAttribute('x2', cx + R * Math.cos(a)); ax.setAttribute('y2', cy + R * Math.sin(a));
       const lb = document.getElementById('lb' + i);
       lb.setAttribute('x', cx + (R + 20) * Math.cos(a)); lb.setAttribute('y', cy + (R + 20) * Math.sin(a));
-      lb.textContent = { zh: labZH, en: labEN, ru: labRU }[lang][i];
+      lb.textContent = labZH[i];
+      if (i === 0 || i === 3) lb.setAttribute('text-anchor', 'middle');
+      else if (i === 1 || i === 2) lb.setAttribute('text-anchor', 'start');
+      else lb.setAttribute('text-anchor', 'end');
     });
     series.forEach(s => document.getElementById(s.id).setAttribute('points', pts(s.vals)));
+    [0, 1, 2, 3].forEach(i => document.getElementById('rp' + i).addEventListener('click', () => selectArch(i)));
 
     const archNames = { zh: ['徽派', '地中海', '町家', '伊斯兰'], en: ['Huizhou', 'Med.', 'Machiya', 'Riad'], ru: ['Хуэй', 'Средиз.', 'Матия', 'Риад'] };
     function buildRadarScores() {
       const c = document.getElementById('radarScores'); c.innerHTML = '';
-      const names = archNames[lang] || archNames.zh;
+      const names = (archNames[lang] || archNames.zh);
       series.forEach((s, i) => {
         const avg = Math.round(s.vals.reduce((a, b) => a + b, 0) / s.vals.length);
         const el = document.createElement('div'); el.className = 'rs-item';
@@ -2333,8 +2538,145 @@
     buildRadarScores();
 
     /* ═══════════════════════════════════════
-       RADAR HIGHLIGHT (no 3D)
+       3D MODEL
     ═══════════════════════════════════════ */
+    let sc3, ca3, re3, co3, gp3, init3 = false;
+    const MODEL_PATHS = [
+      '素材/跨文化/徽派民居3D图.glb', 
+      '素材/跨文化/地中海民居3D图.glb', 
+      '素材/跨文化/日本町家3D图.glb', 
+      '素材/跨文化/伊斯兰庭院3D图.glb'
+    ];
+    const ARCH = [
+      { nameZH: '徽派民居', nameEN: 'Huizhou Vernacular · China', descZH: '以天井为核心，内聚型空间，黑白美学，三雕并重，强调宗族伦理秩序。高墙封院、四水归堂，是徽商家族凝固的精神家园。', descEN: 'Centred on the skywell; inward-gathering space; black-and-white aesthetics; clan ethical order.', descRU: 'Центр — небесный колодец; замкнутое пространство; чёрно-белая эстетика; клановая этика.', tags: ['天井', '马头墙', '三雕', '宗族'], stats: [{ n: '800+', l: '年历史' }, { n: '140', l: '明清建筑' }, { n: '95', l: '工艺指数' }, { n: '90', l: '精神象征' }], color: 0xc9a84c },
+      { nameZH: '地中海民居', nameEN: 'Mediterranean Vernacular', descZH: '以中庭为中心，石灰白墙，强调光线、通风与公共交往空间。开放的柱廊与外向立面彰显主人社会地位与活力，阳光是荣耀的媒介。', descEN: 'Atrium-centred; lime-white walls; emphasises light, ventilation and communal exchange.', descRU: 'Атриум в центре; белые стены; акцент на свет, вентиляцию и общение.', tags: ['Compluvium', '石灰墙', '柱廊', '公共性'], stats: [{ n: '2500+', l: '年历史' }, { n: '88', l: '社会开放' }, { n: '78', l: '工艺精湛' }, { n: '70', l: '精神象征' }], color: 0xe74c3c },
+      { nameZH: '日本町家', nameEN: 'Japanese Machiya', descZH: '纵深式布局，坪庭引入自然，极简美学，以"间"为模数，禅意空间将城市性与自然性完美融合。侘寂美学贯穿每一处细节。', descEN: 'Deep-plan layout; tsubo-niwa garden; minimalist Zen aesthetics using the ma module.', descRU: 'Глубокая планировка; садик цубо-нива; дзен-эстетика модуля «ма».', tags: ['坪庭', '間', '禅', '极简'], stats: [{ n: '400+', l: '年历史' }, { n: '90', l: '自然融合' }, { n: '88', l: '工艺精湛' }, { n: '85', l: '精神象征' }], color: 0x2ecc71 },
+      { nameZH: '伊斯兰庭院', nameEN: 'Islamic Riad · N. Africa', descZH: '十字庭院，华丽几何装饰，强调内外精神隔离；四格水池象征天堂，几何砖饰精密繁复，体现伊斯兰艺术最高精髓。', descEN: 'Cross-shaped courtyard; ornate geometric decoration; spiritual separation. Four-part pool symbolises paradise.', descRU: 'Крестообразный двор; изысканная геометрия; духовное разделение.', tags: ['十字庭', '几何纹', '里亚德', '神圣'], stats: [{ n: '1200+', l: '年历史' }, { n: '98', l: '装饰丰富' }, { n: '96', l: '精神象征' }, { n: '92', l: '工艺精湛' }], color: 0x3498db },
+    ];
+
+    function initThreeJS() {
+      const container = document.getElementById('threeCanvas');
+      const w = Math.max(container.clientWidth, 300);
+      const h = Math.max(container.clientHeight, 200);
+      sc3 = new THREE.Scene(); sc3.background = new THREE.Color(0x0a0816);
+      ca3 = new THREE.PerspectiveCamera(45, w / h, 0.1, 200);
+      ca3.position.set(0, 1.5, 8);
+      re3 = new THREE.WebGLRenderer({ antialias: true });
+      re3.setSize(w, h); re3.setPixelRatio(Math.min(devicePixelRatio, 2));
+      re3.shadowMap.enabled = true;
+      container.insertBefore(re3.domElement, container.firstChild);
+      re3.domElement.style.borderRadius = '10px'; re3.domElement.style.display = 'block';
+      re3.domElement.style.width = '100%'; re3.domElement.style.height = '100%';
+      co3 = new OrbitControls(ca3, re3.domElement);
+      co3.enableDamping = true; co3.dampingFactor = 0.08;
+      co3.minDistance = 3; co3.maxDistance = 18; co3.target.set(0, 0, 0);
+      sc3.add(new THREE.AmbientLight(0xfdf0d0, 0.8));
+      const dl = new THREE.DirectionalLight(0xfff5e0, 1.2);
+      dl.position.set(5, 9, 5); dl.castShadow = true; sc3.add(dl);
+      const pl = new THREE.PointLight(0xc9a84c, 0.4, 20); pl.position.set(-4, 2, -3); sc3.add(pl);
+      const pl2 = new THREE.PointLight(0x4488ff, 0.12, 14); pl2.position.set(4, -1, 3); sc3.add(pl2);
+      const sp = [];
+      for (let i = 0; i < 200; i++) sp.push((Math.random() - .5) * 30, (Math.random() - .5) * 30, (Math.random() - .5) * 30);
+      const sg = new THREE.BufferGeometry();
+      sg.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3));
+      sc3.add(new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xd4a017, size: .07, transparent: true, opacity: .18 })));
+      const gnd = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.MeshStandardMaterial({ color: 0x070614, roughness: .95 }));
+      gnd.rotation.x = -Math.PI / 2; gnd.position.y = -2.2; gnd.receiveShadow = true; sc3.add(gnd);
+      (function loop() { requestAnimationFrame(loop); co3.update(); if (gp3) gp3.rotation.y += .004; re3.render(sc3, ca3); })();
+      init3 = true;
+    }
+
+    function loadDemoModel(idx) {
+      if (gp3) {
+        sc3.remove(gp3);
+        gp3.traverse(ch => { if (ch.geometry) ch.geometry.dispose(); if (ch.material) { if (Array.isArray(ch.material)) ch.material.forEach(m => m.dispose()); else ch.material.dispose(); } });
+        gp3 = null;
+      }
+      const hint = document.getElementById('mpCanvasHint');
+      hint.textContent = '模型加载中...';
+      const loader = new GLTFLoader();
+      const path = MODEL_PATHS[idx] || MODEL_PATHS[0];
+      loader.load(path, gltf => {
+        gp3 = gltf.scene;
+        const box = new THREE.Box3().setFromObject(gp3);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        const scale = 3 / Math.max(size.x, size.y, size.z);
+        gp3.scale.setScalar(scale);
+        gp3.position.sub(center.multiplyScalar(scale));
+        gp3.traverse(ch => { if (ch.isMesh) { ch.castShadow = true; ch.receiveShadow = true; } });
+        sc3.add(gp3);
+        ca3.position.set(0, 1.5, 8); co3.target.set(0, 0, 0); co3.update();
+        hint.textContent = '🖱️ 拖拽旋转 · 滚轮缩放';
+      }, xhr => { if (xhr.total > 0) hint.textContent = `加载中 ${Math.round(xhr.loaded / xhr.total * 100)}%`; },
+        err => { console.warn('GLB加载失败，使用备用几何模型', err); hint.textContent = '🖱️ 拖拽旋转 · 滚轮缩放'; loadFallbackModel(idx); });
+    }
+
+    function loadFallbackModel(idx) {
+      if (gp3) { sc3.remove(gp3); gp3 = null; }
+      gp3 = new THREE.Group();
+      const matWood = new THREE.MeshStandardMaterial({ color: 0x8d6e63, roughness: 0.75, metalness: 0.05 });
+      const matBrick = new THREE.MeshStandardMaterial({ color: 0x4a6fa5, roughness: 0.85, metalness: 0.02 });
+      const matStone = new THREE.MeshStandardMaterial({ color: 0x4e7c60, roughness: 0.90, metalness: 0.00 });
+      switch (idx) {
+        case 0: {
+          const mat = matWood;
+          [-1.5, 1.5].forEach(x => { const w = new THREE.Mesh(new THREE.BoxGeometry(.2, 2.6, 3.0), mat); w.position.set(x, 0, 0); gp3.add(w); });
+          gp3.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(3.2, .2, 3.0), mat), { position: new THREE.Vector3(0, 1.2, 0) }));
+          const rm = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, roughness: 0.8 });
+          gp3.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(3.4, .2, 3.2), rm), { position: new THREE.Vector3(0, 1.32, 0) }));
+          [-1.6, 1.6].forEach(x => [0, .5, 1].forEach((yo, i) => {
+            const s = new THREE.Mesh(new THREE.BoxGeometry(.22, .24 - i * .04, 3.0 - .3 * i), rm);
+            s.position.set(x, 1.42 + yo * .28, 0); gp3.add(s);
+          }));
+          gp3.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(1.0, .06, 1.0), new THREE.MeshStandardMaterial({ color: 0x111 })), { position: new THREE.Vector3(0, -1.3, 0) }));
+          break;
+        }
+        case 1: {
+          gp3.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(3.4, .3, 3.4), matBrick), { position: new THREE.Vector3(0, -1.6, 0) }));
+          [[0, 1.5, 0, 3.0], [0, -1.5, 0, 3.0], [1.5, 0, 3.0, 0], [-1.5, 0, 3.0, 0]].forEach(([x, z, w, d]) => {
+            const wall = new THREE.Mesh(new THREE.BoxGeometry(w || .22, 1.6, d || .22), new THREE.MeshStandardMaterial({ color: 0xf5f0e8, roughness: 0.85 }));
+            wall.position.set(x, 0, z); gp3.add(wall);
+          });
+          [[-1.1, 0, -1.1], [-1.1, 0, 1.1], [1.1, 0, -1.1], [1.1, 0, 1.1]].forEach(([x, y, z]) => {
+            const cl = new THREE.Mesh(new THREE.CylinderGeometry(.13, .15, 1.7, 12), new THREE.MeshStandardMaterial({ color: 0xddd8cc, roughness: 0.7 }));
+            cl.position.set(x, -.1, z); gp3.add(cl);
+          });
+          gp3.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(3.6, .15, 3.6), new THREE.MeshStandardMaterial({ color: 0xc8a05a })), { position: new THREE.Vector3(0, .92, 0) }));
+          const acc = new THREE.Mesh(new THREE.TorusGeometry(.6, .045, 8, 28), matBrick);
+          acc.rotation.x = Math.PI / 2; acc.position.set(0, -1.5, 0); gp3.add(acc);
+          break;
+        }
+        case 2: {
+          gp3.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(1.3, 2.0, 3.8), new THREE.MeshStandardMaterial({ color: 0xd4b896, roughness: 0.8 })), { position: new THREE.Vector3(0, -.1, 0) }));
+          for (let i = 0; i < 3; i++) { const b = new THREE.Mesh(new THREE.BoxGeometry(1.32, .05, .05), new THREE.MeshStandardMaterial({ color: 0x2d1f0f })); b.position.set(0, .7 - i * .45, 1.92); gp3.add(b); }
+          for (let i = 0; i < 4; i++) { const b = new THREE.Mesh(new THREE.BoxGeometry(.05, 1.5, .05), new THREE.MeshStandardMaterial({ color: 0x2d1f0f })); b.position.set(-.48 + i * .32, .08, 1.92); gp3.add(b); }
+          gp3.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(1.7, .14, 4.2), new THREE.MeshStandardMaterial({ color: 0x1a1a1a })), { position: new THREE.Vector3(0, 1.05, 0) }));
+          gp3.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(.65, .07, .85), new THREE.MeshStandardMaterial({ color: 0x3a5e34 })), { position: new THREE.Vector3(0, -1.45, -1.3) }));
+          break;
+        }
+        case 3: {
+          [[0, 1.7, 3.4, .22], [0, -1.7, 3.4, .22], [1.7, 0, .22, 3.4], [-1.7, 0, .22, 3.4]].forEach(([x, z, w, d]) => {
+            const wall = new THREE.Mesh(new THREE.BoxGeometry(w, 2.4, d), new THREE.MeshStandardMaterial({ color: 0xe8e0d4, roughness: 0.85 }));
+            wall.position.set(x, 0, z); gp3.add(wall);
+          });
+          [[0, 0, 2.8, .45], [0, 0, .45, 2.8]].forEach(([x, z, w, d]) => {
+            const cn = new THREE.Mesh(new THREE.BoxGeometry(w, .09, d), matStone);
+            cn.position.set(x, -1.15, z); gp3.add(cn);
+          });
+          gp3.add(Object.assign(new THREE.Mesh(new THREE.CylinderGeometry(.24, .24, .13, 16), matStone), { position: new THREE.Vector3(0, -1.1, 0) }));
+          for (let i = 0; i < 4; i++) {
+            const a = i / 4 * Math.PI * 2;
+            const ar = new THREE.Mesh(new THREE.TorusGeometry(.42, .045, 6, 14, Math.PI), matBrick);
+            ar.position.set(Math.cos(a) * 1.1, -.25, Math.sin(a) * 1.1); ar.rotation.y = -a; gp3.add(ar);
+          }
+          break;
+        }
+      }
+      gp3.traverse(ch => { if (ch.isMesh) { ch.castShadow = true; ch.receiveShadow = true; } });
+      sc3.add(gp3); ca3.position.set(0, 1.5, 8); co3.target.set(0, 0, 0); co3.update();
+    }
+
     let selIdx = -1;
     window.selectArch = function (idx) {
       if (selIdx === idx) { closeModel(); return; }
@@ -2345,13 +2687,30 @@
         p.style.opacity = (i === idx) ? '1' : '0.15';
         p.style.strokeWidth = (i === idx) ? '3' : '1.5';
       });
+      const d = ARCH[idx];
+      document.getElementById('mpHead').textContent = d.nameZH;
+      document.getElementById('mpEn').textContent = d.nameEN;
+      document.getElementById('mpDesc').textContent = d['desc' + lang.toUpperCase()] || d.descZH;
+      const ts = document.getElementById('mpStats'); ts.innerHTML = '';
+      d.stats.forEach(s => { ts.innerHTML += `<div class="mp-stat"><div class="mp-stat-n">${s.n}</div><div class="mp-stat-l">${s.l}</div></div>`; });
+      const te = document.getElementById('mpTags'); te.innerHTML = '';
+      d.tags.forEach(t => { te.innerHTML += `<span class="mp-tag">${t}</span>`; });
+      document.getElementById('p1Right').classList.add('model-open');
+      setTimeout(() => {
+        const container = document.getElementById('threeCanvas');
+        const w = Math.max(container.clientWidth, 300);
+        const h = Math.max(container.clientHeight, 200);
+        if (!init3) { initThreeJS(); setTimeout(() => loadDemoModel(idx), 80); }
+        else { re3.setSize(w, h); ca3.aspect = w / h; ca3.updateProjectionMatrix(); loadDemoModel(idx); }
+      }, 500);
     };
+
     window.closeModel = function () {
       selIdx = -1;
+      document.getElementById('p1Right').classList.remove('model-open');
       document.querySelectorAll('.leg-item').forEach(el => el.classList.remove('selected'));
       series.forEach(s => { const p = document.getElementById(s.id); p.style.opacity = '1'; p.style.strokeWidth = '2'; });
     };
-    [0, 1, 2, 3].forEach(i => document.getElementById('rp' + i).addEventListener('click', () => selectArch(i)));
 
     /* ═══════════════════════════════════════
        PARALLEL COORDINATES
@@ -2967,7 +3326,6 @@
       });
     }
   </script>
-  <script src="i18n.js"></script>
 </body>
 
 </html>
