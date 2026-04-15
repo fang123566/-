@@ -37,6 +37,14 @@
       padding: 0;
     }
 
+    /* 俄语文本全局样式修复：使用系统无衬线字体，恢复正常字母间距 */
+    [lang="ru"],
+    *[lang="ru"] {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      letter-spacing: normal;
+      word-spacing: normal;
+    }
+
     html,
     body {
       height: 100%;
@@ -501,6 +509,14 @@
       font-size: .85rem;
       color: #555;
       line-height: 1.7;
+      letter-spacing: normal;
+    }
+
+    .leg-quote-zh:lang(ru),
+    [lang="ru"] .leg-quote-zh {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      letter-spacing: normal;
+      word-spacing: normal;
     }
 
     .leg-quote-en {
@@ -2280,6 +2296,7 @@
         const t = el.getAttribute('data-' + l) || el.getAttribute('data-zh');
         if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = t;
         else el.textContent = t;
+        el.setAttribute('lang', l);
       });
       document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('lang-active'));
       document.getElementById('btn' + l.toUpperCase()).classList.add('lang-active');
@@ -2371,7 +2388,7 @@
       const svg = document.getElementById('pcSvg');
       const rect = svg.getBoundingClientRect();
       const W = rect.width || 500, H = rect.height || 320;
-      const pad = { l: 32, r: 14, t: 52, b: 28 };
+      const pad = { l: 32, r: 44, t: 52, b: 28 };
       const nAxes = 6;
       const axXs = Array.from({ length: nAxes }, (_, i) => pad.l + (W - pad.l - pad.r) * i / (nAxes - 1));
       const scale = v => pad.t + (H - pad.t - pad.b) * (1 - v / 100);
@@ -2466,14 +2483,12 @@
         });
         if (!isFade) {
           const avg = Math.round(s.vals.reduce((a, b) => a + b, 0) / s.vals.length);
-          const bx = axXs[nAxes - 1] + 10, by = scale(avg);
-          const rb = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-          rb.setAttribute('x', bx); rb.setAttribute('y', by - 9); rb.setAttribute('width', 28); rb.setAttribute('height', 18);
-          rb.setAttribute('rx', 9); rb.setAttribute('fill', s.color); rb.setAttribute('opacity', isHL ? '1' : '0.5'); svg.appendChild(rb);
-          const rt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          rt.setAttribute('x', bx + 14); rt.setAttribute('y', by + 4); rt.setAttribute('text-anchor', 'middle'); rt.setAttribute('font-size', '9');
-          rt.setAttribute('fill', 'white'); rt.setAttribute('font-weight', '700'); rt.setAttribute('font-family', 'Playfair Display,serif');
-          rt.textContent = avg; svg.appendChild(rt);
+          // 右侧标签已禁用: const bx = axXs[nAxes - 1] + 10, by = scale(avg);
+          // 右侧胶囊标签已禁用
+          // const rt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          // rt.setAttribute('x', 0); rt.setAttribute('y', 0); rt.setAttribute('text-anchor', 'middle'); rt.setAttribute('font-size', '0');
+          // rt.setAttribute('fill', 'white'); rt.setAttribute('font-weight', '700'); rt.setAttribute('font-family', 'Playfair Display,serif');
+          // rt.textContent = avg; svg.appendChild(rt);
         }
       });
       axXs.forEach((x, i) => {
@@ -2491,7 +2506,10 @@
         diam.setAttribute('fill', 'rgba(201,168,76,.45)'); svg.appendChild(diam);
         const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         label.setAttribute('x', x); label.setAttribute('y', pad.t - 26); label.setAttribute('text-anchor', 'middle'); label.setAttribute('font-size', '10');
-        label.setAttribute('fill', '#444'); label.setAttribute('font-family', 'Noto Serif SC,serif'); label.setAttribute('font-weight', '700');
+        label.setAttribute('fill', '#444'); label.setAttribute('font-weight', '700');
+        // 根据语言设置字体，俄语使用系统无衬线字体
+        const labelFont = lang === 'ru' ? '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif' : 'Noto Serif SC,serif';
+        label.setAttribute('font-family', labelFont);
         label.textContent = dims[i]; svg.appendChild(label);
       });
       const stripY = H - 14;
@@ -2566,7 +2584,7 @@
         center: [22, 18],
         zoom: 2,
         zoomControl: true,
-        attributionControl: true,
+        attributionControl: false,
         minZoom: 1,
         maxZoom: 10,
       });
@@ -2661,12 +2679,12 @@
        STAR MAP
     ═══════════════════════════════════════ */
     const CULTURES = [
-      { id: 0, label: '徽派民居', en: 'Huizhou', ru: 'Хуэйчжоу', x: 0.38, y: 0.42, r: 26, color: '#c9a84c', hex: 0xc9a84c, glyph: '徽', quote: { zh: '天井的光，是被建筑驯化的自然。站在承志堂中央仰望那片天空，我忽然理解了中国人对"内"的执念——那不是封闭，而是对宇宙最深情的凝视方式。方寸天光之下，时间在此凝结，四代人的喜怒哀乐都曾被这同一片天空见证。', en: 'The light of the skywell is nature tamed by architecture. Standing at Chengzhi Hall, I finally understood the Chinese devotion to "inwardness" — not enclosure, but the most intimate way of contemplating the cosmos.', ru: 'Свет небесного колодца — природа, укрощённая архитектурой. Стоя в центре зала Чэнчжи, я понял преданность китайцев «внутреннему» — это не замкнутость, а созерцание космоса.' }, author: { zh: '—— 成员一', en: '— Member One', ru: '— Участник один' }, dims: { zh: ['自然融合', '工艺精湛', '精神象征', '内聚程度'], vals: [82, 95, 90, 96] } },
-      { id: 1, label: '地中海民居', en: 'Mediterranean', ru: 'Средиземноморье', x: 0.65, y: 0.22, r: 22, color: '#e74c3c', hex: 0xe74c3c, glyph: '地', quote: { zh: '当罗马中庭的阳光洒满整个空间，我才明白"开放"本身也是一种哲学——不是对安全感的放弃，而是对人类社会性的信仰。空间的展演是文明自信的体现，权力通过光线而非高墙来表达。', en: 'When sunlight fills the Roman atrium, I understood that "openness" is itself a philosophy — not abandoning security but believing in human sociality. Power is expressed through light, not high walls.', ru: 'Когда солнечный свет заполнил римский атриум, я понял: «открытость» — это философия веры в человеческую общительность.' }, author: { zh: '—— 成员二', en: '— Member Two', ru: '— Участник два' }, dims: { zh: ['社会开放', '自然融合', '工艺精湛', '外展程度'], vals: [88, 60, 78, 90] } },
-      { id: 2, label: '日本町家', en: 'Machiya', ru: 'Матия', x: 0.73, y: 0.60, r: 20, color: '#2ecc71', hex: 0x2ecc71, glyph: '町', quote: { zh: '町家坪庭的那一抹绿，是城市中最克制的自然宣言。极简不是贫乏，而是经过精心删减后的丰盛。禅意并非虚无，而是在最小的空间里容纳了最大的宇宙意识——一粒砂，一片苔，即整个世界。', en: 'The patch of green in the machiya tsubo-niwa is the most restrained declaration of nature in the city. Minimalism is not poverty but abundance after careful subtraction. One grain of sand, one patch of moss — the entire cosmos.', ru: 'Зелень садика цубо-нива — сдержанная декларация природы в городе. Минимализм — это изобилие после тщательного вычитания.' }, author: { zh: '—— 成员三', en: '— Member Three', ru: '— Участник три' }, dims: { zh: ['自然融合', '工艺精湛', '精神象征', '极简程度'], vals: [90, 88, 85, 95] } },
-      { id: 3, label: '伊斯兰庭院', en: 'Islamic Riad', ru: 'Риад', x: 0.26, y: 0.70, r: 22, color: '#3498db', hex: 0x3498db, glyph: '伊', quote: { zh: '当我把徽州砖雕与伊斯兰里亚德的瓷砖马赛克并排比较，震惊地发现：相距万里的两种文明，都选择用几何图案来表达无限与永恒。也许几何是上天赋予人类的普世语法，信仰的数学证明穿越了地理与文化的隔阂。', en: 'Placing Huizhou carvings beside Islamic tile mosaics, two civilisations worlds apart had independently chosen geometric patterns to express infinity. Perhaps geometry is the universal grammar given to humanity by heaven.', ru: 'Сравнивая резьбу Хуэйчжоу с мозаикой риадов: две цивилизации независимо выбрали геометрию для выражения бесконечности.' }, author: { zh: '—— 成员四', en: '— Member Four', ru: '— Участник четыре' }, dims: { zh: ['装饰丰富', '精神象征', '工艺精湛', '几何美学'], vals: [98, 96, 92, 99] } },
-      { id: 4, label: '俄罗斯木屋', en: 'Russian Izba', ru: 'Русская Изба', x: 0.55, y: 0.80, r: 18, color: '#9b59b6', hex: 0x9b59b6, glyph: '俄', quote: { zh: '作为俄罗斯同学，我最初以为徽州与我的故乡毫无关联。然而当我看到宏村的雪景，那黑瓦白墙与俄罗斯木屋在大雪中的轮廓如此相似——寒冷让人类发展出共同的内聚智慧，气候书写了另一种语言。', en: 'As a Russian student, I thought Huizhou had nothing in common with my homeland. But seeing Hongcun under snow — those black-tiled white walls mirroring the silhouette of a Russian izba — cold climates inspire the same inward wisdom.', ru: 'Как российский студент, я думал иначе. Но увидев Хунцунь под снегом — стены напомнили русскую избу. Холодный климат рождает одинаковую мудрость.' }, author: { zh: '—— 俄罗斯成员', en: '— Russian Member', ru: '— Российский участник' }, dims: { zh: ['自然融合', '工艺精湛', '内聚程度', '气候适应'], vals: [75, 82, 88, 94] } },
-      { id: 5, label: '荷兰水城', en: 'Dutch Canal City', ru: 'Голландский Канал', x: 0.18, y: 0.28, r: 18, color: '#f39c12', hex: 0xf39c12, glyph: '荷', quote: { zh: '宏村的水系设计让我想起荷兰运河城市——月沼与南湖是凝固在地面的哲学。不同文明面对相同的自然挑战，却发展出截然不同的诗意回应：荷兰人用运河征服大海，徽州人用水系参悟天道。这正是人类文明多样性最动人的证明。', en: "Hongcun's water system reminded me of Dutch canal cities. Facing similar natural challenges, different civilisations developed distinct poetic responses: the Dutch conquered the sea with canals; Huizhou contemplated the way of heaven with waterways.", ru: 'Водная система Хунцуня напомнила голландские каналы. Перед одинаковыми вызовами — разные поэтические ответы.' }, author: { zh: '—— 成员五', en: '— Member Five', ru: '— Участник пять' }, dims: { zh: ['自然融合', '工艺精湛', '社会开放', '水系智慧'], vals: [85, 80, 75, 92] } },
+      { id: 0, label: '徽派民居', en: 'Huizhou', ru: 'Хуэйчжоу', x: 0.38, y: 0.42, r: 26, color: '#c9a84c', hex: 0xc9a84c, glyph: '徽', img: '素材/村落概况.png', quote: { zh: '天井的光，是被建筑驯化的自然。站在承志堂中央仰望那片天空，我忽然理解了中国人对"内"的执念——那不是封闭，而是对宇宙最深情的凝视方式。方寸天光之下，时间在此凝结，四代人的喜怒哀乐都曾被这同一片天空见证。', en: 'The light of the skywell is nature tamed by architecture. Standing at Chengzhi Hall, I finally understood the Chinese devotion to "inwardness" — not enclosure, but the most intimate way of contemplating the cosmos.', ru: 'Свет небесного колодца — природа, укрощённая архитектурой. Стоя в центре зала Чэнчжи, я понял преданность китайцев «внутреннему» — это не замкнутость, а созерцание космоса.' }, author: { zh: '—— 成员一', en: '— Member One', ru: '— Участник один' }, dims: { zh: ['自然融合', '工艺精湛', '精神象征', '内聚程度'], en: ['Nature Fusion', 'Craftsmanship', 'Spiritual', 'Cohesion'], ru: ['Природа', 'Мастерство', 'Духовность', 'Сплочённость'], vals: [82, 95, 90, 96] } },
+      { id: 1, label: '地中海民居', en: 'Mediterranean', ru: 'Средиземноморье', x: 0.65, y: 0.22, r: 22, color: '#e74c3c', hex: 0xe74c3c, glyph: '地', img: '素材/跨文化/地中海民居.png', quote: { zh: '当罗马中庭的阳光洒满整个空间，我才明白"开放"本身也是一种哲学——不是对安全感的放弃，而是对人类社会性的信仰。空间的展演是文明自信的体现，权力通过光线而非高墙来表达。', en: 'When sunlight fills the Roman atrium, I understood that "openness" is itself a philosophy — not abandoning security but believing in human sociality. Power is expressed through light, not high walls.', ru: 'Когда солнечный свет заполнил римский атриум, я понял: «открытость» — это философия веры в человеческую общительность.' }, author: { zh: '—— 成员二', en: '— Member Two', ru: '— Участник два' }, dims: { zh: ['社会开放', '自然融合', '工艺精湛', '外展程度'], en: ['Social Open', 'Nature', 'Craft', 'Expansion'], ru: ['Открытость', 'Природа', 'Мастерство', 'Экспансия'], vals: [88, 60, 78, 90] } },
+      { id: 2, label: '日本町家', en: 'Machiya', ru: 'Матия', x: 0.73, y: 0.60, r: 20, color: '#2ecc71', hex: 0x2ecc71, glyph: '町', img: '素材/跨文化/日本町家.png', quote: { zh: '町家坪庭的那一抹绿，是城市中最克制的自然宣言。极简不是贫乏，而是经过精心删减后的丰盛。禅意并非虚无，而是在最小的空间里容纳了最大的宇宙意识——一粒砂，一片苔，即整个世界。', en: 'The patch of green in the machiya tsubo-niwa is the most restrained declaration of nature in the city. Minimalism is not poverty but abundance after careful subtraction. One grain of sand, one patch of moss — the entire cosmos.', ru: 'Зелень садика цубо-нива — сдержанная декларация природы в городе. Минимализм — это изобилие после тщательного вычитания.' }, author: { zh: '—— 成员三', en: '— Member Three', ru: '— Участник три' }, dims: { zh: ['自然融合', '工艺精湛', '精神象征', '极简程度'], en: ['Nature', 'Craft', 'Spiritual', 'Minimal'], ru: ['Природа', 'Мастерство', 'Духовность', 'Минимализм'], vals: [90, 88, 85, 95] } },
+      { id: 3, label: '伊斯兰庭院', en: 'Islamic Riad', ru: 'Риад', x: 0.26, y: 0.70, r: 22, color: '#3498db', hex: 0x3498db, glyph: '伊', img: '素材/跨文化/伊斯兰庭院.png', quote: { zh: '当我把徽州砖雕与伊斯兰里亚德的瓷砖马赛克并排比较，震惊地发现：相距万里的两种文明，都选择用几何图案来表达无限与永恒。也许几何是上天赋予人类的普世语法，信仰的数学证明穿越了地理与文化的隔阂。', en: 'Placing Huizhou carvings beside Islamic tile mosaics, two civilisations worlds apart had independently chosen geometric patterns to express infinity. Perhaps geometry is the universal grammar given to humanity by heaven.', ru: 'Сравнивая резьбу Хуэйчжоу с мозаикой риадов: две цивилизации независимо выбрали геометрию для выражения бесконечности.' }, author: { zh: '—— 成员四', en: '— Member Four', ru: '— Участник четыре' }, dims: { zh: ['装饰丰富', '精神象征', '工艺精湛', '几何美学'], en: ['Decoration', 'Spiritual', 'Craft', 'Geometry'], ru: ['Декор', 'Духовность', 'Мастерство', 'Геометрия'], vals: [98, 96, 92, 99] } },
+      { id: 4, label: '俄罗斯木屋', en: 'Russian Izba', ru: 'Русская Изба', x: 0.55, y: 0.80, r: 18, color: '#9b59b6', hex: 0x9b59b6, glyph: '俄', img: '素材/跨文化/俄罗斯木屋.png', quote: { zh: '作为俄罗斯同学，我最初以为徽州与我的故乡毫无关联。然而当我看到宏村的雪景，那黑瓦白墙与俄罗斯木屋在大雪中的轮廓如此相似——寒冷让人类发展出共同的内聚智慧，气候书写了另一种语言。', en: 'As a Russian student, I thought Huizhou had nothing in common with my homeland. But seeing Hongcun under snow — those black-tiled white walls mirroring the silhouette of a Russian izba — cold climates inspire the same inward wisdom.', ru: 'Как российский студент, я думал иначе. Но увидев Хунцунь под снегом — стены напомнили русскую избу. Холодный климат рождает одинаковую мудрость.' }, author: { zh: '—— 俄罗斯成员', en: '— Russian Member', ru: '— Российский участник' }, dims: { zh: ['自然融合', '工艺精湛', '内聚程度', '气候适应'], en: ['Nature', 'Craft', 'Cohesion', 'Climate'], ru: ['Природа', 'Мастерство', 'Сплочённость', 'Климат'], vals: [75, 82, 88, 94] } },
+      { id: 5, label: '荷兰水城', en: 'Dutch Canal City', ru: 'Голландский Канал', x: 0.18, y: 0.28, r: 18, color: '#f39c12', hex: 0xf39c12, glyph: '荷', img: '素材/跨文化/荷兰水城.png', quote: { zh: '宏村的水系设计让我想起荷兰运河城市——月沼与南湖是凝固在地面的哲学。不同文明面对相同的自然挑战，却发展出截然不同的诗意回应：荷兰人用运河征服大海，徽州人用水系参悟天道。这正是人类文明多样性最动人的证明。', en: "Hongcun's water system reminded me of Dutch canal cities. Facing similar natural challenges, different civilisations developed distinct poetic responses: the Dutch conquered the sea with canals; Huizhou contemplated the way of heaven with waterways.", ru: 'Водная система Хунцуня напомнила голландские каналы. Перед одинаковыми вызовами — разные поэтические ответы.' }, author: { zh: '—— 成员五', en: '— Member Five', ru: '— Участник пять' }, dims: { zh: ['自然融合', '工艺精湛', '社会开放', '水系智慧'], en: ['Nature', 'Craft', 'Social', 'Water'], ru: ['Природа', 'Мастерство', 'Открытость', 'Вода'], vals: [85, 80, 75, 92] } },
     ];
 
     const CONNECTIONS = [
@@ -2886,9 +2904,7 @@
         g.setAttribute('opacity', (nid === i || connected) ? '1' : '0.18');
       });
       const card = document.getElementById('nodeInfoCard');
-      const q = c.quote[lang] || c.quote.zh;
-      const auth = c.author[lang] || c.author.zh;
-      const dimLabels = c.dims.zh;
+      const dimLabels = c.dims[lang] || c.dims.zh;
       const connectedTo = CONNECTIONS
         .filter(conn => conn.a === i || conn.b === i)
         .map(conn => ({ idx: conn.a === i ? conn.b : conn.a, strength: conn.s, type: conn.t }))
@@ -2896,13 +2912,17 @@
       let connHtml = '';
       connectedTo.forEach(ct => {
         const cc = CULTURES[ct.idx];
-        const typeLabel = { strong: '强共鸣', weak: '弱共鸣', tension: '文化张力' }[ct.type];
-        const typeLabelEN = { strong: 'Strong', weak: 'Weak', tension: 'Tension' }[ct.type];
+        const typeLabels = {
+          zh: { strong: '强共鸣', weak: '弱共鸣', tension: '文化张力' },
+          en: { strong: 'Strong', weak: 'Weak', tension: 'Tension' },
+          ru: { strong: 'Сильный', weak: 'Слабый', tension: 'Напряжение' }
+        };
+        const typeLabel = typeLabels[lang][ct.type];
         connHtml += `<div style="display:flex;align-items:center;gap:6px;font-size:.68rem;color:#555;margin-bottom:4px;">
       <span style="width:8px;height:8px;border-radius:50%;background:${cc.color};flex-shrink:0;display:inline-block;"></span>
       <span style="font-weight:700;color:${cc.color};">${cc.label}</span>
       <span style="color:#aaa;">·</span>
-      <span>${lang === 'zh' ? typeLabel : typeLabelEN}</span>
+      <span>${typeLabel}</span>
       <span style="margin-left:auto;font-family:'Playfair Display',serif;font-weight:700;color:${ct.type === 'tension' ? '#8b1a1a' : cc.color};">${Math.round(ct.strength * 100)}%</span>
     </div>`;
       });
@@ -2917,9 +2937,9 @@
       card.innerHTML = `
     <div class="ni-header"><div class="ni-color-dot" style="background:${c.color};"></div>
     <div><div class="ni-title">${c.label}</div><div class="ni-subtitle">${c.en}</div></div></div>
-    <div class="ni-quote">${q}<div class="ni-author">${auth}</div></div>
+    <div class="ni-img-wrap" style="width:100%;height:160px;border-radius:8px;overflow:hidden;margin:8px 0;border:1px solid rgba(201,168,76,.2);"><img src="${c.img}" alt="${c.label}" style="width:100%;height:100%;object-fit:cover;"></div>
     <div class="ni-dims">${dimHtml}</div>
-    ${connectedTo.length ? `<div style="margin-top:8px;border-top:1px solid rgba(201,168,76,.12);padding-top:8px;"><div style="font-family:'Ma Shan Zheng',cursive;font-size:.8rem;color:#888;margin-bottom:6px;">文化共鸣网络</div>${connHtml}</div>` : ''}
+    ${connectedTo.length ? `<div style="margin-top:8px;border-top:1px solid rgba(201,168,76,.12);padding-top:8px;"><div style="font-family:'Ma Shan Zheng',cursive;font-size:.8rem;color:#888;margin-bottom:6px;">${lang === 'zh' ? '文化共鸣网络' : lang === 'en' ? 'Cultural Resonance' : 'Культурный резонанс'}</div>${connHtml}</div>` : ''}
   `;
     }
 

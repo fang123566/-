@@ -341,11 +341,12 @@ body{
 .ch-nav-item.active-ch{background:rgba(184,48,32,.1);border-color:rgba(184,48,32,.22);}
 .ch-nav-num{
   font-family:'Ma Shan Zheng',cursive;
-  font-size:.72rem;color:var(--cinnabar);width:16px;flex-shrink:0;
+  font-size:.72rem;color:var(--cinnabar);min-width:16px;flex-shrink:0;white-space:nowrap;
 }
 .ch-nav-title{
   font-family:'ZCOOL QingKe HuangYou',cursive;
   font-size:.64rem;color:var(--ink-medium);letter-spacing:.06em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;
 }
 .ch-nav-dot{
   margin-left:auto;width:4px;height:4px;border-radius:50%;

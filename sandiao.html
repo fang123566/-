@@ -825,20 +825,6 @@
 
     .stat-label {
       font-size: .58rem;
-      color: var(--ink-faint);
-      display: block;
-      margin-bottom: 2px;
-    }
-
-    .stat-value {
-      font-family: 'Ma Shan Zheng', cursive;
-      font-size: 1rem;
-      color: var(--cinnabar);
-    }
-
-    /* ── 竖向滚动数据面板 — 固定高度滚动区 ── */
-    #vsCard {
-      /* 无需 display:flex，自然高度即可 */
     }
 
     .vs-outer {
@@ -900,8 +886,10 @@
       flex-shrink: 0;
       width: 100%;
       padding: 13px 14px 12px;
+      margin-bottom: 12px;
       background: var(--paper-warm);
       border-bottom: 1px solid rgba(184, 134, 11, .15);
+      border-radius: 4px;
       position: relative;
       overflow: hidden;
       box-sizing: border-box;

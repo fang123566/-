@@ -482,6 +482,11 @@ this.classList.toggle('expanded');
 });
 }
 
+// 初始化时间轴（占位函数）
+function initTimeline() {
+  console.log('时间轴初始化（暂无实现）');
+}
+
 // 时间轴点击处理函数
 function handleTimelineClick(year) {
   console.log('时间轴点击处理函数被调用:', year);
